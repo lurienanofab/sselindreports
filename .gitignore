@@ -1,0 +1,12 @@
+.vs/
+bin/
+obj/
+packages/
+TestResults/
+PublishProfiles/
+*.suo
+*.user
+sselIndReports/Web.config
+sselIndReports/Web.Debug.config
+sselIndReports/Web.Release.config
+sselIndReports.Tests/app.config

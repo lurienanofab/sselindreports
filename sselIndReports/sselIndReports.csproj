@@ -1,0 +1,336 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8B379836-2666-4817-8D6F-63A42826FC20}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>sselIndReports</RootNamespace>
+    <AssemblyName>sselIndReports</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <UseIISExpress>false</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <TargetFrameworkProfile />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="GemBox.ExcelLite">
+      <HintPath>..\..\..\SharedLib\GemBox.ExcelLite.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Owin, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.3.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.3.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="AggDemographic.aspx" />
+    <Content Include="AggFeeComparison.aspx" />
+    <Content Include="AggNNIN.aspx" />
+    <Content Include="AggNNIN2.aspx" />
+    <Content Include="AggSubsidyByFacultyGroup.aspx" />
+    <Content Include="AggSumUsage.aspx" />
+    <Content Include="DatAccount.aspx" />
+    <Content Include="DatClient.aspx" />
+    <Content Include="DatOrganization.aspx" />
+    <Content Include="Global.asax" />
+    <Content Include="IndAuthTools.aspx" />
+    <Content Include="IndClientAccount.aspx" />
+    <Content Include="IndDetUsage.aspx" />
+    <Content Include="index.aspx" />
+    <Content Include="IndSumUsage.aspx" />
+    <Content Include="IndUserUsageSummary.aspx" />
+    <Content Include="IndUserUsageSummary20100701.aspx" />
+    <Content Include="IndUserUsageSummary20110401.aspx" />
+    <Content Include="IndUserUsageSummary20111101.aspx" />
+    <Content Include="IndUserUsageSummaryMonthly.aspx" />
+    <Content Include="scripts\jquery.userusagesummary\css\images\ajax-loader.gif" />
+    <Content Include="scripts\jquery.userusagesummary\css\jquery.userusagesummary.css" />
+    <Content Include="scripts\jquery.userusagesummary\js\jquery.userusagesummary.js" />
+    <Content Include="scripts\main.js" />
+    <Content Include="scripts\overlib.js" />
+    <Content Include="styles\user-usage-summary.css" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="IndReportsMaster.Master" />
+    <Content Include="Spreadsheets\NNIN Data Blank.xls" />
+    <Content Include="Spreadsheets\NNIN\NNIN Data Blank.xls" />
+    <Content Include="packages.config" />
+    <None Include="Properties\PublishProfiles\Production %28Apps%29.pubxml" />
+    <None Include="Properties\PublishProfiles\sselreports.pubxml" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AggDemographic.aspx.cs">
+      <DependentUpon>AggDemographic.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AggDemographic.aspx.designer.cs">
+      <DependentUpon>AggDemographic.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="AggFeeComparison.aspx.cs">
+      <DependentUpon>AggFeeComparison.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AggFeeComparison.aspx.designer.cs">
+      <DependentUpon>AggFeeComparison.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="AggNNIN.aspx.cs">
+      <DependentUpon>AggNNIN.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AggNNIN.aspx.designer.cs">
+      <DependentUpon>AggNNIN.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="AggNNIN2.aspx.cs">
+      <DependentUpon>AggNNIN2.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AggNNIN2.aspx.designer.cs">
+      <DependentUpon>AggNNIN2.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="AggSubsidyByFacultyGroup.aspx.cs">
+      <DependentUpon>AggSubsidyByFacultyGroup.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AggSubsidyByFacultyGroup.aspx.designer.cs">
+      <DependentUpon>AggSubsidyByFacultyGroup.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="AggSumUsage.aspx.cs">
+      <DependentUpon>AggSumUsage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AggSumUsage.aspx.designer.cs">
+      <DependentUpon>AggSumUsage.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="DatAccount.aspx.cs">
+      <DependentUpon>DatAccount.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="DatAccount.aspx.designer.cs">
+      <DependentUpon>DatAccount.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="DatClient.aspx.cs">
+      <DependentUpon>DatClient.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="DatClient.aspx.designer.cs">
+      <DependentUpon>DatClient.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="DatOrganization.aspx.cs">
+      <DependentUpon>DatOrganization.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="DatOrganization.aspx.designer.cs">
+      <DependentUpon>DatOrganization.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="IndAuthTools.aspx.cs">
+      <DependentUpon>IndAuthTools.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="IndAuthTools.aspx.designer.cs">
+      <DependentUpon>IndAuthTools.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="IndClientAccount.aspx.cs">
+      <DependentUpon>IndClientAccount.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="IndClientAccount.aspx.designer.cs">
+      <DependentUpon>IndClientAccount.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="IndDetUsage.aspx.cs">
+      <DependentUpon>IndDetUsage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="IndDetUsage.aspx.designer.cs">
+      <DependentUpon>IndDetUsage.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="index.aspx.cs">
+      <DependentUpon>index.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="index.aspx.designer.cs">
+      <DependentUpon>index.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="IndReportsMaster.Master.cs">
+      <DependentUpon>IndReportsMaster.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="IndReportsMaster.Master.designer.cs">
+      <DependentUpon>IndReportsMaster.Master</DependentUpon>
+    </Compile>
+    <Compile Include="IndSumUsage.aspx.cs">
+      <DependentUpon>IndSumUsage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="IndSumUsage.aspx.designer.cs">
+      <DependentUpon>IndSumUsage.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="IndUserUsageSummary.aspx.cs">
+      <DependentUpon>IndUserUsageSummary.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="IndUserUsageSummary.aspx.designer.cs">
+      <DependentUpon>IndUserUsageSummary.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="IndUserUsageSummary20100701.aspx.cs">
+      <DependentUpon>IndUserUsageSummary20100701.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="IndUserUsageSummary20100701.aspx.designer.cs">
+      <DependentUpon>IndUserUsageSummary20100701.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="IndUserUsageSummary20110401.aspx.cs">
+      <DependentUpon>IndUserUsageSummary20110401.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="IndUserUsageSummary20110401.aspx.designer.cs">
+      <DependentUpon>IndUserUsageSummary20110401.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="IndUserUsageSummary20111101.aspx.cs">
+      <DependentUpon>IndUserUsageSummary20111101.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="IndUserUsageSummary20111101.aspx.designer.cs">
+      <DependentUpon>IndUserUsageSummary20111101.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="IndUserUsageSummaryMonthly.aspx.cs">
+      <DependentUpon>IndUserUsageSummaryMonthly.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="IndUserUsageSummaryMonthly.aspx.designer.cs">
+      <DependentUpon>IndUserUsageSummaryMonthly.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Startup.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\LNF\LNF.Impl\LNF.Impl.csproj">
+      <Project>{7a6cd165-0c48-4680-9a49-281688eb1cd8}</Project>
+      <Name>LNF.Impl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\lnf\LNF.Models\LNF.Models.csproj">
+      <Project>{98c7f73d-ef9d-4a87-8b79-a1208085cfbd}</Project>
+      <Name>LNF.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\LNF\LNF.Web\LNF.Web.csproj">
+      <Project>{f79683ff-e524-4107-a6e1-29579ee544e1}</Project>
+      <Name>LNF.Web</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\LNF\LNF\LNF.csproj">
+      <Project>{e3b73410-869b-4ba2-99ac-ad6708a27ade}</Project>
+      <Name>LNF</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\sselIndReports.AppCode\sselIndReports.AppCode.csproj">
+      <Project>{f29c325b-a5a9-49d9-9998-c490cb9750ea}</Project>
+      <Name>sselIndReports.AppCode</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>59734</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost/sselIndReports</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,41 @@
+#divAggReports {
+    border: none;
+}
+
+#divAggByOrg {
+    border: solid 1px #000000;
+    padding: 3px;
+}
+
+#divAggByAcc {
+    border: solid 1px #000000;
+    padding: 3px;
+}
+
+#divDetail,
+#divDetailAll {
+    border: solid 1px #000000;
+    padding: 3px;
+}
+
+#h4AggByOrg {
+    font-size: 10pt;
+    color: #000000;
+    background-color: #FFCC99;
+}
+
+#h4AggByAcc {
+    font-size: 10pt;
+    color: #000000;
+    background-color: #FFCC99;
+}
+
+#h4BillingDetail {
+    font-size: 10pt;
+    color: #000000;
+    background-color: #FFCC99;
+}
+
+.empty-data {
+    padding: 2px 10px 2px 10px;
+}

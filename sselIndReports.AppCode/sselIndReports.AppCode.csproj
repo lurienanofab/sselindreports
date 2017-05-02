@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{F29C325B-A5A9-49D9-9998-C490CB9750EA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>sselIndReports.AppCode</RootNamespace>
+    <AssemblyName>sselIndReports.AppCode</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BLL\BillingManager.cs" />
+    <Compile Include="BLL\BillingTablesBL.cs" />
+    <Compile Include="BLL\BillingTableType.cs" />
+    <Compile Include="BLL\BillingTypeManager.cs" />
+    <Compile Include="BLL\ClientAccountManager.cs" />
+    <Compile Include="BLL\ClientManager.cs" />
+    <Compile Include="BLL\MiscBillingBL.cs" />
+    <Compile Include="BLL\RoomApportionDataManager.cs" />
+    <Compile Include="BLL\RoomBillingBL.cs" />
+    <Compile Include="BLL\RoomBillingByAccountBL.cs" />
+    <Compile Include="BLL\RoomBillingByOrgBL.cs" />
+    <Compile Include="BLL\RoomBillingByRoomOrgBL.cs" />
+    <Compile Include="BLL\RoomManager.cs" />
+    <Compile Include="BLL\StoreBillingBL.cs" />
+    <Compile Include="BLL\StoreBillingByAccountBL.cs" />
+    <Compile Include="BLL\StoreBillingByItemOrgBL.cs" />
+    <Compile Include="BLL\StoreBillingByOrgBL.cs" />
+    <Compile Include="BLL\TieredSubsidyBillingBL.cs" />
+    <Compile Include="BLL\ToolBillingBL.cs" />
+    <Compile Include="BLL\ToolBillingByAccountBL.cs" />
+    <Compile Include="BLL\ToolBillingByOrgBL.cs" />
+    <Compile Include="ClientItem.cs" />
+    <Compile Include="DAL\AccountDA.cs" />
+    <Compile Include="DAL\BillingTablesDA.cs" />
+    <Compile Include="DAL\ClientDA.cs" />
+    <Compile Include="DAL\MiscBillingChargeDA.cs" />
+    <Compile Include="DAL\NNINDA.cs" />
+    <Compile Include="DAL\OrgDA.cs" />
+    <Compile Include="DAL\RoomBillingDA.cs" />
+    <Compile Include="DAL\StoreBillingDA.cs" />
+    <Compile Include="DAL\SubsidyBillingDA.cs" />
+    <Compile Include="DAL\TieredSubsidyBillingDA.cs" />
+    <Compile Include="DAL\ToolBillingDA.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="OrgItem.cs" />
+    <Compile Include="ParsedFileName.cs" />
+    <Compile Include="ReportPage.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserUsageSummaryPage.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\lnf\LNF.Models\LNF.Models.csproj">
+      <Project>{98c7f73d-ef9d-4a87-8b79-a1208085cfbd}</Project>
+      <Name>LNF.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\LNF\LNF.Web\LNF.Web.csproj">
+      <Project>{f79683ff-e524-4107-a6e1-29579ee544e1}</Project>
+      <Name>LNF.Web</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\LNF\LNF\LNF.csproj">
+      <Project>{e3b73410-869b-4ba2-99ac-ad6708a27ade}</Project>
+      <Name>LNF</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <configSections>
+    <sectionGroup name="lnf">
+      <section name="providers" type="LNF.ProvidersSection, LNF" />
+      <section name="redis" type="LNF.Impl.Redis.RedisConfigurationSection, LNF.Impl" />
+    </sectionGroup>
+  </configSections>
+
+  <lnf>
+    <providers production="false">
+      <context type="LNF.Impl.AppContextProvider, LNF.Impl" loginUrl="/login" />
+      <dataAccess type="LNF.Impl.NHibernateWebDataAccess, LNF.Impl" />
+      <serialization type="LNF.Impl.Serialization.SerializationProvider, LNF.Impl" />
+      <physicalAccess type="LNF.Impl.PhysicalAccess.ProwatchPhysicalAccess, LNF.Impl" />
+      <encryption type="LNF.Impl.EncryptionProvider, LNF.Impl" />
+      <email type="LNF.Impl.Email.EmailProvider, LNF.Impl" host="127.0.0.1" />
+      <log type="LNF.Impl.Logging.ServiceLogProvider, LNF.Impl" name="sselIndReports.Tests" enabled="true" />
+    </providers>
+    <redis>
+      <connection host="cachesvr" databaseId="3" />
+    </redis>
+  </lnf>
+
+  <appSettings>
+    <add key="MongoConnectionString" value="mongodb://*****:*****@localhost/" />
+  </appSettings>
+
+  <connectionStrings>
+    <add name="cnSselData" providerName="System.Data.SqlClient" connectionString="Server=*****;Database=*****;User ID=*****;Password=*****" />
+  </connectionStrings>
+
+  <startup>
+    <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.6.1" />
+  </startup>
+</configuration>
