@@ -18,9 +18,9 @@ namespace sselIndReports.AppCode.BLL
             DateTime period = new DateTime(year, month, 1);
             DataTable dtSource;
             if (period < new DateTime(2011, 10, 1))
-                dtSource = BillingTablesBL.GetMultileTables(year, month, clientId, BillingTableType.RoomByOrg);
+                dtSource = BillingTablesBL.GetMultipleTables(year, month, clientId, BillingTableType.RoomByOrg);
             else
-                dtSource = BillingTablesBL.GetMultileTables20110701(year, month, clientId, BillingTableType.RoomByOrg);
+                dtSource = BillingTablesBL.GetMultipleTables20110701(year, month, clientId, BillingTableType.RoomByOrg);
 
             if (!dtSource.Columns.Contains("TotalCharge"))
                 dtSource.Columns.Add("TotalCharge", typeof(double));

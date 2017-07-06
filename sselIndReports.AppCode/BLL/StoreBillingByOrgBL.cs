@@ -10,7 +10,7 @@ namespace sselIndReports.AppCode.BLL
     {
         public static DataTable GetDataByPeriodAndClientID(int year, int month, int clientId)
         {
-            DataTable dtSource = BillingTablesBL.GetMultileTables(year, month, clientId, BillingTableType.StoreByOrg);
+            DataTable dtSource = BillingTablesBL.GetMultipleTables(year, month, clientId, BillingTableType.StoreByOrg);
             return dtSource;
         }
     }

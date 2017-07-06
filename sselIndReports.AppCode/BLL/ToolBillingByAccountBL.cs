@@ -14,7 +14,7 @@ namespace sselIndReports.AppCode.BLL
     {
         public static DataTable GetDataByPeriodAndClientID(int year, int month, int clientId)
         {
-            DataTable dtSource = BillingTablesBL.GetMultileTables(year, month, clientId, BillingTableType.ToolByAccount);
+            DataTable dtSource = BillingTablesBL.GetMultipleTables(year, month, clientId, BillingTableType.ToolByAccount);
 
             foreach (DataRow dr in dtSource.Rows)
             {
@@ -35,7 +35,7 @@ namespace sselIndReports.AppCode.BLL
 
         public static DataTable GetDataByPeriodAndClientID20110401(int year, int month, int clientId)
         {
-            DataTable dtSource = BillingTablesBL.GetMultileTables(year, month, clientId, BillingTableType.ToolByAccount20110401);
+            DataTable dtSource = BillingTablesBL.GetMultipleTables(year, month, clientId, BillingTableType.ToolByAccount20110401);
             
             foreach (DataRow dr in dtSource.Rows)
             {
@@ -55,7 +55,7 @@ namespace sselIndReports.AppCode.BLL
 
         public static DataTable GetDataByPeriodAndClientID20110701(int year, int month, int clientId)
         {
-            DataTable dt = BillingTablesBL.GetMultileTables20110701(year, month, clientId, BillingTableType.ToolByAccount20110401);
+            DataTable dt = BillingTablesBL.GetMultipleTables20110701(year, month, clientId, BillingTableType.ToolByAccount20110401);
 
             if (!dt.Columns.Contains("UsageFeeDisplay"))
                 dt.Columns.Add("UsageFeeDisplay", typeof(double));

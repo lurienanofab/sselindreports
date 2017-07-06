@@ -18,12 +18,12 @@ namespace sselIndReports.AppCode.BLL
             return result;
         }
 
-        public static DataTable GetMultileTables20110701(int year, int month, int clientId, BillingTableType bt)
+        public static DataTable GetMultipleTables20110701(int year, int month, int clientId, BillingTableType bt)
         {
             DataSet ds;
             if (HttpContext.Current.Session["UserUsageSummaryTables20110701"] == null)
             {
-                ds = BillingTablesDA.GetMultileTables20110701(year, month, clientId);
+                ds = BillingTablesDA.GetMultipleTables20110701(year, month, clientId);
                 HttpContext.Current.Session["UserUsageSummaryTables20110701"] = ds;
             }
             else
@@ -32,12 +32,12 @@ namespace sselIndReports.AppCode.BLL
             return ds.Tables[(int)bt];
         }
 
-        public static DataTable GetMultileTables(int year, int month, int clientId, BillingTableType bt)
+        public static DataTable GetMultipleTables(int year, int month, int clientId, BillingTableType bt)
         {
             DataSet ds;
             if (HttpContext.Current.Session["UserUsageSummaryTables"] == null)
             {
-                ds = BillingTablesDA.GetMultileTables(year, month, clientId);
+                ds = BillingTablesDA.GetMultipleTables(year, month, clientId);
                 HttpContext.Current.Session["UserUsageSummaryTables"] = ds;
             }
             else

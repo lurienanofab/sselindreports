@@ -13,7 +13,9 @@ namespace sselIndReports.AppCode.BLL
     {
         public static DataTable GetDataByPeriodAndClientID(int year, int month, int clientId)
         {
-            DataTable dtSource = BillingTablesBL.GetMultileTables(year, month, clientId, BillingTableType.Subsidy);
+            DataTable dtSource = BillingTablesBL.GetMultipleTables(year, month, clientId, BillingTableType.Subsidy);
+
+            dtSource.Columns.Add("Subsidy", typeof(double), "UserTotalSum - UserPaymentSum");
 
             foreach (DataRow dr in dtSource.Rows)
             {

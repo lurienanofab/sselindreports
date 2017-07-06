@@ -19,9 +19,9 @@ namespace sselIndReports.AppCode.BLL
             DataTable dtSource;
 
             if (period < new DateTime(2011, 10, 1))
-                dtSource = BillingTablesBL.GetMultileTables(year, month, clientId, bt);
+                dtSource = BillingTablesBL.GetMultipleTables(year, month, clientId, bt);
             else
-                dtSource = BillingTablesBL.GetMultileTables20110701(year, month, clientId, bt);
+                dtSource = BillingTablesBL.GetMultipleTables20110701(year, month, clientId, bt);
 
             if (!dtSource.Columns.Contains("UsageFeeDisplay"))
                 dtSource.Columns.Add("UsageFeeDisplay", typeof(double));
@@ -63,7 +63,7 @@ namespace sselIndReports.AppCode.BLL
         {
             BillingTableType bt = BillingTablesBL.GetToolByOrgBillingTableType(new DateTime(year, month, 1));
 
-            DataTable dtSource = BillingTablesBL.GetMultileTables(year, month, clientId, bt);
+            DataTable dtSource = BillingTablesBL.GetMultipleTables(year, month, clientId, bt);
 
             foreach (DataRow dr in dtSource.Rows)
             {

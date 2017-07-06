@@ -10,7 +10,7 @@ namespace sselIndReports.AppCode.DAL
 {
     public static class BillingTablesDA
     {
-        public static DataSet GetMultileTables20110701(int year, int month, int clientId)
+        public static DataSet GetMultipleTables20110701(int year, int month, int clientId)
         {
             DateTime period = new DateTime(year, month, 1);
             SQLDBAccess dba = new SQLDBAccess("cnSselData");
@@ -20,7 +20,7 @@ namespace sselIndReports.AppCode.DAL
             return dba.FillDataSet("BillingTables_Select20110701");
         }
 
-        public static DataSet GetMultileTables(int year, int month, int clientId)
+        public static DataSet GetMultipleTables(int year, int month, int clientId)
         {
             DateTime period = new DateTime(year, month, 1);
             SQLDBAccess dba = new SQLDBAccess("cnSselData");

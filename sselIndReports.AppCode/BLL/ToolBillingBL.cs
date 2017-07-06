@@ -49,7 +49,7 @@ namespace sselIndReports.AppCode.BLL
             string result = "n/a";
 
             if (room != null)
-                result = room.GetDisplayNameOrDefault();
+                result = room.RoomDisplayName;
 
             return result;
         }
@@ -172,10 +172,10 @@ namespace sselIndReports.AppCode.BLL
             else
             {
                 //started reservations
-                dt = BillingTablesBL.GetMultileTables20110701(period.Year, period.Month, clientId, BillingTableType.ToolBillingStarted);
+                dt = BillingTablesBL.GetMultipleTables20110701(period.Year, period.Month, clientId, BillingTableType.ToolBillingStarted);
                 //unstarted reservations
-                dtUnStarted = BillingTablesBL.GetMultileTables20110701(period.Year, period.Month, clientId, BillingTableType.ToolBillingUnStarted);
-                dtCancelled = BillingTablesBL.GetMultileTables20110701(period.Year, period.Month, clientId, BillingTableType.ToolBillingCancelled);
+                dtUnStarted = BillingTablesBL.GetMultipleTables20110701(period.Year, period.Month, clientId, BillingTableType.ToolBillingUnStarted);
+                dtCancelled = BillingTablesBL.GetMultipleTables20110701(period.Year, period.Month, clientId, BillingTableType.ToolBillingCancelled);
             }
 
             dt.Columns.Add("TotalUnStartedUnusedDuration", typeof(double));
@@ -338,9 +338,9 @@ namespace sselIndReports.AppCode.BLL
                     t3 = BillingTableType.ToolBilling20110401Forgiven;
                 }
 
-                dt1 = BillingTablesBL.GetMultileTables(period.Year, period.Month, clientId, t1);
-                dt2 = BillingTablesBL.GetMultileTables(period.Year, period.Month, clientId, t2);
-                dt3 = BillingTablesBL.GetMultileTables(period.Year, period.Month, clientId, t3);
+                dt1 = BillingTablesBL.GetMultipleTables(period.Year, period.Month, clientId, t1);
+                dt2 = BillingTablesBL.GetMultipleTables(period.Year, period.Month, clientId, t2);
+                dt3 = BillingTablesBL.GetMultipleTables(period.Year, period.Month, clientId, t3);
                 ds.Tables.Add(dt1.Copy());
                 ds.Tables.Add(dt2.Copy());
                 ds.Tables.Add(dt3.Copy());

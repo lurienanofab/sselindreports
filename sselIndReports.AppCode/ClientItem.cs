@@ -1,4 +1,4 @@
-﻿using LNF.Repository.Data;
+﻿using LNF.Models.Data;
 using System.Collections.Generic;
 
 namespace sselIndReports.AppCode
@@ -8,7 +8,7 @@ namespace sselIndReports.AppCode
         public int ClientID { get; set; }
         public string FName { get; set; }
         public string LName { get; set; }
-        public string DisplayName { get { return Client.GetDisplayName(LName, FName); } }
+        public string DisplayName { get { return ClientModel.GetDisplayName(LName, FName); } }
     }
 
     public class ClientItemEqualityComparer : IEqualityComparer<ClientItem>

@@ -13,7 +13,7 @@ namespace sselIndReports.AppCode.BLL
     {
         public static DataTable GetDataByPeriodAndClientID(int year, int month, int clientId)
         {
-            DataTable dtSource = BillingTablesBL.GetMultileTables(year, month, clientId, BillingTableType.RoomByAccount);
+            DataTable dtSource = BillingTablesBL.GetMultipleTables(year, month, clientId, BillingTableType.RoomByAccount);
 
             if (!dtSource.Columns.Contains("SubsidyDiscount"))
                 dtSource.Columns.Add("SubsidyDiscount", typeof(double));

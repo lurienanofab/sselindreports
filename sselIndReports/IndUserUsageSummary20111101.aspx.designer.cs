@@ -184,15 +184,6 @@ namespace sselIndReports {
         protected global::System.Web.UI.WebControls.GridView gvToolOrg20110701;
         
         /// <summary>
-        /// gvSubsidy control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvSubsidy;
-        
-        /// <summary>
         /// gvStoreOrg control.
         /// </summary>
         /// <remarks>
@@ -200,6 +191,15 @@ namespace sselIndReports {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.GridView gvStoreOrg;
+        
+        /// <summary>
+        /// gvSubsidy control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView gvSubsidy;
         
         /// <summary>
         /// gvRoomAccount control.
@@ -256,15 +256,6 @@ namespace sselIndReports {
         protected global::System.Web.UI.WebControls.Label lblRoomHours;
         
         /// <summary>
-        /// rptParentRoomDetail control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptParentRoomDetail;
-        
-        /// <summary>
         /// rptRoomDetail control.
         /// </summary>
         /// <remarks>
@@ -272,15 +263,6 @@ namespace sselIndReports {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Repeater rptRoomDetail;
-        
-        /// <summary>
-        /// gvRoomDetail control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvRoomDetail;
         
         /// <summary>
         /// lblRoomsSum control.

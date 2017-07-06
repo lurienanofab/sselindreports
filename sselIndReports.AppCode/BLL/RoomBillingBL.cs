@@ -19,9 +19,9 @@ namespace sselIndReports.AppCode.BLL
             else
             {
                 if (period >= new DateTime(2011, 10, 1))
-                    dt = BillingTablesBL.GetMultileTables20110701(period.Year, period.Month, clientId, BillingTableType.RoomBilling);
+                    dt = BillingTablesBL.GetMultipleTables20110701(period.Year, period.Month, clientId, BillingTableType.RoomBilling);
                 else
-                    dt = BillingTablesBL.GetMultileTables(period.Year, period.Month, clientId, BillingTableType.RoomBilling);
+                    dt = BillingTablesBL.GetMultipleTables(period.Year, period.Month, clientId, BillingTableType.RoomBilling);
             }
 
             dt.Columns.Add("DailyFee", typeof(decimal));

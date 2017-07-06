@@ -139,7 +139,7 @@ namespace sselIndReports
                     dr.SetField("RowCssClass", "child");
                 }
                 else
-                { 
+                {
                     dr.SetField("IsParent", true);
                     dr.SetField("ParentID", r.RoomID);
                     dr.SetField("RowCssClass", "parent");
@@ -150,13 +150,6 @@ namespace sselIndReports
 
             rptRoomDetail.DataSource = dtRoom.DefaultView;
             rptRoomDetail.DataBind();
-
-            gvRoomDetail.Visible = false;
-
-            //Room[] parents = DA.Current.Query<Room>().Where(x => x.Active && x.ParentID == null).ToArray();
-
-            //rptParentRoomDetail.DataSource = parents.Select(x => CreateRoomBillingDetailItem(x.RoomID, dtRoom)).ToArray();
-            //rptParentRoomDetail.DataBind();
 
             decimal totalCleanRoomHours = 0, totalWetChemHours = 0, totalTestLabHours = 0, totalOrganicsHours = 0, totalLnfHours = 0;
 
@@ -200,7 +193,7 @@ namespace sselIndReports
             //DataTable dtTool = ToolBillingBL.GetToolBillingDataByClientID20110701(period, clientId);
             IToolBilling[] query;
 
-            if (DateTime.Now.FirstOfMonth()==period)
+            if (DateTime.Now.FirstOfMonth() == period)
                 query = DA.Current.Query<ToolBillingTemp>().Where(x => x.Period == period && x.ClientID == clientId).ToArray();
             else
                 query = DA.Current.Query<ToolBilling>().Where(x => x.Period == period && x.ClientID == clientId).ToArray();
@@ -291,10 +284,13 @@ namespace sselIndReports
             gvToolOrg20110701.DataBind();
             gvToolOrg20110701.Visible = true;
 
-            gvStoreOrg.DataSource = StoreBillingByOrgBL.GetDataByPeriodAndClientID(period.Year, period.Month, clientId);
+            var dtStore = StoreBillingByOrgBL.GetDataByPeriodAndClientID(period.Year, period.Month, clientId);
+            gvStoreOrg.DataSource = dtStore;
             gvStoreOrg.DataBind();
 
-            gvSubsidy.DataSource = TieredSubsidyBillingBL.GetDataByPeriodAndClientID(period.Year, period.Month, clientId);
+            var dtSubsidy = TieredSubsidyBillingBL.GetDataByPeriodAndClientID(period.Year, period.Month, clientId);
+            AddStoreChargesToSubsidyTable(dtStore, dtSubsidy);
+            gvSubsidy.DataSource = dtSubsidy;
             gvSubsidy.DataBind();
 
             gvRoomAccount.DataSource = RoomBillingByAccountBL.GetDataByPeriodAndClientID(period.Year, period.Month, clientId);
@@ -313,6 +309,38 @@ namespace sselIndReports
             PopulateReportInfo(divReportInfo, SelectedClientID, pp1.SelectedPeriod);
 
             HandlePageDisplay(period, clientId);
+        }
+
+        private void AddStoreChargesToSubsidyTable(DataTable dtStore, DataTable dtSubsidy)
+        {
+            var storeChargesByOrg = dtStore.AsEnumerable().Select(x => new
+            {
+                OrgID = x.Field<int>("OrgID"),
+                StoreSum = x.Field<decimal>("TotalChargeNoMisc"),
+                StoreMiscSum = x.Field<decimal>("StoreMisc"),
+                TotalCharge = x.Field<decimal>("TotalCharge")
+            }).ToList();
+
+            dtSubsidy.Columns.Add("StoreSum", typeof(decimal));
+            dtSubsidy.Columns.Add("StoreMiscSum", typeof(decimal));
+            dtSubsidy.Columns.Add("UsageCharges", typeof(decimal), "UserTotalSum + StoreSum + StoreMiscSum");
+            dtSubsidy.Columns.Add("NetCharges", typeof(decimal), "UserPaymentSum + StoreSum + StoreMiscSum");
+
+            foreach (DataRow dr in dtSubsidy.Rows)
+            {
+                int orgId = dr.Field<int>("OrgID");
+                var storeCharge = storeChargesByOrg.FirstOrDefault(x => x.OrgID == orgId);
+                if (storeCharge != null)
+                {
+                    dr.SetField("StoreSum", storeCharge.StoreSum);
+                    dr.SetField("StoreMiscSum", storeCharge.StoreMiscSum);
+                }
+                else
+                {
+                    dr.SetField("StoreSum", 0D);
+                    dr.SetField("StoreMiscSum", 0D);
+                }
+            }
         }
 
         protected void gvToolDetail_RowDataBound(object sender, GridViewRowEventArgs e)
