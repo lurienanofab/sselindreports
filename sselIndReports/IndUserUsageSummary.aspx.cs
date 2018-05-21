@@ -1,6 +1,9 @@
-﻿using LNF.Repository.Billing;
+﻿using LNF.CommonTools;
+using LNF.Data;
+using LNF.Repository.Billing;
 using sselIndReports.AppCode;
 using sselIndReports.AppCode.BLL;
+using sselIndReports.AppCode.DAL;
 using System;
 using System.Data;
 using System.Linq;
@@ -222,7 +225,7 @@ namespace sselIndReports
             lblRoomSumUnCancelled.Text = string.Empty;
 
             //Room
-            dtRoom = RoomBillingBL.GetRoomBillingDataByClientID2(period, clientId);
+            dtRoom = GetRoomBillingDataByClientID(period, clientId);
             gvRoom.DataSource = dtRoom;
             gvRoom.DataBind();
 
@@ -344,6 +347,46 @@ namespace sselIndReports
         protected void btnFuture_Click(object sender, EventArgs e)
         {
             RunFutureReport(SelectedPeriod, SelectedClientID);
+        }
+
+        private DataTable GetRoomBillingDataByClientID(DateTime period, int clientId)
+        {
+            DataTable dt;
+
+            if (period.Month == DateTime.Now.Month && period.Year == DateTime.Now.Year)
+                dt = RoomBillingDA.GetRoomBillingTempDataByClientID(period, clientId);
+            else
+                dt = RoomBillingDA.GetRoomBillingDataByClientID(period, clientId);
+
+            if (!dt.Columns.Contains("LineCost"))
+                dt.Columns.Add("LineCost", typeof(double));
+
+            // Part I: Get the true cost based on billing types
+            foreach (DataRow dr in dt.Rows)
+            {
+                int billingTypeId = dr.Field<int>("BillingTypeID");
+                var room = RoomUtility.GetRoom(dr.Field<int>("RoomID"));
+
+                if (billingTypeId == BillingType.Other)
+                    dr["LineCost"] = 0;
+                else if (BillingTypeManager.IsGrowerUserBillingType(billingTypeId))
+                {
+                    if (room == Rooms.OrganicsBay)
+                    {
+                        //Organics bay must be charged for growers as well
+                        dr["LineCost"] = dr.Field<decimal>("RoomCharge");
+                    }
+                    else
+                        dr["LineCost"] = dr.Field<decimal>("AccountDays") * dr.Field<decimal>("RoomRate") + dr.Field<decimal>("EntryCharge");
+                }
+                else
+                {
+                    //Per Use types
+                    dr["LineCost"] = dr.Field<decimal>("RoomCharge") + dr.Field<decimal>("EntryCharge");
+                }
+            }
+
+            return dt;
         }
     }
 }

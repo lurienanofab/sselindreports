@@ -21,20 +21,20 @@ namespace sselIndReports
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            List<OrgItem> dataSource = null;
+            IEnumerable<OrgListItem> dataSource = null;
 
             if (CurrentUser.HasPriv(ClientPrivilege.Administrator))
             {
                 IList<Org> allOrgs = DA.Current.Query<Org>().ToList();
-                dataSource = allOrgs.Select(x => new OrgItem() { OrgID = x.OrgID, OrgName = x.OrgName }).OrderBy(x => x.OrgName).ToList();
+                dataSource = allOrgs.Select(x => new OrgListItem() { OrgID = x.OrgID, OrgName = x.OrgName }).OrderBy(x => x.OrgName);
             }
             else if (CurrentUser.HasPriv(ClientPrivilege.Executive))
             {
-                IList<ClientModel> allClientOrgs = CacheManager.Current.CurrentUserActiveClientOrgs();
-                dataSource = allClientOrgs.Select(x => new OrgItem() { OrgID = x.OrgID, OrgName = x.OrgName }).OrderBy(x => x.OrgName).ToList();
+                var allClientOrgs = CacheManager.Current.CurrentUserActiveClientOrgs();
+                dataSource = allClientOrgs.Select(x => new OrgListItem() { OrgID = x.OrgID, OrgName = x.OrgName }).OrderBy(x => x.OrgName);
             }
 
-            if (dataSource.Count > 1)
+            if (dataSource.Count() > 1)
                 ddlOrg.AppendDataBoundItems = true;
 
             ddlOrg.DataSource = dataSource;

@@ -114,7 +114,7 @@ namespace sselIndReports
                         //if the current user is not using the Hourly rate, we have to calcuate it
                         int[] billingTypesThatDoNotUseHourlyRate = { BillingType.ExtAc_Ga, BillingType.ExtAc_Si, BillingType.Int_Si, BillingType.Int_Ga, BillingType.ExtAc_Tools, BillingType.Int_Tools };
                         if (billingTypesThatDoNotUseHourlyRate.Contains(billingTypeId))
-                            dr["LineCost"] = BillingTypeManager.GetTotalCostByBillingType(billingTypeId, dr.Field<decimal>("TotalHours"), dr.Field<decimal>("TotalEntries"), room, dr.Field<decimal>("TotalCalcCost"), tempTotalHours);
+                            dr["LineCost"] = AppCode.BLL.BillingTypeManager.GetTotalCostByBillingType(billingTypeId, dr.Field<decimal>("TotalHours"), dr.Field<decimal>("TotalEntries"), room, dr.Field<decimal>("TotalCalcCost"), tempTotalHours);
                         else if (billingTypeId == BillingType.Other)
                             dr["LineCost"] = 0;
 

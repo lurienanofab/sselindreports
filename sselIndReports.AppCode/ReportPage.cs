@@ -1,9 +1,13 @@
-﻿using LNF.Cache;
+﻿using LNF;
+using LNF.Billing;
+using LNF.Cache;
 using LNF.Data;
 using LNF.Models.Data;
 using LNF.Repository;
 using LNF.Repository.Data;
+using LNF.Scheduler;
 using LNF.Web;
+using StructureMap.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +17,23 @@ namespace sselIndReports.AppCode
 {
     public abstract class ReportPage : LNF.Web.Content.LNFPage
     {
+        [SetterProperty]
+        public IOrgManager OrgManager { get; set; }
+
+        [SetterProperty]
+        public IBillingTypeManager BillingTypeManager { get; set; }
+
+        [SetterProperty]
+        public IClientOrgManager ClientOrgManager { get; set; }
+
+        [SetterProperty]
+        public IReservationManager ReservationManager { get; set; }
+
+        public ReportPage()
+        {
+            ServiceProvider.Current.Resolver.BuildUp(this);
+        }
+
         public virtual bool ShowButton
         {
             get { return true; }
@@ -30,42 +51,67 @@ namespace sselIndReports.AppCode
             WebUtility.BindYearData(ddl, startYear);
         }
 
-        protected static void PopulateUserDropDownList(DropDownList clientDDList, DateTime selectedPeriod, Button btnRetrieveData, bool displayAllUsersToStaff = false)
+        protected UserClientSelectItem[] GetClientSelectItems(DateTime period)
         {
-            clientDDList.Enabled = true;
+            // clear the session variable whenever the period changes
+            if (Session["ClientSelectPeriod"] == null || Convert.ToDateTime(Session["ClientSelectPeriod"]) != period)
+                Session.Remove("ClientSelectItems");
+
+            Session["ClientSelectPeriod"] = period;
+
+            if (Session["ClientSelectItems"] == null)
+            {
+                DateTime sd = period;
+                DateTime ed = sd.AddMonths(1);
+
+                Session["ClientSelectItems"] = DA.Current.Query<ActiveLogClientAccount>()
+                    .Where(x => x.EnableDate < ed && (x.DisableDate == null || x.DisableDate > sd))
+                    .Select(x => new UserClientSelectItem()
+                    {
+                        ClientID = x.ClientID,
+                        LName = x.LName,
+                        FName = x.FName,
+                        AccountID = x.AccountID,
+                        Manager = x.Manager
+                    })
+                    .ToArray();
+            }
+
+            return (UserClientSelectItem[])Session["ClientSelectItems"];
+        }
+
+        protected void PopulateUserDropDownList(DropDownList ddl, DateTime period, Button btnRetrieveData, bool displayAllUsersToStaff = false)
+        {
+            ddl.Enabled = true;
             btnRetrieveData.Enabled = true;
 
             //used to store temporary selected user because we want to keep the same user when date has been changed
-            string origSelectedValue = clientDDList.SelectedValue;
+            string origSelectedValue = ddl.SelectedValue;
 
-            //populate the user dropdown list
-            //int privs = AccessPrivs.GetPrivVal("Lab User") | AccessPrivs.GetPrivVal("Staff") | AccessPrivs.GetPrivVal("Remote User");
-            DateTime sDate = selectedPeriod;
-            DateTime eDate = sDate.AddMonths(1);
+            //populate the user dropdown list            
+            var allClientAccountsActiveInPeriod = GetClientSelectItems(period);
 
-            ActiveLogClientAccount[] allClientAccountsActiveInPeriod = DA.Current.Query<ActiveLogClientAccount>().Where(x => x.EnableDate < eDate && (x.DisableDate == null || x.DisableDate > sDate)).ToArray();
-            //ActiveLog.GetActive<ClientAccount>(x => x.ClientAccountID, sDate, eDate).ToArray();
             ClientItem[] filtered = FilterUsers(CacheManager.Current.CurrentUser, allClientAccountsActiveInPeriod, displayAllUsersToStaff); //checks for administrator, manager, or normal user
-            clientDDList.DataSource = filtered;
-            clientDDList.DataBind();
+            ddl.DataSource = filtered;
+            ddl.DataBind();
 
             if (filtered.Length == 0)
             {
-                clientDDList.Items.Insert(0, new ListItem("-- You were not active in this period --", "0"));
-                clientDDList.Enabled = false;
+                ddl.Items.Insert(0, new ListItem("-- You were not active in this period --", "0"));
+                ddl.Enabled = false;
                 btnRetrieveData.Enabled = false;
             }
             else if (filtered.Length > 1)
             {
-                clientDDList.Items.Insert(0, new ListItem("-- Select --", "0"));
+                ddl.Items.Insert(0, new ListItem("-- Select --", "0"));
             }
 
             //make sure the original user is still selected after the update of user dropdownlist
-            if (!string.IsNullOrEmpty(origSelectedValue) && clientDDList.Items.FindByValue(origSelectedValue) != null)
-                clientDDList.SelectedValue = origSelectedValue;
+            if (!string.IsNullOrEmpty(origSelectedValue) && ddl.Items.FindByValue(origSelectedValue) != null)
+                ddl.SelectedValue = origSelectedValue;
         }
 
-        private static ClientItem[] FilterUsers(ClientModel client, ActiveLogClientAccount[] baseQuery, bool displayAllUsersToStaff)
+        private static ClientItem[] FilterUsers(LNF.Models.Data.ClientItem client, UserClientSelectItem[] items, bool displayAllUsersToStaff)
         {
             List<ClientItem> dataSource = new List<ClientItem>();
             bool isUserStaffAndAllowedAllUserInfo = client.HasPriv(ClientPrivilege.Staff) && displayAllUsersToStaff;
@@ -73,19 +119,19 @@ namespace sselIndReports.AppCode
             if (client.HasPriv(ClientPrivilege.Administrator) || isUserStaffAndAllowedAllUserInfo)
             {
                 //administrators see everyone
-                dataSource.AddRange(baseQuery.Select(x => new ClientItem() { ClientID = x.ClientID, FName = x.FName, LName = x.LName }));
+                dataSource.AddRange(items.Select(x => new ClientItem() { ClientID = x.ClientID, FName = x.FName, LName = x.LName }));
             }
             else
             {
                 //not an admin - get all of this user's ClientAccounts
-                var clientAccts = baseQuery.Where(x => x.ClientID == client.ClientID).ToArray();
+                var clientAccts = items.Where(x => x.ClientID == client.ClientID).ToArray();
 
-                foreach (ActiveLogClientAccount ca in clientAccts)
+                foreach (var ca in clientAccts)
                 {
                     //check to see if they are a manager
                     if (ca.Manager)
                     {
-                        var otherClientAccts = baseQuery.Where(x => x.AccountID == ca.AccountID);
+                        var otherClientAccts = items.Where(x => x.AccountID == ca.AccountID);
                         dataSource.AddRange(otherClientAccts.Select(x => new ClientItem() { ClientID = x.ClientID, FName = x.FName, LName = x.LName }).ToArray());
                     }
                     else
@@ -97,5 +143,15 @@ namespace sselIndReports.AppCode
 
             return dataSource.Distinct(new ClientItemEqualityComparer()).OrderBy(x => x.DisplayName).ToArray();
         }
+    }
+
+    public class UserClientSelectItem
+    {
+        public int ClientID { get; set; }
+        public string LName { get; set; }
+        public string FName { get; set; }
+        public int AccountID { get; set; }
+        public bool Manager { get; set; }
+        public string DisplayName => LNF.Models.Data.ClientItem.GetDisplayName(LName, FName);
     }
 }

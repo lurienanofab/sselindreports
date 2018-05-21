@@ -5,7 +5,6 @@ using LNF.Models.Data;
 using LNF.Repository;
 using LNF.Repository.Billing;
 using LNF.Repository.Data;
-using LNF.Scheduler;
 using LNF.Web.Controls;
 using sselIndReports.AppCode;
 using System;
@@ -32,38 +31,8 @@ namespace sselIndReports
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Page.IsPostBack)
+            if (!Page.IsPostBack)
             {
-                //dsUsage = CacheManager.Current.CacheData();
-                //if (dsUsage == null)
-                //    Response.Redirect("~");
-                //else if (dsUsage.DataSetName != "IndDetUsage")
-                //    Response.Redirect("~");
-            }
-            else
-            {
-                //dsUsage = new DataSet("IndDetUsage");
-                //CacheManager.Current.Updated(false);
-
-                // get account info
-                //using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-                //{
-                //    dba.AddParameter("@Action", "All");
-                //    dba.FillDataSet("Account_Select", dsUsage, "Account");
-                //}
-
-                //dsUsage.Tables["Account"].PrimaryKey = new DataColumn[] { dsUsage.Tables["Account"].Columns["AccountID"] };
-
-                //using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-                //{
-                //    dba.AddParameter("@Action", "AllResources");
-                //    dba.FillDataSet("sselScheduler_Select", dsUsage, "Resource");
-                //}
-
-                //dsUsage.Tables["Resource"].PrimaryKey = new DataColumn[] { dsUsage.Tables["Resource"].Columns["ResourceID"] };
-
-                //CacheManager.Current.CacheData(dsUsage);
-
                 //2007-02-1 add the button back, disable all postback of dropdown list
                 if (CurrentUser.HasPriv(ClientPrivilege.Administrator | ClientPrivilege.Staff | ClientPrivilege.Executive))
                 {
@@ -100,26 +69,9 @@ namespace sselIndReports
 
                 SetCurrentUser(CurrentUser.ClientID.ToString());
 
-                //UpdateTimeDepTables(0);
                 DisplayUsage();
             }
         }
-
-        //private void zUpdateTimeDepTables(int selClientID)
-        //{
-        //    DateTime sDate = pp1.SelectedPeriod;
-        //    DateTime eDate = sDate.AddMonths(1);
-
-        //    // the call to UpdateDataType is overly broad, but it would be hard to narrow its scope to match the user priv. And, it doesn't hurt.
-        //    if (sDate <= DateTime.Now && eDate > DateTime.Now && !CacheManager.Current.Updated())
-        //    {
-        //        WriteData mWriteData = new WriteData();
-        //        mWriteData.UpdateTables(new string[] { "Tool", "Room" }, 0, 0, eDate, UpdateDataType.CleanData, true, false);
-        //        CacheManager.Current.Updated(true);
-        //    }
-
-        //    DisplayUsage();
-        //}
 
         private ActivityDate[] GetActivityData(int clientId, DateTime startDate, DateTime endDate)
         {
@@ -142,27 +94,35 @@ namespace sselIndReports
                 {
                     if (item.Room.PassbackRoom)
                     {
-                        RoomDataImport entry = new RoomDataImport();
-                        entry.ClientID = item.Client.ClientID;
-                        entry.RoomName = item.Room.RoomName;
-                        entry.EventDate = item.EntryDT;
-                        entry.EventDescription = EVENT_ANTIPASSBACK_IN;
+                        RoomDataImport entry = new RoomDataImport
+                        {
+                            ClientID = item.Client.ClientID,
+                            RoomName = item.Room.RoomName,
+                            EventDate = item.EntryDT,
+                            EventDescription = EVENT_ANTIPASSBACK_IN
+                        };
+
                         roomData.Add(entry);
 
-                        RoomDataImport exit = new RoomDataImport();
-                        exit.ClientID = item.Client.ClientID;
-                        exit.RoomName = item.Room.RoomName;
-                        exit.EventDate = item.ExitDT.GetValueOrDefault();
-                        exit.EventDescription = EVENT_ANTIPASSBACK_OUT;
+                        RoomDataImport exit = new RoomDataImport
+                        {
+                            ClientID = item.Client.ClientID,
+                            RoomName = item.Room.RoomName,
+                            EventDate = item.ExitDT.GetValueOrDefault(),
+                            EventDescription = EVENT_ANTIPASSBACK_OUT
+                        };
+
                         roomData.Add(exit);
                     }
                     else
                     {
-                        RoomDataImport entry = new RoomDataImport();
-                        entry.ClientID = item.Client.ClientID;
-                        entry.RoomName = item.Room.RoomName;
-                        entry.EventDate = item.EntryDT;
-                        entry.EventDescription = EVENT_NO_ANTIPASSBACK;
+                        RoomDataImport entry = new RoomDataImport
+                        {
+                            ClientID = item.Client.ClientID,
+                            RoomName = item.Room.RoomName,
+                            EventDate = item.EntryDT,
+                            EventDescription = EVENT_NO_ANTIPASSBACK
+                        };
 
                         roomData.Add(entry);
                     }
@@ -193,11 +153,8 @@ namespace sselIndReports
                 }
             }
 
-            //second fill the table with reservations
-            //var toolData = DA.Current.Query<Reservation>().Where(x => x.Client.ClientID == clientId);
-
-            var toolData = ReservationUtility.SelectByDateRange(startDate, endDate, clientId);
-            var filteredToolData = ReservationUtility.FilterCancelledReservations(toolData, false);
+            var toolData = ReservationManager.SelectByDateRange(startDate, endDate, clientId);
+            var filteredToolData = ReservationManager.FilterCancelledReservations(toolData, false);
 
             DateTime startTime;
             double duration;

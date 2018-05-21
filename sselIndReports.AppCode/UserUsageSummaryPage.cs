@@ -87,8 +87,7 @@ namespace sselIndReports.AppCode
         protected void UpdateRoomSums(DataTable dt, Label lbl)
         {
             //2009-12-11 Used to calculate differen room charges, because users want to see those differentiated
-            object lnfSum, cleanRoomSum, wetChemSum, testLabSum;
-            GetRoomSums(dt, out lnfSum, out cleanRoomSum, out wetChemSum, out testLabSum);
+            GetRoomSums(dt, out object lnfSum, out object cleanRoomSum, out object wetChemSum, out object testLabSum);
             UpdateSumLabel(lnfSum, lbl, "LNF");
             UpdateSumLabel(cleanRoomSum, lbl, "Clean Room");
             UpdateSumLabel(wetChemSum, lbl, "Wet Chemistry");
@@ -105,8 +104,7 @@ namespace sselIndReports.AppCode
 
         private void UpdateSumLabel(object sum, Label lbl, string roomName)
         {
-            double temp;
-            if (RepositoryUtility.TryConvertTo(sum, out temp, 0.0))
+            if (Utility.TryConvertTo(sum, out double temp, 0.0))
             {
                 if (!string.IsNullOrEmpty(lbl.Text)) lbl.Text += " | ";
                 lbl.Text += string.Format("{0}: {1:$#,##0.00}", roomName, temp);
@@ -116,7 +114,7 @@ namespace sselIndReports.AppCode
 
         protected bool IsPrimaryOrg(int orgId)
         {
-            return OrgUtility.GetPrimaryOrg().OrgID == orgId;
+            return OrgManager.GetPrimaryOrg().OrgID == orgId;
         }
 
         protected void ShowEstimateMessage()
@@ -200,7 +198,7 @@ namespace sselIndReports.AppCode
         {
             // get all accounts of this manager Client.Current
             // get all users in each of these accounts
-            ClientModel client = CacheManager.Current.CurrentUser;
+            var client = CacheManager.Current.CurrentUser;
             //if (client.HasPriv(ClientPrivilege.Executive))
             //return DA.Current.Query<ClientAccount>().Where(x => x.ClientOrg.ClientOrgID == clientOrgId).ToArray();
 
@@ -266,14 +264,19 @@ namespace sselIndReports.AppCode
 
         protected void PopulateReportInfo(HtmlControl div, int clientId, DateTime period)
         {
-            Client client = DA.Current.Single<Client>(clientId);
+            var client = CacheManager.Current.GetClient(clientId);
+
             if (client != null)
             {
-                ArrayList data = new ArrayList();
-                data.Add(new { Label = "User", Value = client.DisplayName });
-                data.Add(new { Label = "Period", Value = period.ToString("M/d/yyyy") });
-                data.Add(new { Label = "Created", Value = DateTime.Now.ToString("M/d/yyyy h:mm:ss tt") });
+                ArrayList data = new ArrayList
+                {
+                    new { Label = "User", Value = client.DisplayName },
+                    new { Label = "Period", Value = period.ToString("M/d/yyyy") },
+                    new { Label = "Created", Value = DateTime.Now.ToString("M/d/yyyy h:mm:ss tt") }
+                };
+
                 Repeater rpt = (Repeater)div.FindControl("rptReportInfo");
+
                 if (rpt != null)
                 {
                     rpt.DataSource = data;

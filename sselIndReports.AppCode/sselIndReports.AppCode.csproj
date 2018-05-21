@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>sselIndReports.AppCode</RootNamespace>
     <AssemblyName>sselIndReports.AppCode</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -33,6 +33,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="StructureMap, Version=4.6.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\StructureMap.4.6.1\lib\net45\StructureMap.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
@@ -77,7 +80,7 @@
     <Compile Include="DAL\TieredSubsidyBillingDA.cs" />
     <Compile Include="DAL\ToolBillingDA.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="OrgItem.cs" />
+    <Compile Include="OrgListItem.cs" />
     <Compile Include="ParsedFileName.cs" />
     <Compile Include="ReportPage.cs">
       <SubType>ASPXCodeBehind</SubType>
@@ -103,6 +106,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

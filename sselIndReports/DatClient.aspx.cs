@@ -399,7 +399,7 @@ namespace sselIndReports
                 tblCell = new HtmlTableCell();
                 lblInfo = new Label();
 
-                lblInfo.Text = "<b>Billing Type:</b> " + BillingTypeManager.GetBillingTypeName(Convert.ToInt32(codr["ClientOrgID"]));
+                lblInfo.Text = "<b>Billing Type:</b> " + AppCode.BLL.BillingTypeManager.GetBillingTypeName(Convert.ToInt32(codr["ClientOrgID"]));
                 lblInfo.CssClass = "LabelText";
                 tblCell.Controls.Add(lblInfo);
                 tblRow.Cells.Add(tblCell);

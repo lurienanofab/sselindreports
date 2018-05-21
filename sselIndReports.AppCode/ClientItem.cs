@@ -8,7 +8,7 @@ namespace sselIndReports.AppCode
         public int ClientID { get; set; }
         public string FName { get; set; }
         public string LName { get; set; }
-        public string DisplayName { get { return ClientModel.GetDisplayName(LName, FName); } }
+        public string DisplayName { get { return LNF.Models.Data.ClientItem.GetDisplayName(LName, FName); } }
     }
 
     public class ClientItemEqualityComparer : IEqualityComparer<ClientItem>

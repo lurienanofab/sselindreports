@@ -95,7 +95,7 @@ namespace sselIndReports
             gvRoomOrg.DataSource = RoomBillingByOrgBL.GetDataByPeriodAndClientID(period.Year, period.Month, clientId);
             gvRoomOrg.DataBind();
 
-            gvStoreOrg.DataSource = StoreBillingByOrgBL.GetDataByPeriodAndClientID(period.Year, period.Month, clientId);
+            gvStoreOrg.DataSource = BillingTablesBL.GetMultipleTables(period.Year, period.Month, clientId, BillingTableType.StoreByOrg);
             gvStoreOrg.DataBind();
 
             gvSubsidy.DataSource = TieredSubsidyBillingBL.GetDataByPeriodAndClientID(period.Year, period.Month, clientId);

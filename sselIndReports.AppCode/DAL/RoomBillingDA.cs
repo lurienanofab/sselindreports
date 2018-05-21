@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using LNF.Repository;
+using System;
 using System.Data;
-using LNF.Repository;
-using LNF.CommonTools;
 
 namespace sselIndReports.AppCode.DAL
 {
@@ -12,20 +8,24 @@ namespace sselIndReports.AppCode.DAL
     {
         public static DataTable GetRoomBillingDataByClientID(DateTime period, int clientId)
         {
-            SQLDBAccess dba = new SQLDBAccess("cnSselData");
-		    dba.AddParameter("@Action", "ByClientIDPeriod");
-		    dba.AddParameter("@Period", period);
-		    dba.AddParameter("@ClientID", clientId);
-		    return dba.FillDataTable("RoomApportionmentInDaysMonthly_Select");
-	    }
+            using (var dba = DA.Current.GetAdapter())
+            {
+                dba.AddParameter("@Action", "ByClientIDPeriod");
+                dba.AddParameter("@Period", period);
+                dba.AddParameter("@ClientID", clientId);
+                return dba.FillDataTable("RoomApportionmentInDaysMonthly_Select");
+            }
+        }
 
-	    public static DataTable GetRoomBillingTempDataByClientID(DateTime period, int clientId)
+        public static DataTable GetRoomBillingTempDataByClientID(DateTime period, int clientId)
         {
-            SQLDBAccess dba = new SQLDBAccess("cnSselData");
-		    dba.AddParameter("@Action", "ByClientIDPeriod");
-		    dba.AddParameter("@Period", period);
-		    dba.AddParameter("@ClientID", clientId);
-            return dba.FillDataTable("RoomBillingTemp_Select");
-	    }
+            using (var dba = DA.Current.GetAdapter())
+            {
+                dba.AddParameter("@Action", "ByClientIDPeriod");
+                dba.AddParameter("@Period", period);
+                dba.AddParameter("@ClientID", clientId);
+                return dba.FillDataTable("RoomBillingTemp_Select");
+            }
+        }
     }
 }

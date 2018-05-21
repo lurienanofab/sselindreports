@@ -1,4 +1,5 @@
 ﻿using LNF;
+using LNF.Impl.DependencyInjection.Web;
 using System;
 using System.Security.Principal;
 using System.Web;
@@ -10,8 +11,10 @@ namespace sselIndReports
     {
         void Application_Start(object sender, EventArgs e)
         {
+            ServiceProvider.Current = IOC.Resolver.GetInstance<ServiceProvider>();
+
             // Code that runs on application startup
-            if (Providers.IsProduction())
+            if (ServiceProvider.Current.IsProduction())
                 Application["AppServer"] = "http://" + Environment.MachineName + ".eecs.umich.edu/";
             else
                 Application["AppServer"] = "/";

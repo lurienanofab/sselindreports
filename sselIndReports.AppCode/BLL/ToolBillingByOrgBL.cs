@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using LNF.Repository.Billing;
+using System;
 using System.Data;
-using LNF.Billing;
-using LNF.Repository;
-using LNF.Repository.Billing;
-using LNF.CommonTools;
 
 namespace sselIndReports.AppCode.BLL
 {
@@ -14,14 +8,8 @@ namespace sselIndReports.AppCode.BLL
     {
         public static DataTable GetDataByPeriodAndClientID(int year, int month, int clientId)
         {
-            DateTime period = new DateTime(year, month, 1);
-            BillingTableType bt = BillingTablesBL.GetToolByOrgBillingTableType(period);
-            DataTable dtSource;
-
-            if (period < new DateTime(2011, 10, 1))
-                dtSource = BillingTablesBL.GetMultipleTables(year, month, clientId, bt);
-            else
-                dtSource = BillingTablesBL.GetMultipleTables20110701(year, month, clientId, bt);
+            BillingTableType btt = BillingTablesBL.GetToolByOrgBillingTableType(new DateTime(year, month, 1));
+            DataTable dtSource = BillingTablesBL.GetMultipleTables(year, month, clientId, btt);
 
             if (!dtSource.Columns.Contains("UsageFeeDisplay"))
                 dtSource.Columns.Add("UsageFeeDisplay", typeof(double));

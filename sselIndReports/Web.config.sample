@@ -2,43 +2,36 @@
 <configuration>
   <configSections>
     <sectionGroup name="lnf">
-      <section name="providers" type="LNF.ProvidersSection, LNF" />
-      <section name="redis" type="LNF.Impl.Redis.RedisConfigurationSection, LNF.Impl" />
+      <section name="provider" type="LNF.ServiceProviderSection, LNF" />
     </sectionGroup>
   </configSections>
 
   <lnf>
-    <providers production="false">
-      <context type="LNF.Impl.WebContextProvider, LNF.Impl" loginUrl="/login" />
-      <dataAccess type="LNF.Impl.NHibernateWebDataAccess, LNF.Impl" />
-      <serialization type="LNF.Impl.Serialization.SerializationProvider, LNF.Impl" />
-      <physicalAccess type="LNF.Impl.PhysicalAccess.ProwatchPhysicalAccess, LNF.Impl" />
-      <encryption type="LNF.Impl.EncryptionProvider, LNF.Impl" />
-      <email type="LNF.Impl.Email.EmailProvider, LNF.Impl" host="127.0.0.1" />
-      <log type="LNF.Impl.Logging.ServiceLogProvider, LNF.Impl" name="sselIndReports" enabled="true" />
-      <modelFactory type="LNF.Impl.ModelFactory.ValueInjecterModelFactory, LNF.Impl" />
-    </providers>
-    <redis>
-      <connection host="cachesvr" databaseId="5" />
-    </redis>
+    <provider production="false">
+      <context loginUrl="/login" />
+      <dataAccess showSql="true" />
+      <email host="127.0.0.1" log="true" />
+      <control host="xxxxx" />
+      <log name="sselIndReports" enabled="true" />
+    </provider>
   </lnf>
 
   <appSettings>
     <add key="DisclaimerText" value="Please note: The data for {PreviousMonth} usage has not yet been finalized." />
     <add key="Debug" value="false" />
     <add key="ShowMenu" value="false" />
-    <add key="MongoConnectionString" value="mongodb://*****:*****@localhost/" />
+    <add key="MongoConnectionString" value="xxxxx" />
     <add key="ValidationSettings:UnobtrusiveValidationMode" value="None" />
     <add key="owin:appStartup" value="sselIndReports.Startup, sselIndReports" />
   </appSettings>
 
   <connectionStrings>
-    <add name="cnSselData" providerName="System.Data.SqlClient" connectionString="Server=*****;Database=*****;User ID=*****;Password=*****" />
+    <add name="cnSselData" providerName="System.Data.SqlClient" connectionString="xxxxx" />
   </connectionStrings>
 
   <system.web>
-    <compilation debug="true" targetFramework="4.6.1" />
-    <httpRuntime targetFramework="4.6.1" />
+    <compilation debug="true" targetFramework="4.7" />
+    <httpRuntime targetFramework="4.7" />
 
     <pages controlRenderingCompatibilityVersion="4.0">
       <controls>
@@ -54,7 +47,7 @@
       <deny users="?" />
     </authorization>
 
-    <machineKey compatibilityMode="Framework20SP2" validationKey="*****" decryptionKey="*****" validation="SHA1" decryption="3DES" />
+    <machineKey compatibilityMode="Framework20SP2" validationKey="xxxxx" decryptionKey="xxxxx" validation="SHA1" decryption="3DES" />
 
     <customErrors mode="Off" />
   </system.web>

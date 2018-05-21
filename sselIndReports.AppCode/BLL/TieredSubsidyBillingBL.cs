@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using LNF.Repository.Billing;
+using System;
 using System.Data;
-using LNF.Billing;
-using LNF.Repository;
-using LNF.Repository.Billing;
 
 namespace sselIndReports.AppCode.BLL
 {
@@ -15,7 +10,8 @@ namespace sselIndReports.AppCode.BLL
         {
             DataTable dtSource = BillingTablesBL.GetMultipleTables(year, month, clientId, BillingTableType.Subsidy);
 
-            dtSource.Columns.Add("Subsidy", typeof(double), "UserTotalSum - UserPaymentSum");
+            if (!dtSource.Columns.Contains("Subsidy"))
+                dtSource.Columns.Add("Subsidy", typeof(double), "UserTotalSum - UserPaymentSum");
 
             foreach (DataRow dr in dtSource.Rows)
             {

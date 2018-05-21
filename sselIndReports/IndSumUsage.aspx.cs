@@ -97,7 +97,7 @@ namespace sselIndReports
             //   IsActive=1, if False then only IsActive=0, if DBNull then both are returned. If no parameter
             //   is passed to GetBillingTypes the results are the same as they always were - only IsActive=1
             //   are returned.
-            dsReport.Tables.Add(BillingTypeManager.GetBillingTypes(DBNull.Value));
+            dsReport.Tables.Add(AppCode.BLL.BillingTypeManager.GetBillingTypes(DBNull.Value));
             dsReport.Tables[4].TableName = "BillingType";
 
             dsReport.Tables["BillingType"].PrimaryKey = new DataColumn[] { dsReport.Tables["BillingType"].Columns["BillingTypeID"] };
@@ -349,7 +349,7 @@ namespace sselIndReports
                     else if (dr.Field<int>("RoomID") == 25)
                         tempTotalHours = totalChemRoomHours;
 
-                    dr["LineCost"] = BillingTypeManager.GetTotalCostByBillingType(dr.Field<int>("BillingType"), dr.Field<decimal>("TotalHours"), dr.Field<decimal>("TotalEntries"), dr.Field<Rooms>("RoomID"), dr.Field<decimal>("TotalCalcCost"), tempTotalHours);
+                    dr["LineCost"] = AppCode.BLL.BillingTypeManager.GetTotalCostByBillingType(dr.Field<int>("BillingType"), dr.Field<decimal>("TotalHours"), dr.Field<decimal>("TotalEntries"), dr.Field<Rooms>("RoomID"), dr.Field<decimal>("TotalCalcCost"), tempTotalHours);
 
                     currentOrgId = dr.Field<int>("OrgID");
                     if (previousOrgId != currentOrgId)

@@ -121,13 +121,20 @@ namespace sselIndReports
 
         private void PopulateRoomDetailData(DateTime period, int clientId)
         {
+            // gets either current or prior period data
             DataTable dtRoom = RoomBillingBL.GetRoomBillingDataByClientID(period, clientId);
 
-            dtRoom.Columns.Add("IsParent", typeof(bool));
-            dtRoom.Columns.Add("ParentID", typeof(int));
-            dtRoom.Columns.Add("RowCssClass", typeof(string));
+            if (!dtRoom.Columns.Contains("IsParent"))
+                dtRoom.Columns.Add("IsParent", typeof(bool));
 
-            var rooms = DA.Current.Query<Room>().ToList();
+            if (!dtRoom.Columns.Contains("ParentID"))
+                dtRoom.Columns.Add("ParentID", typeof(int));
+
+            if (!dtRoom.Columns.Contains("RowCssClass"))
+                dtRoom.Columns.Add("RowCssClass", typeof(string));
+
+            var rooms = CacheManager.Current.Rooms();
+
             foreach (DataRow dr in dtRoom.Rows)
             {
                 var r = rooms.FirstOrDefault(x => x.RoomID == dr.Field<int>("RoomID"));
@@ -225,7 +232,9 @@ namespace sselIndReports
 
         private void PopulateStoreDetailData(DateTime period, int clientId)
         {
+            // gets either current or prior period data
             DataTable dtStore = StoreBillingBL.GetStoreBillingDataByClientID(period, clientId);
+
             gvStoreDetail.DataSource = dtStore;
             gvStoreDetail.DataBind();
 
@@ -269,40 +278,53 @@ namespace sselIndReports
             DateTime cutoff = new DateTime(2011, 10, 1);
             if (period < cutoff)
             {
-                Response.Redirect(string.Format("~/IndUserUsageSummary20110401.aspx?p={0:yyyy-MM-dd}&cid={1}", period, clientId));
+                Response.Redirect($"~/IndUserUsageSummary20110401.aspx?p={period:yyyy-MM-dd}&cid={clientId}");
                 return;
             }
 
+            // 01) Billing Details: Room
             PopulateRoomDetailData(period, clientId);
+
+            // 02) Billing Details: Tool
             PopulateToolDetailData(period, clientId);
+
+            // 03) Billing Details: Store
             PopulateStoreDetailData(period, clientId);
 
+            // 04) Aggregate by Organization: Room
             gvAggByOrgRoom.DataSource = RoomBillingByOrgBL.GetDataByPeriodAndClientID(period.Year, period.Month, clientId);
             gvAggByOrgRoom.DataBind();
 
+            // 05) Aggregate by Organization: Tool
             gvToolOrg20110701.DataSource = ToolBillingByOrgBL.GetDataByPeriodAndClientID(period.Year, period.Month, clientId);
             gvToolOrg20110701.DataBind();
             gvToolOrg20110701.Visible = true;
 
-            var dtStore = StoreBillingByOrgBL.GetDataByPeriodAndClientID(period.Year, period.Month, clientId);
+            // 06) Aggregate by Organization: Store
+            var dtStore = BillingTablesBL.GetMultipleTables(period.Year, period.Month, clientId, BillingTableType.StoreByOrg);
             gvStoreOrg.DataSource = dtStore;
             gvStoreOrg.DataBind();
 
+            // 07) Aggregate by Organization: Subsidy
             var dtSubsidy = TieredSubsidyBillingBL.GetDataByPeriodAndClientID(period.Year, period.Month, clientId);
             AddStoreChargesToSubsidyTable(dtStore, dtSubsidy);
             gvSubsidy.DataSource = dtSubsidy;
             gvSubsidy.DataBind();
 
+            // 08) Aggregate by Accounts: Room
             gvRoomAccount.DataSource = RoomBillingByAccountBL.GetDataByPeriodAndClientID(period.Year, period.Month, clientId);
             gvRoomAccount.DataBind();
 
+            // 09) Aggregate by Accounts: Tool
             gvToolAccount20110701.DataSource = ToolBillingByAccountBL.GetDataByPeriodAndClientID20110701(period.Year, period.Month, clientId);
             gvToolAccount20110701.DataBind();
             gvToolAccount20110701.Visible = true;
 
+            // 10) Aggregate by Accounts: Store
             gvStoreAccount.DataSource = StoreBillingByAccountBL.GetDataByPeriodAndClientID(period.Year, period.Month, clientId);
             gvStoreAccount.DataBind();
 
+            // 11) Billing Details: Misc
             gvMisc.DataSource = MiscBillingBL.GetMiscBillingByClientID(period.Year, period.Month, clientId);
             gvMisc.DataBind();
 

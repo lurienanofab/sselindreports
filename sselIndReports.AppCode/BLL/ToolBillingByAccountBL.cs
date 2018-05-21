@@ -55,7 +55,8 @@ namespace sselIndReports.AppCode.BLL
 
         public static DataTable GetDataByPeriodAndClientID20110701(int year, int month, int clientId)
         {
-            DataTable dt = BillingTablesBL.GetMultipleTables20110701(year, month, clientId, BillingTableType.ToolByAccount20110401);
+            var btt = BillingTablesBL.GetToolByAccountBillingTableType(new DateTime(year, month, 1));
+            DataTable dt = BillingTablesBL.GetMultipleTables(year, month, clientId, btt);
 
             if (!dt.Columns.Contains("UsageFeeDisplay"))
                 dt.Columns.Add("UsageFeeDisplay", typeof(double));

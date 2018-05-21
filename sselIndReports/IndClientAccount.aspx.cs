@@ -48,14 +48,14 @@ namespace sselIndReports
 
         protected void LoadManagers()
         {
-            ClientModel client = CacheManager.Current.CurrentUser;
+            LNF.Models.Data.ClientItem client = CacheManager.Current.CurrentUser;
 
             IEnumerable<ClientOrg> allClientOrgs = null;
 
             if (client.HasPriv(ClientPrivilege.Administrator))
-                allClientOrgs = ClientOrgUtility.AllActiveManagers();
+                allClientOrgs = ClientOrgManager.AllActiveManagers();
             else if (client.HasPriv(ClientPrivilege.Executive))
-                allClientOrgs = ClientOrgUtility.AllActiveManagers().Where(x=> x.Client.ClientID == client.ClientID).ToList();
+                allClientOrgs = ClientOrgManager.AllActiveManagers().Where(x=> x.Client.ClientID == client.ClientID).ToList();
 
             var dataSource = allClientOrgs.Select(x=>GetManagerItem(x, allClientOrgs)).OrderBy(x=> x.DisplayName).ToList();
 
@@ -77,7 +77,7 @@ namespace sselIndReports
 
             var result = new
             {
-                ClientOrgID = co.ClientOrgID,
+                co.ClientOrgID,
                 DisplayName = displayName
             };
 

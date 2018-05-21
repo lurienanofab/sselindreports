@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Web;
+﻿using sselIndReports.AppCode.DAL;
+using System;
 using System.Data;
-using sselIndReports.AppCode.DAL;
+using System.Web;
 
 namespace sselIndReports.AppCode.BLL
 {
     public static class BillingTablesBL
     {
+        public static readonly DateTime NewBillingStartPeriod = new DateTime(2011, 10, 1);
         public static readonly DateTime CutoffPeriod = new DateTime(2011, 4, 1);
 
         public static BillingTableType GetToolByOrgBillingTableType(DateTime period)
@@ -18,31 +16,37 @@ namespace sselIndReports.AppCode.BLL
             return result;
         }
 
-        public static DataTable GetMultipleTables20110701(int year, int month, int clientId, BillingTableType bt)
+        public static BillingTableType GetToolByAccountBillingTableType(DateTime period)
         {
+            BillingTableType result = (period < CutoffPeriod) ? BillingTableType.ToolByAccount : BillingTableType.ToolByAccount20110401;
+            return result;
+        }
+
+        public static DataSet GetDataSet(int year, int month, int clientId)
+        {
+            DateTime period = new DateTime(year, month, 1);
+
             DataSet ds;
-            if (HttpContext.Current.Session["UserUsageSummaryTables20110701"] == null)
+
+            if (period < NewBillingStartPeriod)
             {
-                ds = BillingTablesDA.GetMultipleTables20110701(year, month, clientId);
-                HttpContext.Current.Session["UserUsageSummaryTables20110701"] = ds;
+                if (HttpContext.Current.Session["UserUsageSummaryTables"] == null)
+                    HttpContext.Current.Session["UserUsageSummaryTables"] = BillingTablesDA.GetMultipleTables(year, month, clientId);
+                ds = (DataSet)HttpContext.Current.Session["UserUsageSummaryTables"];
             }
             else
+            {
+                if (HttpContext.Current.Session["UserUsageSummaryTables20110701"] == null)
+                    HttpContext.Current.Session["UserUsageSummaryTables20110701"] = BillingTablesDA.GetMultipleTables20110701(year, month, clientId);
                 ds = (DataSet)HttpContext.Current.Session["UserUsageSummaryTables20110701"];
+            }
 
-            return ds.Tables[(int)bt];
+            return ds;
         }
 
         public static DataTable GetMultipleTables(int year, int month, int clientId, BillingTableType bt)
         {
-            DataSet ds;
-            if (HttpContext.Current.Session["UserUsageSummaryTables"] == null)
-            {
-                ds = BillingTablesDA.GetMultipleTables(year, month, clientId);
-                HttpContext.Current.Session["UserUsageSummaryTables"] = ds;
-            }
-            else
-                ds = (DataSet)HttpContext.Current.Session["UserUsageSummaryTables"];
-
+            DataSet ds = GetDataSet(year, month, clientId);
             return ds.Tables[(int)bt];
         }
     }
