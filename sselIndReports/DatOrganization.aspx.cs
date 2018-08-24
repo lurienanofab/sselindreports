@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Web.UI.WebControls;
+using System.Diagnostics;
 
 namespace sselIndReports
 {
@@ -50,7 +51,12 @@ namespace sselIndReports
             var month = pp1.SelectedMonth;
             var orgId = int.Parse(ddlOrg.SelectedValue);
 
+            var sw = Stopwatch.StartNew();
             var dt = AccountDA.GetAccountDetailsByOrgID(year, month, orgId);
+            sw.Stop();
+
+            litDebug.Text = $"<div class=\"debug\"><em>Query completed in {sw.Elapsed.TotalSeconds:0.00} seconds</em></div>";
+
             gvReport.DataSource = dt;
             gvReport.DataBind();
         }

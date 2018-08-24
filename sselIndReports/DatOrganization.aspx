@@ -1,6 +1,13 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/IndReportsMaster.Master" AutoEventWireup="true" CodeBehind="DatOrganization.aspx.cs" Inherits="sselIndReports.DatOrganization" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+    <style>
+        .debug {
+            color: #bbb;
+            margin-top: 20px;
+            font-size: 10pt;
+        }
+    </style>
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
@@ -54,6 +61,8 @@
                 There are no active accounts with this organization.
             </EmptyDataTemplate>
         </asp:GridView>
+
+        <asp:Literal runat="server" ID="litDebug"></asp:Literal>
     </div>
 </asp:Content>
 
