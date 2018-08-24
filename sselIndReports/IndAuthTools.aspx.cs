@@ -27,9 +27,9 @@ namespace sselIndReports
                     LoadUserList();
                 }
                 else
-                    ddlUser.Items.Insert(0, new ListItem(CacheManager.Current.CurrentUser.DisplayName, CacheManager.Current.ClientID.ToString()));
+                    ddlUser.Items.Insert(0, new ListItem(CacheManager.Current.CurrentUser.DisplayName, CacheManager.Current.CurrentUser.ClientID.ToString()));
 
-                ddlUser.SelectedValue = CacheManager.Current.ClientID.ToString();
+                ddlUser.SelectedValue = CacheManager.Current.CurrentUser.ClientID.ToString();
 
                 RetrieveData();
             }
@@ -40,7 +40,7 @@ namespace sselIndReports
             //client info - gets put into ddl, not needed in dataset
             using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
             {
-                dba.AddParameter("@ClientID", CacheManager.Current.ClientID);
+                dba.AddParameter("@ClientID", CacheManager.Current.CurrentUser.ClientID);
 
                 if (CurrentUser.HasPriv(ClientPrivilege.Administrator | ClientPrivilege.Staff))
                 {

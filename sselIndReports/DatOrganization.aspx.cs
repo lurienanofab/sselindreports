@@ -30,7 +30,7 @@ namespace sselIndReports
             }
             else if (CurrentUser.HasPriv(ClientPrivilege.Executive))
             {
-                var allClientOrgs = CacheManager.Current.CurrentUserActiveClientOrgs();
+                var allClientOrgs = CacheManager.Current.GetCurrentUserClientOrgs();
                 dataSource = allClientOrgs.Select(x => new OrgListItem() { OrgID = x.OrgID, OrgName = x.OrgName }).OrderBy(x => x.OrgName);
             }
 

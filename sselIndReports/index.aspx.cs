@@ -1,4 +1,5 @@
-﻿using LNF.Cache;
+﻿using LNF;
+using LNF.Cache;
 using LNF.Data;
 using LNF.Models.Data;
 using sselIndReports.AppCode;
@@ -48,7 +49,7 @@ namespace sselIndReports
                     string strClientID = Request.QueryString["ClientID"];
                     if (int.TryParse(strClientID.Trim(), out clientId))
                     {
-                        if (CacheManager.Current.ClientID != clientId)
+                        if (CacheManager.Current.CurrentUser.ClientID != clientId)
                         {
                             Session.Abandon();
                             Response.Redirect("~");
@@ -104,7 +105,7 @@ namespace sselIndReports
         {
             CacheManager.Current.RemoveCacheData();
             Session.Abandon();
-            Response.Redirect(CacheManager.Current.Logout + "?Action=Blank");
+            Response.Redirect(ServiceProvider.Current.Context.LoginUrl + "?Action=Blank");
         }
     }
 }

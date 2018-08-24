@@ -122,7 +122,7 @@ namespace sselIndReports.AppCode.BLL
 		    else
             {
 			    //Executieves only see him/herself
-                return AccountDA.GetActiveManagers(CacheManager.Current.ClientID);
+                return AccountDA.GetActiveManagers(CacheManager.Current.CurrentUser.ClientID);
 		    }
 	    }
 

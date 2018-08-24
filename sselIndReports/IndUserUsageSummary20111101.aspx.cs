@@ -53,7 +53,9 @@ namespace sselIndReports
                 Session.Remove("UserUsageSummaryTables20110701");
             }
             else
+            {
                 lblGlobalMsg.Text = string.Empty;
+            }
 
             base.OnLoad(e);
         }
@@ -206,7 +208,7 @@ namespace sselIndReports
                 query = DA.Current.Query<ToolBilling>().Where(x => x.Period == period && x.ClientID == clientId).ToArray();
 
             DataTable dtTool = ToolBillingBL.GetAggreateByTool(query);
-
+            dtTool.DefaultView.Sort = "RoomName ASC, ResourceName ASC";
             gvToolDetail.DataSource = dtTool;
             gvToolDetail.DataBind();
 

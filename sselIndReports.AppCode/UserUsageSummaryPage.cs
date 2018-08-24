@@ -48,6 +48,11 @@ namespace sselIndReports.AppCode
         {
             if (!Page.IsPostBack)
             {
+                var p = GetPeriodFromQueryString();
+
+                if (p.HasValue)
+                    SelectedPeriod = p.Value;
+
                 PopulateUserDropDownList(ClientDropDownList, SelectedPeriod, RetrieveDataButton);
                 ShowEstimateMessage();
                 RunReportOnLoad();
@@ -64,23 +69,21 @@ namespace sselIndReports.AppCode
             return result;
         }
 
-        private DateTime GetPeriodFromQueryString()
+        private DateTime? GetPeriodFromQueryString()
         {
-            DateTime result = DateTime.MinValue;
-            if (!string.IsNullOrEmpty(Request.QueryString["p"]))
-                DateTime.TryParse(Request.QueryString["p"], out result);
+            DateTime? result = null;
+            if (DateTime.TryParse(Request.QueryString["p"], out DateTime p))
+                result = p;
             return result;
         }
 
         protected void RunReportOnLoad()
         {
-            DateTime period = GetPeriodFromQueryString();
             int clientId = GetClientIDFromQueryString();
-            if (clientId > 0 && period != DateTime.MinValue)
+            if (clientId > 0)
             {
-                SelectedPeriod = period;
                 SelectedClientID = clientId;
-                RunReport(period, clientId);
+                RunReport(SelectedPeriod, SelectedClientID);
             }
         }
 

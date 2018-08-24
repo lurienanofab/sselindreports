@@ -1,4 +1,5 @@
-﻿using LNF.Cache;
+﻿using LNF;
+using LNF.Cache;
 using LNF.CommonTools;
 using LNF.Data;
 using LNF.Models.Data;
@@ -167,7 +168,7 @@ namespace sselIndReports
                 catch
                 {
                     Session.Abandon();
-                    Response.Redirect(CacheManager.Current.Logout + "?Action=Exit");
+                    Response.Redirect(ServiceProvider.Current.Context.LoginUrl + "?Action=Exit");
                 }
             }
         }

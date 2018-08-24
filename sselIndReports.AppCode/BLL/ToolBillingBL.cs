@@ -11,6 +11,7 @@ using sselIndReports.AppCode.DAL;
 using System;
 using System.Data;
 using System.Linq;
+using LNF.Repository.Data;
 
 namespace sselIndReports.AppCode.BLL
 {
@@ -90,7 +91,8 @@ namespace sselIndReports.AppCode.BLL
             dt.Columns.Add("UnstartedUnused", typeof(decimal));
             dt.Columns.Add("LineCost", typeof(decimal));
 
-            var accounts = CacheManager.Current.Accounts();
+            //var accounts = CacheManager.Current.Accounts();
+            var accounts = DA.Current.Query<AccountInfo>().Model<AccountItem>();
             var resources = CacheManager.Current.ResourceTree().Resources();
 
             foreach (IToolBilling item in query.OrderBy(x => x.AccountID).ThenBy(x => x.ResourceID))
@@ -99,14 +101,28 @@ namespace sselIndReports.AppCode.BLL
 
                 if (dr == null)
                 {
-                    AccountItem acct = accounts.First(x => x.AccountID == item.AccountID);
-                    ResourceModel res = resources.First(x => x.ResourceID == item.ResourceID);
+                    AccountItem acct = accounts.FirstOrDefault(x => x.AccountID == item.AccountID);
+
+                    string acctName, shortCode;
+
+                    if (acct == null)
+                    {
+                        acctName = $"unknown account [{item.AccountID}]";
+                        shortCode = string.Empty;
+                    }
+                    else
+                    {
+                        acctName = acct.AccountName;
+                        shortCode = acct.ShortCode.Trim();
+                    }
+
+                    ResourceTreeItem res = resources.First(x => x.ResourceID == item.ResourceID);
                    
                     dr = dt.NewRow();
                     dr.SetField("ClientID", item.ClientID);
-                    dr.SetField("AccountID", acct.AccountID);
-                    dr.SetField("AccountName", acct.AccountName);
-                    dr.SetField("ShortCode", acct.ShortCode.Trim());
+                    dr.SetField("AccountID", item.AccountID);
+                    dr.SetField("AccountName", acctName);
+                    dr.SetField("ShortCode", shortCode);
                     dr.SetField("ResourceID", res.ResourceID);
                     dr.SetField("ResourceName", res.ResourceName);
                     dr.SetField("BillingTypeID", item.BillingTypeID);

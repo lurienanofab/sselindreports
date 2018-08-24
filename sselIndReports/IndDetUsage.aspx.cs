@@ -43,7 +43,7 @@ namespace sselIndReports
                     {
                         dba.AddParameter("@sDate", sDate);
                         dba.AddParameter("@eDate", eDate);
-                        dba.AddParameter("@ClientID", CacheManager.Current.ClientID);
+                        dba.AddParameter("@ClientID", CacheManager.Current.CurrentUser.ClientID);
 
                         //Depending on the user prives, we need to retrieve different set of data
                         if (CurrentUser.HasPriv(ClientPrivilege.Administrator | ClientPrivilege.Staff))
@@ -255,10 +255,10 @@ namespace sselIndReports
             //but sometimes the user him/herself is not belong to this group of people
 
             //remove first so we don't show the same user twice in the list
-            var item = ddlUser.Items.FindByValue(CacheManager.Current.ClientID.ToString());
+            var item = ddlUser.Items.FindByValue(CacheManager.Current.CurrentUser.ClientID.ToString());
             if (item != null) ddlUser.Items.Remove(item);
 
-            ddlUser.Items.Insert(0, new ListItem(CacheManager.Current.CurrentUser.DisplayName, CacheManager.Current.ClientID.ToString()));
+            ddlUser.Items.Insert(0, new ListItem(CacheManager.Current.CurrentUser.DisplayName, CacheManager.Current.CurrentUser.ClientID.ToString()));
 
             if (ddlUser.Items.FindByValue(selectedValue) != null)
                 ddlUser.SelectedValue = selectedValue;
