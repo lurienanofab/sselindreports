@@ -4,6 +4,7 @@ using LNF.Models.Data;
 using LNF.Repository;
 using LNF.Repository.Data;
 using sselIndReports.AppCode;
+using sselIndReports.AppCode.DAL;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -43,23 +44,28 @@ namespace sselIndReports
             ddlOrg.DataBind();
         }
 
-        protected void btnReport_Click(object sender, EventArgs e)
+        protected void BtnReport_Click(object sender, EventArgs e)
         {
-            gv.DataSourceID = "odsGrid";
-            gv.DataBind();
+            var year = pp1.SelectedYear;
+            var month = pp1.SelectedMonth;
+            var orgId = int.Parse(ddlOrg.SelectedValue);
+
+            var dt = AccountDA.GetAccountDetailsByOrgID(year, month, orgId);
+            gvReport.DataSource = dt;
+            gvReport.DataBind();
         }
 
-        protected void gv_RowDataBound(object sender, GridViewRowEventArgs e)
+        protected void GvReport_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (ddlOrg.SelectedValue == "17")
             {
-                gv.Columns[1].Visible = true;
-                gv.Columns[2].Visible = true;
+                gvReport.Columns[1].Visible = true;
+                gvReport.Columns[2].Visible = true;
             }
             else
             {
-                gv.Columns[1].Visible = false;
-                gv.Columns[2].Visible = false;
+                gvReport.Columns[1].Visible = false;
+                gvReport.Columns[2].Visible = false;
             }
         }
     }

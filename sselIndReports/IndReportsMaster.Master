@@ -5,10 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <title>LNF User Reports</title>
-    <link rel="shortcut icon" href="/static/favicon.ico?v=20160303" />
-    <link rel="stylesheet" type="text/css" href="/static/styles/theme/default.css" />
-    <link rel="stylesheet" type="text/css" href="styles/user-usage-summary.css" />
-    <link rel="stylesheet" type="text/css" href="scripts/jquery.userusagesummary/css/jquery.userusagesummary.css" />
+    
+    <link rel="shortcut icon" href="//ssel-apps.eecs.umich.edu/static/favicon.ico?v=20160303" />
+    <link rel="stylesheet" href="//ssel-apps.eecs.umich.edu/static/styles/theme/default.css" />
+    <link rel="stylesheet" href="//ssel-apps.eecs.umich.edu/static/lib/datatables/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" href="styles/user-usage-summary.css" />
+    <link rel="stylesheet" href="scripts/jquery.userusagesummary/css/jquery.userusagesummary.css" />
+
     <asp:ContentPlaceHolder ID="head" runat="server">
     </asp:ContentPlaceHolder>
 </head>
@@ -21,15 +24,16 @@
         <asp:Literal runat="server" ID="litCommonToolsVersion"></asp:Literal>
     </form>
 
-    <script type="text/javascript" src="/static/lib/jquery/jquery.min.js"></script>
-    <script type="text/javascript" src="scripts/main.js?v=20160315"></script>
-    <script type="text/javascript" src="scripts/jquery.userusagesummary/js/jquery.userusagesummary.js"></script>
+    <script src="//ssel-apps.eecs.umich.edu/static/lib/jquery/jquery.min.js"></script>
+    <script src="//ssel-apps.eecs.umich.edu/static/lib/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="scripts/main.js?v=20160315"></script>
+    <script src="scripts/jquery.userusagesummary/js/jquery.userusagesummary.js"></script>
 
     <script type="text/javascript">
         $(".user-usage-summary").userusagesummary();
     </script>
 
-    <asp:ContentPlaceHolder ID="scripts" runat="server">
+    <asp:ContentPlaceHolder ID="scripts" runat="server">        
     </asp:ContentPlaceHolder>
 </body>
 </html>

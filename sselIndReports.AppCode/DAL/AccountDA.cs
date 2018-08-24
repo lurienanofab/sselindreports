@@ -58,7 +58,7 @@ namespace sselIndReports.AppCode.DAL
             DateTime sDate = new DateTime(year, month, 1);
             DateTime eDate = sDate.AddMonths(1);
 
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
+            using (var dba = DA.Current.GetAdapter())
             {
                 dba.AddParameter("@Action", "GetAccountDetailByOrgID");
                 dba.AddParameter("@OrgID", orgId);

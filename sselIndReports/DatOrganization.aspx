@@ -2,6 +2,7 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
+
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="section">
         <h2>Organization Report</h2>
@@ -23,13 +24,13 @@
                 </tr>
             </table>
             <div class="criteria-item">
-                <asp:Button ID="btnReport" runat="server" Text="Retrieve Data" OnClick="btnReport_Click" CssClass="report-button" />
+                <asp:Button ID="btnReport" runat="server" Text="Retrieve Data" OnClick="BtnReport_Click" CssClass="report-button" />
                 <asp:LinkButton runat="server" ID="btnBack" Text="&larr; Back to Main Page" OnClick="BackButton_Click"></asp:LinkButton>
             </div>
         </div>
     </div>
     <div class="section">
-        <asp:GridView runat="server" ID="gv" CssClass="gridview highlight" GridLines="None" AutoGenerateColumns="false" AllowSorting="True" OnRowDataBound="gv_RowDataBound">
+        <asp:GridView runat="server" ID="gvReport" CssClass="gridview highlight" GridLines="None" AutoGenerateColumns="false" AllowSorting="True" OnRowDataBound="GvReport_RowDataBound">
             <HeaderStyle CssClass="header" />
             <RowStyle CssClass="row" />
             <AlternatingRowStyle CssClass="altrow" />
@@ -46,17 +47,15 @@
                 <asp:BoundField DataField="Email" HeaderText="Email" ReadOnly="True" />
                 <asp:BoundField DataField="IsManager" HeaderText="Is Manager" ReadOnly="True" SortExpression="IsManager" />
                 <asp:BoundField DataField="IsFinManager" HeaderText="Is Fin Manager" ReadOnly="True" SortExpression="IsFinManager" />
+                <asp:BoundField DataField="FundingSourceName" HeaderText="Funding Source" ReadOnly="True" SortExpression="FundingSourceName" />
+                <asp:BoundField DataField="TechnicalFieldName" HeaderText="Technical Field" ReadOnly="True" SortExpression="TechnicalFieldName" />
             </Columns>
             <EmptyDataTemplate>
-                There is not active account with this organization
+                There are no active accounts with this organization.
             </EmptyDataTemplate>
         </asp:GridView>
-        <asp:ObjectDataSource ID="odsGrid" runat="server" SelectMethod="GetAccountDetailsByOrgID" TypeName="sselIndReports.AppCode.DAL.AccountDA">
-            <SelectParameters>
-                <asp:ControlParameter ControlID="ddlOrg" DefaultValue="0" Name="OrgID" PropertyName="SelectedValue" Type="Int32" />
-                <asp:ControlParameter ControlID="pp1" Name="Year" PropertyName="SelectedYear" Type="Int32" />
-                <asp:ControlParameter ControlID="pp1" Name="Month" PropertyName="SelectedMonth" Type="Int32" />
-            </SelectParameters>
-        </asp:ObjectDataSource>
     </div>
+</asp:Content>
+
+<asp:Content runat="server" ContentPlaceHolderID="scripts">
 </asp:Content>
