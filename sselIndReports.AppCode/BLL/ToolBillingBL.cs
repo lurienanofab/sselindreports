@@ -451,7 +451,11 @@ namespace sselIndReports.AppCode.BLL
                         }
 
                         //if the tool rate is 0, then everything should be 0
-                        if (dr.Field<decimal>("ResourceRate") + dr.Field<decimal>("PerUseRate") == 0)
+                        bool hasPerUseRateColumn = dt.Columns.Contains("PerUseRate");
+                        var resourceRate = dr.Field<decimal>("ResourceRate");
+                        var perUserRate = hasPerUseRateColumn ? dr.Field<decimal>("PerUseRate") : 0M;
+
+                        if (resourceRate + perUserRate == 0)
                             dr["LineCost"] = 0;
                     }
                 }
