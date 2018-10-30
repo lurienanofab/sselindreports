@@ -39,31 +39,30 @@ namespace sselIndReports
                     DateTime sDate = pp1.SelectedPeriod;
                     DateTime eDate = sDate.AddMonths(1);
 
-                    using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
+                    var command = DA.Command()
+                        .Param("sDate", sDate)
+                        .Param("eDate", eDate)
+                        .Param("ClientID", CacheManager.Current.CurrentUser.ClientID);
+
+                    //Depending on the user prives, we need to retrieve different set of data
+                    if (CurrentUser.HasPriv(ClientPrivilege.Administrator | ClientPrivilege.Staff))
                     {
-                        dba.AddParameter("@sDate", sDate);
-                        dba.AddParameter("@eDate", eDate);
-                        dba.AddParameter("@ClientID", CacheManager.Current.CurrentUser.ClientID);
+                        command
+                            .Param("Privs", (int)(ClientPrivilege.LabUser | ClientPrivilege.Staff | ClientPrivilege.StoreUser))
+                            .Param("Action", "All");
+                    }
+                    else if (CurrentUser.HasPriv(ClientPrivilege.Executive))
+                    {
+                        //for executive-only person, we only show the people he/she manages
+                        command.Param("Action", "ByMgr");
+                    }
 
-                        //Depending on the user prives, we need to retrieve different set of data
-                        if (CurrentUser.HasPriv(ClientPrivilege.Administrator | ClientPrivilege.Staff))
-                        {
-                            dba.AddParameter("@Privs", (int)(ClientPrivilege.LabUser | ClientPrivilege.Staff | ClientPrivilege.StoreUser));
-                            dba.AddParameter("@Action", "All");
-                        }
-                        else if (CurrentUser.HasPriv(ClientPrivilege.Executive))
-                        {
-                            //for executive-only person, we only show the people he/she manages
-                            dba.AddParameter("@Action", "ByMgr");
-                        }
-
-                        using (var reader = dba.ExecuteReader("Client_Select"))
-                        {
-                            ddlUser.DataSource = reader;
-                            ddlUser.DataTextField = "DisplayName";
-                            ddlUser.DataValueField = "ClientID";
-                            ddlUser.DataBind();
-                        }
+                    using (var reader = command.ExecuteReader("dbo.Client_Select"))
+                    {
+                        ddlUser.DataSource = reader;
+                        ddlUser.DataTextField = "DisplayName";
+                        ddlUser.DataValueField = "ClientID";
+                        ddlUser.DataBind();
                     }
                 }
 
@@ -89,15 +88,20 @@ namespace sselIndReports
             {
                 //get prior month data from RoomDataClean but make it look like RoomDataImport
                 roomData = new List<RoomDataImport>();
-                var cleanData = DA.Current.Query<RoomDataClean>().Where(x => (x.EntryDT >= startDate && x.EntryDT < endDate) && x.Client.ClientID == clientId).ToList();
+                var cleanData = DA.Current.Query<RoomDataClean>().Where(x => (x.EntryDT >= startDate && x.EntryDT < endDate) && x.ClientID == clientId).ToList();
+
+                var rooms = DA.Current.Query<Room>().ToList();
+
                 foreach (var item in cleanData)
                 {
-                    if (item.Room.PassbackRoom)
+                    var room = rooms.First(x => x.RoomID == item.RoomID);
+
+                    if (room.PassbackRoom)
                     {
                         RoomDataImport entry = new RoomDataImport
                         {
-                            ClientID = item.Client.ClientID,
-                            RoomName = item.Room.RoomName,
+                            ClientID = item.ClientID,
+                            RoomName = room.RoomName,
                             EventDate = item.EntryDT,
                             EventDescription = EVENT_ANTIPASSBACK_IN
                         };
@@ -106,8 +110,8 @@ namespace sselIndReports
 
                         RoomDataImport exit = new RoomDataImport
                         {
-                            ClientID = item.Client.ClientID,
-                            RoomName = item.Room.RoomName,
+                            ClientID = item.ClientID,
+                            RoomName = room.RoomName,
                             EventDate = item.ExitDT.GetValueOrDefault(),
                             EventDescription = EVENT_ANTIPASSBACK_OUT
                         };
@@ -118,8 +122,8 @@ namespace sselIndReports
                     {
                         RoomDataImport entry = new RoomDataImport
                         {
-                            ClientID = item.Client.ClientID,
-                            RoomName = item.Room.RoomName,
+                            ClientID = item.ClientID,
+                            RoomName = room.RoomName,
                             EventDate = item.EntryDT,
                             EventDescription = EVENT_NO_ANTIPASSBACK
                         };

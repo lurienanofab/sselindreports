@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using LNF.Repository;
+using System;
 using System.Data;
-using LNF.Repository;
-using LNF.CommonTools;
 
 namespace sselIndReports.AppCode.DAL
 {
@@ -13,21 +9,23 @@ namespace sselIndReports.AppCode.DAL
         public static DataSet GetMultipleTables20110701(int year, int month, int clientId)
         {
             DateTime period = new DateTime(year, month, 1);
-            SQLDBAccess dba = new SQLDBAccess("cnSselData");
-            dba.AddParameter("@Action", "UserUsageSummary");
-            dba.AddParameter("@Period", period);
-            dba.AddParameter("@ClientID", clientId);
-            return dba.FillDataSet("BillingTables_Select20110701");
+
+            return DA.Command()
+                .Param("Action", "UserUsageSummary")
+                .Param("Period", period)
+                .Param("ClientID", clientId)
+                .FillDataSet("dbo.BillingTables_Select20110701");
         }
 
         public static DataSet GetMultipleTables(int year, int month, int clientId)
         {
             DateTime period = new DateTime(year, month, 1);
-            SQLDBAccess dba = new SQLDBAccess("cnSselData");
-            dba.AddParameter("@Action", "UserUsageSummary");
-            dba.AddParameter("@Period", period);
-            dba.AddParameter("@ClientID", clientId);
-            return dba.FillDataSet("BillingTables_Select");
+
+            return DA.Command()
+                .Param("Action", "UserUsageSummary")
+                .Param("Period", period)
+                .Param("ClientID", clientId)
+                .FillDataSet("dbo.BillingTables_Select");
         }
     }
 }

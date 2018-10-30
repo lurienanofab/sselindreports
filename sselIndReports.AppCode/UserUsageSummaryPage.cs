@@ -226,20 +226,18 @@ namespace sselIndReports.AppCode
         }
         private static DataTable GetAllClient(DateTime sDate, DateTime eDate, int privs)
         {
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "AllUniqueName");
-                dba.AddParameter("@sDate", sDate);
-                dba.AddParameter("@eDate", eDate);
-                dba.AddParameter("@Privs", privs);
-                DataTable dt = dba.FillDataTable("Client_Select");
+            var dt = DA.Command()
+                .Param("Action", "AllUniqueName")
+                .Param("sDate", sDate)
+                .Param("eDate", eDate)
+                .Param("Privs", privs)
+                .FillDataTable("dbo.Client_Select");
 
-                //Must set primary key because the client code need to find data in this table
-                //should this code below to business logic or data access?
-                dt.PrimaryKey = new DataColumn[] { dt.Columns["ClientID"] };
+            //Must set primary key because the client code need to find data in this table
+            //should this code below to business logic or data access?
+            dt.PrimaryKey = new DataColumn[] { dt.Columns["ClientID"] };
 
-                return dt;
-            }
+            return dt;
         }
 
         protected void ReportButton_Click(object sender, EventArgs e)

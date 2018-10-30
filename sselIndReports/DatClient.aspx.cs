@@ -38,25 +38,19 @@ namespace sselIndReports
                 dsReport = new DataSet("DatClient");
 
                 //get Role info
-                using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-                {
-                    dba.AddParameter("@TableName", "Role");
-                    dba.FillDataSet(dsReport, "Global_Select", "Role");
-                }
+                DA.Command()
+                    .Param("TableName", "Role")
+                    .FillDataSet(dsReport, "dbo.Global_Select", "Role");
 
                 //get UserType info
-                using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-                {
-                    dba.AddParameter("@TableName", "Community");
-                    dba.FillDataSet(dsReport, "Global_Select", "Communities");
-                }
+                DA.Command()
+                    .Param("TableName", "Community")
+                    .FillDataSet(dsReport, "dbo.Global_Select", "Communities");
 
                 //grab all departments
-                using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-                {
-                    dba.AddParameter("@Action", "All");
-                    dba.FillDataSet(dsReport, "Department_Select", "Department");
-                }
+                DA.Command()
+                    .Param("Action", "All")
+                    .FillDataSet(dsReport, "dbo.Department_Select", "Department");
 
                 CacheManager.Current.CacheData(dsReport);
 
@@ -109,117 +103,83 @@ namespace sselIndReports
             if (dsReport.Tables.Contains("DemRace")) dsReport.Tables.Remove(dsReport.Tables["DemRace"]);
 
             //display name column is appended to facilitate manager display
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "AllActive");
-                dba.AddParameter("@sDate", sDate);
-                dba.AddParameter("@eDate", eDate);
-                dba.FillDataSet(dsReport, "ClientOrg_Select", "ClientOrg");
-            }
+            DA.Command()
+                .Param("Action", "AllActive")
+                .Param("sDate", sDate)
+                .Param("eDate", eDate)
+                .FillDataSet(dsReport, "dbo.ClientOrg_Select", "ClientOrg");
 
-            dsReport.Tables["ClientOrg"].PrimaryKey = new DataColumn[] { dsReport.Tables["ClientOrg"].Columns["ClientOrgID"] };
+            dsReport.Tables["ClientOrg"].PrimaryKey = new[] { dsReport.Tables["ClientOrg"].Columns["ClientOrgID"] };
 
             //Manager info
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "AllActive");
-                dba.AddParameter("@sDate", sDate);
-                dba.AddParameter("@eDate", eDate);
-                dba.FillDataSet(dsReport, "ClientManager_Select", "ClientManager");
-            }
+            DA.Command()
+                .Param("Action", "AllActive")
+                .Param("sDate", sDate)
+                .Param("eDate", eDate)
+                .FillDataSet(dsReport, "dbo.ClientManager_Select", "ClientManager");
 
             //get Org info
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "AllActive");
-                dba.AddParameter("@sDate", sDate);
-                dba.AddParameter("@eDate", eDate);
-                dba.MapSchema().FillDataSet(dsReport, "Org_Select", "Org");
-                dsReport.Tables["Org"].PrimaryKey = new DataColumn[] { dsReport.Tables["Org"].Columns["OrgID"] };
-            }
+            DA.Command()
+                .MapSchema()
+                .Param("Action", "AllActive")
+                .Param("sDate", sDate)
+                .Param("eDate", eDate)
+                .FillDataSet(dsReport, "dbo.Org_Select", "Org");
+
+            dsReport.Tables["Org"].PrimaryKey = new[] { dsReport.Tables["Org"].Columns["OrgID"] };
 
             //get Account info
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "AllActive");
-                dba.AddParameter("@sDate", sDate);
-                dba.AddParameter("@eDate", eDate);
-                dba.FillDataSet(dsReport, "Account_Select", "Account");
-            }
+            DA.Command()
+                .Param("Action", "AllActive")
+                .Param("sDate", sDate)
+                .Param("eDate", eDate)
+                .FillDataSet(dsReport, "dbo.Account_Select", "Account");
 
-            dsReport.Tables["Account"].PrimaryKey = new DataColumn[] { dsReport.Tables["Account"].Columns["AccountID"] };
+            dsReport.Tables["Account"].PrimaryKey = new[] { dsReport.Tables["Account"].Columns["AccountID"] };
 
             //get ClientAccount info
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "AllActive");
-                dba.AddParameter("@sDate", sDate);
-                dba.AddParameter("@eDate", eDate);
-                dba.FillDataSet(dsReport, "ClientAccount_Select", "ClientAccount");
-            }
+            DA.Command()
+                .Param("Action", "AllActive")
+                .Param("sDate", sDate)
+                .Param("eDate", eDate)
+                .FillDataSet(dsReport, "dbo.ClientAccount_Select", "ClientAccount");
 
             //Client info - gets put into ddl, not needed in dataset
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "All");
-                dba.AddParameter("@sDate", sDate);
-                dba.AddParameter("@eDate", eDate);
-                dba.FillDataSet(dsReport, "Client_Select", "Client");
-            }
+            DA.Command()
+                .Param("Action", "All")
+                .Param("sDate", sDate)
+                .Param("eDate", eDate)
+                .FillDataSet(dsReport, "dbo.Client_Select", "Client");
 
             dsReport.Tables["Client"].PrimaryKey = new DataColumn[] { dsReport.Tables["Client"].Columns["ClientID"] };
 
             //fill in demographics RBL - could be prettier...
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                var cmd = dba.SelectCommand; //select command
 
-                cmd.AddParameter("@Action", "All");
-                cmd.AddParameter("@DemType", SqlDbType.NVarChar, 30);
+            var command = DA.Command().MapSchema(); //select command
 
-                cmd.SetParameterValue("@DemType", "DemCitizen");
-                dba.MapSchema().FillDataSet(dsReport, "Dem_Select", "DemCitizen");
-                dsReport.Tables["DemCitizen"].PrimaryKey = new DataColumn[] { dsReport.Tables["DemCitizen"].Columns["DemCitizenID"] };
+            command.Param("Action", "All");
 
-                cmd.SetParameterValue("@DemType", "DemDisability");
-                dba.MapSchema().FillDataSet(dsReport, "Dem_Select", "DemDisability");
-                dsReport.Tables["DemDisability"].PrimaryKey = new DataColumn[] { dsReport.Tables["DemDisability"].Columns["DemDisabilityID"] };
+            command.Param("DemType", "DemCitizen");
+            command.FillDataSet(dsReport, "dbo.Dem_Select", "DemCitizen");
+            dsReport.Tables["DemCitizen"].PrimaryKey = new[] { dsReport.Tables["DemCitizen"].Columns["DemCitizenID"] };
 
-                cmd.SetParameterValue("@DemType", "DemEthnic");
-                dba.MapSchema().FillDataSet(dsReport, "Dem_Select", "DemEthnic");
-                dsReport.Tables["DemEthnic"].PrimaryKey = new DataColumn[] { dsReport.Tables["DemEthnic"].Columns["DemEthnicID"] };
+            command.Param("DemType", "DemDisability");
+            command.FillDataSet(dsReport, "Dem_Select", "DemDisability");
+            dsReport.Tables["DemDisability"].PrimaryKey = new[] { dsReport.Tables["DemDisability"].Columns["DemDisabilityID"] };
 
-                cmd.SetParameterValue("@DemType", "DemGender");
-                dba.MapSchema().FillDataSet(dsReport, "Dem_Select", "DemGender");
-                dsReport.Tables["DemGender"].PrimaryKey = new DataColumn[] { dsReport.Tables["DemGender"].Columns["DemGenderID"] };
+            command.Param("DemType", "DemEthnic");
+            command.FillDataSet(dsReport, "dbo.Dem_Select", "DemEthnic");
+            dsReport.Tables["DemEthnic"].PrimaryKey = new[] { dsReport.Tables["DemEthnic"].Columns["DemEthnicID"] };
 
-                cmd.SetParameterValue("@DemType", "DemRace");
-                dba.MapSchema().FillDataSet(dsReport, "Dem_Select", "DemRace");
-                dsReport.Tables["DemRace"].PrimaryKey = new DataColumn[] { dsReport.Tables["DemRace"].Columns["DemRaceID"] };
-            }
+            command.Param("DemType", "DemGender");
+            command.FillDataSet(dsReport, "dbo.Dem_Select", "DemGender");
+            dsReport.Tables["DemGender"].PrimaryKey = new[] { dsReport.Tables["DemGender"].Columns["DemGenderID"] };
+
+            command.Param("DemType", "DemRace");
+            command.FillDataSet(dsReport, "dbo.Dem_Select", "DemRace");
+            dsReport.Tables["DemRace"].PrimaryKey = new[] { dsReport.Tables["DemRace"].Columns["DemRaceID"] };
 
             CacheManager.Current.CacheData(dsReport);
-
-            /*ddlUser.DataSource = dsReport.Tables["Client"];
-            ddlUser.DataTextField = "DisplayName";
-            ddlUser.DataValueField = "ClientID";
-            ddlUser.DataBind();
-
-            ddlUser.Items.Insert(0, new ListItem("-- Select --", "0"));
-
-            if (selectedClientId > 0)
-            {
-                if (ddlUser.Items.FindByValue(selectedClientId.ToString()) == null)
-                    ddlUser.ClearSelection();
-                else
-                    ddlUser.SelectedValue = selectedClientId.ToString();
-            }
-            else if (ddlUser.Items.Count == 2)
-                ddlUser.SelectedIndex = 1;
-            else
-                ddlUser.ClearSelection();*/
-
-            //MakeClientReport();
         }
 
         private string GetOrgName(int orgId)

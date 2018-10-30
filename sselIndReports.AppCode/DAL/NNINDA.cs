@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using LNF.Repository;
+using System;
 using System.Data;
-using LNF.Repository;
-using LNF.CommonTools;
 
 namespace sselIndReports.AppCode.DAL
 {
@@ -12,54 +8,46 @@ namespace sselIndReports.AppCode.DAL
     {
         public static DataSet GetTablesWithMinimumMinutes(DateTime period, int privs, bool makeAggData, double minimumHours)
         {
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "GetAllTablesWithMinimumHours");
-                dba.AddParameter("@Period", period);
-                dba.AddParameter("@Privs", privs);
-                dba.AddParameter("@MakeCumUser", makeAggData);
-                dba.AddParameter("@MinimumHours", minimumHours);
-                DataSet ds = dba.FillDataSet("NNIN_Select");
-                return ds;
-            }
+            return DA.Command()
+                .Param("Action", "GetAllTablesWithMinimumHours")
+                .Param("Period", period)
+                .Param("Privs", privs)
+                .Param("MakeCumUser", makeAggData)
+                .Param("MinimumHours", minimumHours)
+                .FillDataSet("dbo.NNIN_Select");
         }
 
         public static DataTable GetCumulativeUserTable()
         {
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-                return dba.ApplyParameters(new { Action = "AllInternal" }).FillDataTable("Account_Select");
+            return DA.Command()
+                .Param("Action", "AllInternal")
+                .FillDataTable("dbo.Account_Select");
         }
 
 
         public static DataSet GetCostTables(DateTime period)
         {
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "GetCostTables");
-                dba.AddParameter("@Period", period);
-                return dba.FillDataSet("NNIN_Select");
-            }
+            return DA.Command()
+                .Param("Action", "GetCostTables")
+                .Param("Period", period)
+                .FillDataSet("dbo.NNIN_Select");
         }
 
         public static bool CumulativeUserExists(DateTime period)
         {
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "DataCheck");
-                dba.AddParameter("@eDate", period);
-                return dba.ExecuteScalar<bool>("CumUserForNNIN_Select");
-            }
+            return DA.Command()
+                .Param("@Action", "DataCheck")
+                .Param("@eDate", period)
+                .ExecuteScalar<bool>("dbo.CumUserForNNIN_Select");
         }
 
         public static DataTable GetCumulativeUserAggregateData(DateTime sDate, DateTime eDate)
         {
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "Aggregate");
-                dba.AddParameter("@sDate", sDate);
-                dba.AddParameter("@eDate", eDate);
-                return dba.FillDataTable("CumUserForNNIN_Select");
-            }
+            return DA.Command()
+                .Param("Action", "Aggregate")
+                .Param("sDate", sDate)
+                .Param("eDate", eDate)
+                .FillDataTable("dbo.CumUserForNNIN_Select");
         }
     }
 }

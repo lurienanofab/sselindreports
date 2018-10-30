@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using LNF.Repository;
+using System;
 using System.Data;
-using LNF.Repository;
-using LNF.CommonTools;
 
 namespace sselIndReports.AppCode.DAL
 {
@@ -12,20 +8,20 @@ namespace sselIndReports.AppCode.DAL
     {
         public static DataTable GetStoreBillingDataByClientID(DateTime period, int clientId)
         {
-            SQLDBAccess dba = new SQLDBAccess("cnSselData");
-            dba.AddParameter("@Action", "ByClientIDPeriod");
-            dba.AddParameter("@Period", period);
-            dba.AddParameter("@ClientID", clientId);
-            return dba.FillDataTable("StoreBilling_Select");
+            return DA.Command()
+                .Param("Action", "ByClientIDPeriod")
+                .Param("Period", period)
+                .Param("ClientID", clientId)
+                .FillDataTable("dbo.StoreBilling_Select");
         }
 
         public static DataTable GetStoreBillingTempDataByClientID(DateTime period, int clientId)
         {
-            SQLDBAccess dba = new SQLDBAccess("cnSselData");
-            dba.AddParameter("@Action", "ByClientIDPeriod");
-            dba.AddParameter("@Period", period);
-            dba.AddParameter("@ClientID", clientId);
-            return dba.FillDataTable("StoreBillingTemp_Select");
+            return DA.Command()
+                .Param("Action", "ByClientIDPeriod")
+                .Param("Period", period)
+                .Param("ClientID", clientId)
+                .FillDataTable("dbo.StoreBillingTemp_Select");
         }
     }
 }

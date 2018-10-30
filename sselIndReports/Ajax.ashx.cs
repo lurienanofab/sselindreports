@@ -1,9 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using LNF.Repository;
+using LNF.Web;
+using Newtonsoft.Json;
 using sselIndReports.AppCode.DAL;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.SessionState;
@@ -15,38 +16,15 @@ namespace sselIndReports
     /// </summary>
     public class Ajax : IHttpHandler, IRequiresSessionState
     {
-        private string GetRequestBody(HttpContext context)
-        {
-            var bodyStream = new StreamReader(HttpContext.Current.Request.InputStream);
-            bodyStream.BaseStream.Seek(0, SeekOrigin.Begin);
-            var bodyText = bodyStream.ReadToEnd();
-            return bodyText;
-        }
-
         public void ProcessRequest(HttpContext context)
         {
             string json;
-
             string command = context.Request.QueryString["command"];
 
             if (!string.IsNullOrEmpty(command))
-            {
                 json = HandleCommand(command, context);
-            }
             else
-            {
-                DatatablesRequest req = JsonConvert.DeserializeObject<DatatablesRequest>(GetRequestBody(context));
-
-                if (!string.IsNullOrEmpty(req.Command))
-                {
-                    if (req.Command == "GetOrganizationReport")
-                        json = Json(context, GetOrganizationReport(req));
-                    else
-                        json = Error(context, $"Unknown command: {req.Command}");
-                }
-                else
-                    json = Error(context, "Missing parameter: command");
-            }
+                json = Error(context, "Missing parameter: command");
 
             context.Response.Write(json);
         }
@@ -64,40 +42,34 @@ namespace sselIndReports
                 if (!int.TryParse(context.Request.QueryString["month"], out int month))
                     return Error(context, "Invalid parameter value: month");
 
-                return Json(context, GetOrganizationReportItems(year, month, orgId));
+                if (IsDatatableRequest(context))
+                {
+                    var req = context.Request.GetDocumentContents<DatatablesRequest>();
+                    return Json(context, GetOrganizationReport(req, year, month, orgId));
+                }
+                else
+                    return Json(context, GetOrganizationReport(year, month, orgId));
             }
             else
-            {
                 return Error(context, "Unknown command");
-            }
         }
 
-        private string Error(HttpContext context, string message, int statusCode = 400)
+        private bool IsDatatableRequest(HttpContext context)
         {
-            context.Response.StatusCode = 400;
-            return JsonConvert.SerializeObject(new { error = message });
+            return context.Request.QueryString["dt"] == "true";
         }
 
-        private string Json(HttpContext context, object obj)
+        private IEnumerable<OrganizationReportItem> GetOrganizationReportItems(DataTable dt)
         {
-            context.Response.StatusCode = 200;
-            context.Response.ContentType = "application/json";
-            return JsonConvert.SerializeObject(obj);
-        }
-
-        private IEnumerable<OrganizationReportItem> GetOrganizationReportItems(int year, int month, int orgId)
-        {
-            var dt = AccountDA.GetAccountDetailsByOrgID(year, month, orgId);
-
             var result = new List<OrganizationReportItem>();
 
             foreach (DataRow dr in dt.Rows)
             {
                 result.Add(new OrganizationReportItem()
                 {
-                    AccountName = dr.Field<string>("Name"),
+                    AccountName = dr.Field<string>("AccountName"),
                     ShortCode = dr.Field<string>("ShortCode").Trim(),
-                    ProjectNumber = dr.Field<string>("Project Number"),
+                    ProjectNumber = dr.Field<string>("ProjectNumber"),
                     DisplayName = dr.Field<string>("DisplayName"),
                     Phone = dr.Field<string>("Phone"),
                     Email = dr.Field<string>("Email"),
@@ -111,20 +83,188 @@ namespace sselIndReports
             return result;
         }
 
-        private DatatablesResponse<OrganizationReportItem> GetOrganizationReport(DatatablesRequest req)
+        private IEnumerable<OrganizationReportItem> GetOrganizationReport(int year, int month, int orgId)
         {
-            var data = GetOrganizationReportItems(req.Year, req.Month, req.OrgID);
+            var dt = AccountDA.GetAccountDetailsByOrgID(year, month, orgId);
+            return GetOrganizationReportItems(dt);
+        }
+
+        private DatatablesResponse<OrganizationReportItem> GetOrganizationReport(DatatablesRequest req, int year, int month, int orgId)
+        {
+            var dt = GetAccountDetailsByOrgID(req, year, month, orgId, out int recordsTotal, out int recordsFiltered);
+
+            var data = GetOrganizationReportItems(dt);
 
             var result = new DatatablesResponse<OrganizationReportItem>()
             {
                 Data = data,
                 Draw = req.Draw,
                 Error = string.Empty,
-                RecordsFiltered = data.Count(),
-                RecordsTotal = data.Count()
+                RecordsFiltered = recordsFiltered,
+                RecordsTotal = recordsTotal
             };
 
             return result;
+        }
+
+        public static DataTable GetAccountDetailsByOrgID(DatatablesRequest req, int year, int month, int orgId, out int recordsTotal, out int recordsFiltered)
+        {
+            DateTime sDate = new DateTime(year, month, 1);
+            DateTime eDate = sDate.AddMonths(1);
+
+            var command = DA.Command(CommandType.Text);
+
+            string columns = @"
+                    a.[Name] AS AccountName
+			        , RTRIM(LTRIM(a.ShortCode)) AS ShortCode
+			        , RIGHT(a.Number, 7) AS ProjectNumber
+			        , c.LName + ', ' + c.FName AS DisplayName
+			        , co.Phone
+			        , co.Email
+			        , co.IsManager
+			        , co.IsFinManager
+			        , fs.FundingSource AS FundingSourceName
+			        , tf.TechnicalField AS TechnicalFieldName";
+
+            string select = @"
+                    DECLARE @alog_account table (Record int NOT NULL PRIMARY KEY)
+					DECLARE @alog_clientorg table (Record int NOT NULL PRIMARY KEY)
+					DECLARE @alog_client table (Record int NOT NULL PRIMARY KEY)
+
+		            INSERT @alog_account
+		            SELECT DISTINCT Record
+		            FROM dbo.ActiveLog
+		            WHERE TableName = 'Account'
+			            AND EnableDate < @eDate
+			            AND ((DisableDate IS NULL) OR (DisableDate > @sDate))
+
+					INSERT @alog_clientorg
+		            SELECT DISTINCT Record
+		            FROM dbo.ActiveLog
+		            WHERE TableName = 'ClientOrg'
+			            AND EnableDate < @eDate
+			            AND ((DisableDate IS NULL) OR (DisableDate > @sDate))
+
+					INSERT @alog_client
+		            SELECT DISTINCT Record
+		            FROM dbo.ActiveLog
+		            WHERE TableName = 'Client'
+			            AND EnableDate < @eDate
+			            AND ((DisableDate IS NULL) OR (DisableDate > @sDate))
+
+		            SELECT
+			            {0}
+		            FROM dbo.Account a
+		            FULL JOIN dbo.ClientAccount ca ON ca.AccountID = a.AccountID
+		            FULL JOIN dbo.ClientOrg co ON co.ClientOrgID = ca.ClientOrgID
+		            FULL JOIN dbo.Client c ON c.ClientID = co.ClientID
+		            LEFT JOIN dbo.FundingSource fs ON fs.FundingSourceID = a.FundingSourceID
+		            LEFT JOIN dbo.TechnicalField tf ON tf.TechnicalFieldID = a.TechnicalFieldID";
+
+            string where = @"
+		            WHERE a.OrgID = @OrgID
+		            AND EXISTS
+		            (
+			            SELECT Record
+			            FROM @alog_account
+			            WHERE a.AccountID = Record
+		            )
+		            AND EXISTS
+		            (
+			            SELECT Record
+			            FROM @alog_clientorg
+			            WHERE co.ClientOrgID = Record
+		            )
+		            AND EXISTS
+		            (
+			            SELECT Record
+			            FROM @alog_client
+			            WHERE c.ClientID = Record
+		            )";
+
+            string sql = string.Format(select, "COUNT(*)") + where;
+
+            command
+                .Param("sDate", sDate)
+                .Param("eDate", eDate)
+                .Param("OrgID", orgId);
+
+            recordsTotal = command.ExecuteScalar<int>(sql);
+
+            if (req.Search != null && !string.IsNullOrEmpty(req.Search.Value))
+            {
+                command.Param("Search", "%" + req.Search.Value + "%");
+
+                where += $@"
+                    AND (
+                        a.[Name] LIKE @Search
+                        OR RTRIM(LTRIM(a.ShortCode)) LIKE @Search
+                        OR RIGHT(a.Number, 7) LIKE @Search
+                        OR c.LName + ', ' + c.FName LIKE @Search
+                        OR co.Phone LIKE @Search
+                        OR co.Email LIKE @Search
+                        OR CASE WHEN co.IsManager = 1 THEN 'true' ELSE 'false' END LIKE @Search
+                        OR CASE WHEN co.IsFinManager = 1 THEN 'true' ELSE 'false' END LIKE @Search
+                        OR fs.FundingSource LIKE @Search
+                        OR tf.TechnicalField LIKE @Search
+                    )";
+
+                sql = string.Format(select, "COUNT(*)") + where;
+                recordsFiltered = command.ExecuteScalar<int>(sql);
+            }
+            else
+            {
+                recordsFiltered = recordsTotal;
+            }
+
+            string orderBy = " ORDER BY ";
+            string comma = string.Empty;
+
+            if (req.Order != null)
+            {
+                foreach (var ord in req.Order)
+                {
+                    if (req.Columns.Count() > ord.Column)
+                    {
+                        var col = req.Columns.ElementAt(ord.Column);
+
+                        if (col.Orderable)
+                        {
+                            orderBy += comma + col.Name + " " + ord.Direction;
+                            comma = ", ";
+                        }
+                    }
+                }
+            }
+
+            if (orderBy == " ORDER BY ")
+                orderBy += "AccountName ASC, DisplayName ASC";
+
+            sql = string.Format(select, columns) + where + orderBy;
+
+            command.Param("Skip", req.Start);
+            sql += " OFFSET @Skip ROWS";
+
+            if (req.Length > 0)
+            {
+                command.Param("Take", req.Length);
+                sql += " FETCH NEXT @Take ROWS ONLY";
+            }
+
+            return command.FillDataTable(sql);
+        }
+
+        private string Error(HttpContext context, string message, int statusCode = 400)
+        {
+            context.Response.StatusCode = 400;
+            return JsonConvert.SerializeObject(new { error = message });
+        }
+
+        private string Json(HttpContext context, object obj)
+        {
+            context.Response.StatusCode = 200;
+            context.Response.ContentType = "application/json";
+            return JsonConvert.SerializeObject(obj);
         }
 
         public bool IsReusable => false;
@@ -164,18 +304,6 @@ namespace sselIndReports
 
     public class DatatablesRequest
     {
-        [JsonProperty("command")]
-        public string Command { get; set; }
-
-        [JsonProperty("year")]
-        public int Year { get; set; }
-
-        [JsonProperty("month")]
-        public int Month { get; set; }
-
-        [JsonProperty("orgId")]
-        public int OrgID { get; set; }
-
         [JsonProperty("draw")]
         public int Draw { get; set; }
 

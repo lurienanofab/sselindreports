@@ -8,24 +8,20 @@ namespace sselIndReports.AppCode.DAL
     {
         public static DataTable GetRoomBillingDataByClientID(DateTime period, int clientId)
         {
-            using (var dba = DA.Current.GetAdapter())
-            {
-                dba.AddParameter("@Action", "ByClientIDPeriod");
-                dba.AddParameter("@Period", period);
-                dba.AddParameter("@ClientID", clientId);
-                return dba.FillDataTable("RoomApportionmentInDaysMonthly_Select");
-            }
+            return DA.Command()
+                .Param("Action", "ByClientIDPeriod")
+                .Param("Period", period)
+                .Param("ClientID", clientId)
+                .FillDataTable("dbo.RoomApportionmentInDaysMonthly_Select");
         }
 
         public static DataTable GetRoomBillingTempDataByClientID(DateTime period, int clientId)
         {
-            using (var dba = DA.Current.GetAdapter())
-            {
-                dba.AddParameter("@Action", "ByClientIDPeriod");
-                dba.AddParameter("@Period", period);
-                dba.AddParameter("@ClientID", clientId);
-                return dba.FillDataTable("RoomBillingTemp_Select");
-            }
+            return DA.Command()
+                .Param("Action", "ByClientIDPeriod")
+                .Param("Period", period)
+                .Param("ClientID", clientId)
+                .FillDataTable("dbo.RoomBillingTemp_Select");
         }
     }
 }

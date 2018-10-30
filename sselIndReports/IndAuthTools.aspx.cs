@@ -1,8 +1,8 @@
 ﻿using LNF.Cache;
-using LNF.CommonTools;
 using LNF.Data;
 using LNF.Models.Data;
 using LNF.Repository;
+using LNF.Web;
 using sselIndReports.AppCode;
 using System;
 using System.Data;
@@ -38,39 +38,33 @@ namespace sselIndReports
         private void LoadUserList()
         {
             //client info - gets put into ddl, not needed in dataset
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
+            var command = DA.Command();
+
+            command.Param("ClientID", Context.CurrentUser().ClientID);
+
+            if (CurrentUser.HasPriv(ClientPrivilege.Administrator | ClientPrivilege.Staff))
             {
-                dba.AddParameter("@ClientID", CacheManager.Current.CurrentUser.ClientID);
-
-                if (CurrentUser.HasPriv(ClientPrivilege.Administrator | ClientPrivilege.Staff))
+                command.Param("Privs", (int)ClientPrivilege.PhysicalAccess);
+                if (chkActive.Checked)
                 {
-                    dba.AddParameter("@Privs", (int)ClientPrivilege.PhysicalAccess);
-                    if (chkActive.Checked)
-                    {
-                        dba.AddParameter("@SDate", new DateTime(1999, 1, 1));
-                        dba.AddParameter("@EDate", DateTime.Now.AddDays(1));
-                    }
-                    dba.AddParameter("@Action", "All");
+                    command.Param("SDate", new DateTime(1999, 1, 1))
+                        .Param("EDate", DateTime.Now.AddDays(1));
                 }
-                else if (CurrentUser.HasPriv(ClientPrivilege.Executive))
-                {
-                    //for executive-only person, we only show the people he/she manages
-                    dba.AddParameter("@Action", "ByMgr");
-                }
-
-                using (var reader = dba.ExecuteReader("Client_Select"))
-                {
-                    ddlUser.DataSource = reader;
-                    ddlUser.DataTextField = "DisplayName";
-                    ddlUser.DataValueField = "ClientID";
-                    ddlUser.DataBind();
-                }
+                command.Param("Action", "All");
             }
-        }
+            else if (CurrentUser.HasPriv(ClientPrivilege.Executive))
+            {
+                //for executive-only person, we only show the people he/she manages
+                command.Param("Action", "ByMgr");
+            }
 
-        protected void ddlUser_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            RetrieveData();
+            using (var reader = command.ExecuteReader("dbo.Client_Select"))
+            {
+                ddlUser.DataSource = reader;
+                ddlUser.DataTextField = "DisplayName";
+                ddlUser.DataValueField = "ClientID";
+                ddlUser.DataBind();
+            }
         }
 
         private void RetrieveData()
@@ -82,14 +76,10 @@ namespace sselIndReports
                 return;
             }
 
-            DataTable dtAuthTools;
-
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "AuthTools");
-                dba.AddParameter("@ClientID", ddlUser.SelectedValue);
-                dtAuthTools = dba.FillDataTable("sselScheduler_Select");
-            }
+            var dtAuthTools = DA.Command()
+                .Param("Action", "AuthTools")
+                .Param("ClientID", ddlUser.SelectedValue)
+                .FillDataTable("dbo.sselScheduler_Select");
 
             int i = 0;
             DataRow dr;
@@ -136,7 +126,7 @@ namespace sselIndReports
             }
         }
 
-        protected void dgAuthTools_ItemDataBound(object sender, DataGridItemEventArgs e)
+        protected void DgAuthTools_ItemDataBound(object sender, DataGridItemEventArgs e)
         {
             if (e.Item.ItemType == ListItemType.AlternatingItem || e.Item.ItemType == ListItemType.Item)
             {
@@ -165,11 +155,16 @@ namespace sselIndReports
             }
         }
 
-        protected void chkActive_CheckedChanged(object sender, EventArgs e) //Handles chkActive.CheckedChanged
+        protected void ChkActive_CheckedChanged(object sender, EventArgs e)
         {
             LoadUserList();
             ddlUser.Items.Insert(0, new ListItem("-- Select --", "0"));
             ddlUser.ClearSelection();
+        }
+
+        protected void BtnReport_Click(object sender, EventArgs e)
+        {
+            RetrieveData();
         }
     }
 }

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using LNF.Repository;
+using System;
 using System.Data;
-using LNF.Repository;
-using LNF.CommonTools;
 
 namespace sselIndReports.AppCode.BLL
 {
@@ -19,12 +15,10 @@ namespace sselIndReports.AppCode.BLL
 
         public static DataTable GetAllNAPRoomsWithCosts(DateTime period)
         {
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "NAPRoomsWithCost");
-                dba.AddParameter("@Period", period);
-                return dba.FillDataTable("Room_Select");
-            }
+            return DA.Command()
+                .Param("Action", "NAPRoomsWithCost")
+                .Param("Period", period)
+                .FillDataTable("dbo.Room_Select");
         }
     }
 }

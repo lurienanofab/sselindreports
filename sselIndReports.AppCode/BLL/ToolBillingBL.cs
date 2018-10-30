@@ -1,17 +1,17 @@
-﻿using LNF.Repository;
-using LNF.Billing;
+﻿using LNF.Billing;
 using LNF.Cache;
 using LNF.CommonTools;
 using LNF.Data;
 using LNF.Models.Data;
 using LNF.Models.Scheduler;
+using LNF.Repository;
 using LNF.Repository.Billing;
+using LNF.Repository.Data;
 using LNF.Scheduler;
 using sselIndReports.AppCode.DAL;
 using System;
 using System.Data;
 using System.Linq;
-using LNF.Repository.Data;
 
 namespace sselIndReports.AppCode.BLL
 {
@@ -160,7 +160,7 @@ namespace sselIndReports.AppCode.BLL
                 AddToColumn(dr, "BookingFee", item.BookingFee); //no need to check IsCancelledBeforeAllowedTime, will be zero if not true
 
                 // Activated Used (hours)
-                decimal activatedUsed = (item.IsStarted && !item.IsCancelledBeforeAllowedTime) ? (Convert.ToDecimal(item.ActDuration) - item.OverTime) / 60 : 0;
+                decimal activatedUsed = (item.IsStarted && !item.IsCancelledBeforeAllowedTime) ? (item.ActDuration - item.OverTime) / 60 : 0;
 
                 // Activated Unused (hours)
                 decimal activatedUnused = (item.IsStarted && !item.IsCancelledBeforeAllowedTime) ? Math.Max(item.ChargeDuration - item.ActDuration, 0) / 60 : 0;

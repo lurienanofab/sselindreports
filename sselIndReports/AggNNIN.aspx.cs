@@ -119,13 +119,10 @@ namespace sselIndReports
             }
 
             //need to check to see if data exists for selected report month
-            bool makeAggData;
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "DataCheck");
-                dba.AddParameter("@eDate", repDate);
-                makeAggData = dba.ExecuteScalar<bool>("CumUser_Select");
-            }
+            bool makeAggData = DA.Command()
+                .Param("Action", "DataCheck")
+                .Param("eDate", repDate)
+                .ExecuteScalar<bool>("dbo.CumUser_Select");
 
             //clean up old files
             DirectoryInfo dirInfo = new DirectoryInfo(xlsFilePath);
@@ -181,15 +178,12 @@ namespace sselIndReports
             DataTable dtToolCost = dsCostTables.Tables[1];
 
             //get Client info
-            DataSet ds = null;
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "GetAllTables");
-                dba.AddParameter("@Period", period);
-                dba.AddParameter("@Privs", (int)ClientPrivilege.LabUser);
-                dba.AddParameter("@MakeCumUser", makeAggData);
-                ds = dba.FillDataSet("NNIN_Select");
-            }
+            DataSet ds = DA.Command()
+                .Param("Action", "GetAllTables")
+                .Param("Period", period)
+                .Param("Privs", (int)ClientPrivilege.LabUser)
+                .Param("MakeCumUser", makeAggData)
+                .FillDataSet("dbo.NNIN_Select");
 
             ds.Tables[0].TableName = "ClientTechInt";
             ds.Tables[1].TableName = "AcctOrgType";
@@ -232,13 +226,11 @@ namespace sselIndReports
             }
 
             //get raw cumulative user data
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "Aggregate");
-                dba.AddParameter("@sDate", aggStartDate);
-                dba.AddParameter("@eDate", repDate);
-                dba.FillDataSet(ds, "CumUser_Select", "CumUser");
-            }
+            DA.Command()
+                .Param("Action", "Aggregate")
+                .Param("sDate", aggStartDate)
+                .Param("eDate", repDate)
+                .FillDataSet(ds, "dbo.CumUser_Select", "CumUser");
 
             DataTable dtReport = new DataTable();
             dtReport.Columns.Add("BaseRow", typeof(int));

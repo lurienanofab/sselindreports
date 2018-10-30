@@ -10,25 +10,21 @@ namespace sselIndReports.AppCode.BLL
     {
         public static DataTable GetBillingTypes()
         {
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "All");
-                return dba.FillDataTable("BillingType_Select");
-            }
+            return DA.Command()
+                .Param("Action", "All")
+                .FillDataTable("dbo.BillingType_Select");
         }
 
         public static DataTable GetBillingTypes(object isActive)
         {
             if (isActive == DBNull.Value || isActive is bool)
             {
-                using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-                {
-                    dba.AddParameter("@Action", "All");
-                    dba.AddParameter("@IsActive", isActive);
-                    return dba.FillDataTable("BillingType_Select");
-                }
+                return DA.Command()
+                    .Param("Action", "All")
+                    .Param("IsActive", isActive)
+                    .FillDataTable("dbo.BillingType_Select");
             }
-            
+
             throw new Exception("Invalid type for parameter IsActive. Must be System.DBNull or System.Boolean.");
         }
 
@@ -153,31 +149,25 @@ namespace sselIndReports.AppCode.BLL
 
         public static string GetBillingTypeName(int clientOrgId)
         {
-            using(SQLDBAccess dba = new SQLDBAccess("cnSselData"))
+            try
             {
-                dba.AddParameter("@Action", "GetCurrentTypeName");
-                dba.AddParameter("@ClientOrgID", clientOrgId);
-
-                try
-                {
-                    string result = dba.ExecuteScalar<string>("ClientOrgBillingTypeTS_Select");
-                    return result;
-                }
-                catch
-                {
-                    return "Error, there is no billing type with this user";
-                }
+                return DA.Command()
+                    .Param("Action", "GetCurrentTypeName")
+                    .Param("ClientOrgID", clientOrgId)
+                    .ExecuteScalar<string>("dbo.ClientOrgBillingTypeTS_Select");
+            }
+            catch
+            {
+                return "Error, there is no billing type with this user";
             }
         }
 
         public static DataTable GetClientBillingTypesByPeriod(DateTime period)
         {
-            using(SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "GetClientBillingTypeByPeriod");
-                dba.AddParameter("@Period", period);
-                return dba.FillDataTable("ClientOrgBillingTypeTS_Select");
-            }
+            return DA.Command()
+                .Param("Action", "GetClientBillingTypeByPeriod")
+                .Param("Period", period)
+                .FillDataTable("dbo.ClientOrgBillingTypeTS_Select");
         }
     }
 }

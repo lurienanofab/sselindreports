@@ -29,14 +29,15 @@
         <h2>User Tool Authorization</h2>
         <div class="criteria">
             <div class="criteria-item">
-                <asp:CheckBox ID="chkActive" runat="server" Visible="false" Text="Includes Inactive Users" AutoPostBack="true" OnCheckedChanged="chkActive_CheckedChanged" />
+                <asp:CheckBox ID="chkActive" runat="server" Visible="false" Text="Includes Inactive Users" AutoPostBack="true" OnCheckedChanged="ChkActive_CheckedChanged" />
             </div>
             <div class="criteria-item">
                 Select user:
-                <asp:DropDownList ID="ddlUser" runat="server" AutoPostBack="True" CssClass="report-select" OnSelectedIndexChanged="ddlUser_SelectedIndexChanged"></asp:DropDownList>
+                <asp:DropDownList runat="server" ID="ddlUser" CssClass="report-select"></asp:DropDownList>
                 <asp:Label runat="server" ID="lblUserMessage" ForeColor="Red"></asp:Label>
             </div>
             <div class="criteria-item">
+                <asp:Button runat="server" ID="btnReport" Text="Retrieve Data" OnClick="BtnReport_Click" CssClass="report-button" />
                 <asp:LinkButton runat="server" ID="btnBack" Text="&larr; Back to Main Page" OnClick="BackButton_Click" CssClass="back-link"></asp:LinkButton>
             </div>
         </div>
@@ -44,7 +45,7 @@
     <div class="section">
         <div class="report-container">
             <asp:Literal runat="server" ID="litNoData"></asp:Literal>
-            <asp:DataGrid runat="server" ID="dgAuthTools" AutoGenerateColumns="False" CssClass="outline tool-auth-table" OnItemDataBound="dgAuthTools_ItemDataBound">
+            <asp:DataGrid runat="server" ID="dgAuthTools" AutoGenerateColumns="False" CssClass="outline tool-auth-table" OnItemDataBound="DgAuthTools_ItemDataBound">
                 <HeaderStyle CssClass="GridHeader"></HeaderStyle>
                 <Columns>
                     <asp:TemplateColumn HeaderText="Authorized Tools">

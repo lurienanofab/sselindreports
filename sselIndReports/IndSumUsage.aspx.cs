@@ -59,37 +59,29 @@ namespace sselIndReports
             dsReport = new DataSet("IndSumUsage");
 
             // get account, resource and item info info
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "All");
-                dba.FillDataSet(dsReport, "Account_Select", "Account");
-            }
+            DA.Command()
+                .Param("Action", "All")
+                .FillDataSet(dsReport, "dbo.Account_Select", "Account");
 
-            dsReport.Tables["Account"].PrimaryKey = new DataColumn[] { dsReport.Tables["Account"].Columns["AccountID"] };
+            dsReport.Tables["Account"].PrimaryKey = new[] { dsReport.Tables["Account"].Columns["AccountID"] };
 
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "All");
-                dba.FillDataSet(dsReport, "Room_Select", "Room");
-            }
+            DA.Command()
+                .Param("Action", "All")
+                .FillDataSet(dsReport, "dbo.Room_Select", "Room");
 
-            dsReport.Tables["Room"].PrimaryKey = new DataColumn[] { dsReport.Tables["Room"].Columns["RoomID"] };
+            dsReport.Tables["Room"].PrimaryKey = new[] { dsReport.Tables["Room"].Columns["RoomID"] };
 
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "AllResources");
-                dba.FillDataSet(dsReport, "sselScheduler_Select", "Resource");
-            }
+            DA.Command()
+                .Param("Action", "AllResources")
+                .FillDataSet(dsReport, "dbo.sselScheduler_Select", "Resource");
 
-            dsReport.Tables["Resource"].PrimaryKey = new DataColumn[] { dsReport.Tables["Resource"].Columns["ResourceID"] };
+            dsReport.Tables["Resource"].PrimaryKey = new[] { dsReport.Tables["Resource"].Columns["ResourceID"] };
 
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "Item");
-                dba.FillDataSet(dsReport, "sselMAS_Select", "Item");
-            }
+            DA.Command()
+                .Param("Action", "Item")
+                .FillDataSet(dsReport, "dbo.sselMAS_Select", "Item");
 
-            dsReport.Tables["Item"].PrimaryKey = new DataColumn[] { dsReport.Tables["Item"].Columns["ItemID"] };
+            dsReport.Tables["Item"].PrimaryKey = new[] { dsReport.Tables["Item"].Columns["ItemID"] };
 
             //2007-05-30 Adding billing type to data grid
             //2011-06-23 GetBillingTypes was only returning active billing types. This caused problems when
@@ -101,13 +93,13 @@ namespace sselIndReports
             dsReport.Tables.Add(AppCode.BLL.BillingTypeManager.GetBillingTypes(DBNull.Value));
             dsReport.Tables[4].TableName = "BillingType";
 
-            dsReport.Tables["BillingType"].PrimaryKey = new DataColumn[] { dsReport.Tables["BillingType"].Columns["BillingTypeID"] };
+            dsReport.Tables["BillingType"].PrimaryKey = new[] { dsReport.Tables["BillingType"].Columns["BillingTypeID"] };
 
             //2009-02-17 Adding org name because users might have different orgs
             dsReport.Tables.Add(OrgDA.GetAllOrgs());
             dsReport.Tables[5].TableName = "Org";
 
-            dsReport.Tables["Org"].PrimaryKey = new DataColumn[] { dsReport.Tables["Org"].Columns["OrgID"] };
+            dsReport.Tables["Org"].PrimaryKey = new[] { dsReport.Tables["Org"].Columns["OrgID"] };
 
             CacheManager.Current.CacheData(dsReport);
 
@@ -118,31 +110,30 @@ namespace sselIndReports
                 DateTime sDate = period;
                 DateTime eDate = sDate.AddMonths(1);
 
-                using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
+                var command = DA.Command()
+                    .Param("sDate", sDate)
+                    .Param("eDate", eDate)
+                    .Param("ClientID", clientId);
+
+                //Depending on the user prives, we need to retrieve different set of data
+                if (CurrentUser.HasPriv(ClientPrivilege.Administrator | ClientPrivilege.Staff))
                 {
-                    dba.AddParameter("@sDate", sDate);
-                    dba.AddParameter("@eDate", eDate);
-                    dba.AddParameter("@ClientID", clientId);
+                    command
+                        .Param("Privs", (int)(ClientPrivilege.LabUser | ClientPrivilege.Staff | ClientPrivilege.StoreUser))
+                        .Param("Action", "All");
+                }
+                else if (CurrentUser.HasPriv(ClientPrivilege.Executive))
+                {
+                    //for executive-only person, we only show the people he/she manages
+                    command.Param("Action", "ByMgr");
+                }
 
-                    //Depending on the user prives, we need to retrieve different set of data
-                    if (CurrentUser.HasPriv(ClientPrivilege.Administrator | ClientPrivilege.Staff))
-                    {
-                        dba.AddParameter("@Privs", (int)(ClientPrivilege.LabUser | ClientPrivilege.Staff | ClientPrivilege.StoreUser));
-                        dba.AddParameter("@Action", "All");
-                    }
-                    else if (CurrentUser.HasPriv(ClientPrivilege.Executive))
-                    {
-                        //for executive-only person, we only show the people he/she manages
-                        dba.AddParameter("@Action", "ByMgr");
-                    }
-
-                    using (var reader = dba.ExecuteReader("Client_Select"))
-                    {
-                        ddlUser.DataSource = reader;
-                        ddlUser.DataTextField = "DisplayName";
-                        ddlUser.DataValueField = "ClientID";
-                        ddlUser.DataBind();
-                    }
+                using (var reader = command.ExecuteReader("dbo.Client_Select"))
+                {
+                    ddlUser.DataSource = reader;
+                    ddlUser.DataTextField = "DisplayName";
+                    ddlUser.DataValueField = "ClientID";
+                    ddlUser.DataBind();
                 }
             }
 

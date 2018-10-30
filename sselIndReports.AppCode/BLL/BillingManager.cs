@@ -13,12 +13,10 @@ namespace sselIndReports.AppCode.BLL
         //Get all users' ClientID who had accessed to the lab in any specific month
         public static DataTable GetMonthlyClientID(DateTime period)
         {
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            { 
-                dba.AddParameter("@Action", "GetAllUsersDuringSpecificMonth");
-                dba.AddParameter("@Period", period);
-                return dba.FillDataTable("RoomData_Select");
-            }
+            return DA.Command()
+                .Param("Action", "GetAllUsersDuringSpecificMonth")
+                .Param("Period", period)
+                .FillDataTable("dbo.RoomData_Select");
         }
 
         public static DataTable GetRoomCost(DateTime period, int clientId, DataTable dtSummary, ref double sumCost)

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using LNF.Repository;
+using System;
 using System.Data;
-using LNF.Repository;
-using LNF.CommonTools;
 
 namespace sselIndReports.AppCode.BLL
 {
@@ -12,15 +8,15 @@ namespace sselIndReports.AppCode.BLL
     {
         public static DataTable GetNAPRoomApportionDataByPeriod(DateTime period, int roomId)
         {
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "SelectByPeriod");
-                dba.AddParameter("@Period", period);
-                dba.AddParameter("@RoomID", roomId);
-                DataTable dt = dba.FillDataTable("RoomApportionData_Select");
-                dt.PrimaryKey = new DataColumn[] { dt.Columns["RoomApportionDataID"] };
-                return dt;
-            }
+            var dt = DA.Command()
+                .Param("Action", "SelectByPeriod")
+                .Param("Period", period)
+                .Param("RoomID", roomId)
+                .FillDataTable("dbo.RoomApportionData_Select");
+
+            dt.PrimaryKey = new[] { dt.Columns["RoomApportionDataID"] };
+
+            return dt;
         }
     }
 }

@@ -64,7 +64,7 @@ namespace sselIndReports
                 try //to handle missing data error
                 {
                     WriteData writeData = new WriteData();
-                    writeData.UpdateTables(new string[] { "Tool", "Room" }, 0, 0, DateTime.Now, UpdateDataType.DataClean | UpdateDataType.Data, true, false);
+                    writeData.UpdateTables(new string[] { "Tool", "Room" }, UpdateDataType.DataClean | UpdateDataType.Data, DateTime.Now.FirstOfMonth(), 0);
                 }
                 catch { }
 
@@ -72,23 +72,20 @@ namespace sselIndReports
             }
 
             //get all access data for period
-            DataSet ds;
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                int orgId = Convert.ToInt32(Session["OrgID"]);
-                int userOrgId = Convert.ToInt32(rblUserOrg.SelectedValue);
-                dba
-                    .AddParameter("@Period", pp1.SelectedPeriod)
-                    .AddParameter("@Privs", (int)selectedPriv)
-                    .AddParameterIf("@SelOrg", userOrgId >= 0, userOrgId)
-                    .AddParameterIf("@OrgID", CacheManager.Current.CurrentUser.HasPriv(ClientPrivilege.Executive), orgId);
-                ds = dba.FillDataSet("AggUsage_Select");
-            }
+            int orgId = Convert.ToInt32(Session["OrgID"]);
+            int userOrgId = Convert.ToInt32(rblUserOrg.SelectedValue);
 
-            DataTable dtRaw = ds.Tables[0];
-            DataTable dtRoom = ds.Tables[1];
+            var ds = DA.Command()
+                .Param("Period", pp1.SelectedPeriod)
+                .Param("Privs", (int)selectedPriv)
+                .Param("SelOrg", userOrgId >= 0, userOrgId)
+                .Param("OrgID", CacheManager.Current.CurrentUser.HasPriv(ClientPrivilege.Executive), orgId)
+                .FillDataSet("dbo.AggUsage_Select");
 
-            DataTable dtUsage = new DataTable();
+            var dtRaw = ds.Tables[0];
+            var dtRoom = ds.Tables[1];
+
+            var dtUsage = new DataTable();
             dtUsage.Columns.Add("ClientID", typeof(int));
             dtUsage.Columns.Add("DisplayName", typeof(string));
             dtUsage.Columns.Add("Manager", typeof(string));
@@ -228,9 +225,11 @@ namespace sselIndReports
                 else
                 {
                     cStart = 1;
-                    HyperLink userUrl = new HyperLink();
-                    userUrl.Text = drv["DisplayName"].ToString();
-                    userUrl.NavigateUrl = "~/IndSumUsage.aspx?" + drv["URLdata"].ToString();
+                    HyperLink userUrl = new HyperLink
+                    {
+                        Text = drv["DisplayName"].ToString(),
+                        NavigateUrl = "~/IndSumUsage.aspx?" + drv["URLdata"].ToString()
+                    };
                     e.Row.Cells[0].Controls.Add(userUrl);
                 }
 

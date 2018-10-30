@@ -44,7 +44,7 @@ namespace sselIndReports
             grids.Add("DemDisability", dgDisability);
             grids.Add("DemCitizen", dgCitizen);
 
-            foreach(var kvp in grids)
+            foreach (var kvp in grids)
             {
                 DataGrid dg = kvp.Value;
                 dg.DataSource = null;
@@ -59,52 +59,45 @@ namespace sselIndReports
                 try //to handle missing data error
                 {
                     WriteData writeData = new WriteData();
-                    writeData.UpdateTables(new string[]{"Tool", "Room"}, 0, 0, DateTime.Now, UpdateDataType.DataClean | UpdateDataType.Data, true, false);
+                    writeData.UpdateTables(new string[] { "Tool", "Room" }, UpdateDataType.DataClean | UpdateDataType.Data, DateTime.Now.FirstOfMonth(), 0);
                 }
-                catch{}
+                catch { }
 
                 CacheManager.Current.Updated(true);
             }
 
             //client info
-            DataTable dtClient;
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "All");
-                dba.AddParameter("@sDate", sDate);
-                dba.AddParameter("@eDate", eDate);
-                dba.AddParameter("@Privs", (int)ClientPrivilege.LabUser);
-                dtClient = dba.FillDataTable("Client_Select");
-            }
+            var dtClient = DA.Command()
+                .Param("Action", "All")
+                .Param("sDate", sDate)
+                .Param("eDate", eDate)
+                .Param("Privs", (int)ClientPrivilege.LabUser)
+                .FillDataTable("dbo.Client_Select");
 
             //room info
-            DataTable dtRoom;
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "PassbackRooms");
-                dtRoom = dba.FillDataTable("Room_Select");
-            }
+            var dtRoom = DA.Command()
+                .Param("Action", "PassbackRooms")
+                .FillDataTable("dbo.Room_Select");
 
             foreach (var kvp in grids)
             {
                 string type = kvp.Key;
-                DataSet ds;
-                using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-                {
-                    dba.AddParameter("@Action", "DemReport");
-                    dba.AddParameter("@demType", type);
-                    dba.AddParameter("@sDate", sDate);
-                    dba.AddParameter("@eDate", eDate);
-                    ds = dba.FillDataSet("Dem_Select");
-                }
 
-                DataTable dtDemInfo = ds.Tables[0];
-                DataTable dtDemCat = ds.Tables[1];
+                var ds = DA.Command()
+                    .Param("Action", "DemReport")
+                    .Param("demType", type)
+                    .Param("sDate", sDate)
+                    .Param("eDate", eDate)
+                    .FillDataSet("dbo.Dem_Select");
 
-                DataTable dtDemRep = new DataTable();
+                var dtDemInfo = ds.Tables[0];
+                var dtDemCat = ds.Tables[1];
+
+                var dtDemRep = new DataTable();
                 dtDemRep.Columns.Add("RoomID", typeof(int));
                 dtDemRep.Columns.Add("Room", typeof(string));
                 dtDemRep.Columns.Add("Total", typeof(double));
+
                 foreach (DataRow drDemCat in dtDemCat.Rows)
                     dtDemRep.Columns.Add(drDemCat[type].ToString(), typeof(double));
 
@@ -149,11 +142,11 @@ namespace sselIndReports
             {
                 ((TableCell)e.Item.Controls[0]).Width = Unit.Pixel(130);
                 DataRowView drv = (DataRowView)e.Item.DataItem;
-                for (int i = 1; i < drv.Row.Table.Columns.Count;i++)
+                for (int i = 1; i < drv.Row.Table.Columns.Count; i++)
                 {
                     TableCell tc = (TableCell)e.Item.Controls[i];
                     tc.Width = Unit.Pixel(80);
-                    tc.Text = string.Format("{0:#,##0.0}",drv[i]);
+                    tc.Text = string.Format("{0:#,##0.0}", drv[i]);
                 }
             }
         }
