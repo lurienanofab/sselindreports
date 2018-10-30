@@ -164,7 +164,7 @@ namespace sselIndReports
             dsReport.Tables["DemCitizen"].PrimaryKey = new[] { dsReport.Tables["DemCitizen"].Columns["DemCitizenID"] };
 
             command.Param("DemType", "DemDisability");
-            command.FillDataSet(dsReport, "Dem_Select", "DemDisability");
+            command.FillDataSet(dsReport, "dbo.Dem_Select", "DemDisability");
             dsReport.Tables["DemDisability"].PrimaryKey = new[] { dsReport.Tables["DemDisability"].Columns["DemDisabilityID"] };
 
             command.Param("DemType", "DemEthnic");
