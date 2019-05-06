@@ -2,6 +2,7 @@
 using LNF.Cache;
 using LNF.Data;
 using LNF.Models.Data;
+using LNF.Web;
 using sselIndReports.AppCode;
 using System;
 using System.Collections.Generic;
@@ -45,11 +46,10 @@ namespace sselIndReports
                 // check to see if session is valid
                 if (Request.QueryString.Count > 0) // probably coming from sselOnLine
                 {
-                    int clientId;
                     string strClientID = Request.QueryString["ClientID"];
-                    if (int.TryParse(strClientID.Trim(), out clientId))
+                    if (int.TryParse(strClientID.Trim(), out int clientId))
                     {
-                        if (CacheManager.Current.CurrentUser.ClientID != clientId)
+                        if (CurrentUser.ClientID != clientId)
                         {
                             Session.Abandon();
                             Response.Redirect("~");
@@ -76,9 +76,9 @@ namespace sselIndReports
                     lbl.Visible = lbl.Visible | DisplayButton(kvp.Key, kvp.Value);
                 }
 
-                btnDatHistory.Visible = CacheManager.Current.CurrentUser.HasPriv(ClientPrivilege.Developer | ClientPrivilege.Administrator);
+                btnDatHistory.Visible = CurrentUser.HasPriv(ClientPrivilege.Developer | ClientPrivilege.Administrator);
 
-                lblName.Text = CacheManager.Current.CurrentUser.DisplayName;
+                lblName.Text = CurrentUser.DisplayName;
             }
         }
 
@@ -103,7 +103,7 @@ namespace sselIndReports
 
         protected void btnLogout_Click(object sender, EventArgs e)
         {
-            CacheManager.Current.RemoveCacheData();
+            ContextBase.RemoveCacheData();
             Session.Abandon();
             Response.Redirect(ServiceProvider.Current.Context.LoginUrl + "?Action=Blank");
         }

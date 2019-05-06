@@ -115,14 +115,14 @@ namespace sselIndReports.AppCode.BLL
 		    return dtDisplay;
 	    }
 
-	    public static DataTable GetActiveManagers()
+	    public static DataTable GetActiveManagers(int currentUserClientId)
         {
 		    if (HttpContext.Current.User.IsInRole("Administrator"))
 			    return AccountDA.GetActiveManagers(-1);
 		    else
             {
 			    //Executieves only see him/herself
-                return AccountDA.GetActiveManagers(CacheManager.Current.CurrentUser.ClientID);
+                return AccountDA.GetActiveManagers(currentUserClientId);
 		    }
 	    }
 

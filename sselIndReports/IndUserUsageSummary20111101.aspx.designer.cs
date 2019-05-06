@@ -283,13 +283,22 @@ namespace sselIndReports {
         protected global::System.Web.UI.WebControls.Label lblTool;
         
         /// <summary>
-        /// gvToolDetail control.
+        /// rptToolDetail control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvToolDetail;
+        protected global::System.Web.UI.WebControls.Repeater rptToolDetail;
+        
+        /// <summary>
+        /// zgvToolDetail control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView zgvToolDetail;
         
         /// <summary>
         /// lbl20110401RoomSum control.

@@ -1,10 +1,8 @@
-﻿using LNF.Cache;
-using LNF.CommonTools;
-using LNF.Models.Data;
+﻿using LNF.Models.Data;
 using LNF.Repository;
 using LNF.Repository.Data;
+using LNF.Web;
 using sselIndReports.AppCode;
-using sselIndReports.AppCode.BLL;
 using sselIndReports.AppCode.DAL;
 using System;
 using System.Data;
@@ -27,7 +25,7 @@ namespace sselIndReports
         {
             if (Page.IsPostBack)
             {
-                dsReport = CacheManager.Current.CacheData();
+                dsReport = ContextBase.CacheData();
                 if (dsReport == null)
                     Response.Redirect("~");
                 else if (dsReport.DataSetName != "DatClient")
@@ -52,7 +50,7 @@ namespace sselIndReports
                     .Param("Action", "All")
                     .FillDataSet(dsReport, "dbo.Department_Select", "Department");
 
-                CacheManager.Current.CacheData(dsReport);
+                ContextBase.CacheData(dsReport);
 
                 UpdateClientDDL();
             }
@@ -68,6 +66,7 @@ namespace sselIndReports
             UpdateClientDDL();
             ClearReport();
         }
+
         private bool IsDDLUserEmptyOrZero()
         {
             if ("" == ddlUser.SelectedValue || "0" == ddlUser.SelectedValue)
@@ -75,6 +74,7 @@ namespace sselIndReports
             else
                 return false;
         }
+
         private void UpdateClientDDL()
         {
             int selectedClientId = 0;
@@ -85,6 +85,7 @@ namespace sselIndReports
             }
 
             PopulateUserDropDownList(ddlUser, pp1.SelectedPeriod, btnReport, true);
+
             // The following is to generate report
             DateTime sDate = pp1.SelectedPeriod;
             DateTime eDate = sDate.AddMonths(1);
@@ -179,7 +180,7 @@ namespace sselIndReports
             command.FillDataSet(dsReport, "dbo.Dem_Select", "DemRace");
             dsReport.Tables["DemRace"].PrimaryKey = new[] { dsReport.Tables["DemRace"].Columns["DemRaceID"] };
 
-            CacheManager.Current.CacheData(dsReport);
+            ContextBase.CacheData(dsReport);
         }
 
         private string GetOrgName(int orgId)
@@ -232,11 +233,13 @@ namespace sselIndReports
                 myTable.Rows.Clear();
                 HtmlTableRow tblRowE = new HtmlTableRow();
                 HtmlTableCell tblCellE = new HtmlTableCell();
-                Label lblInfoE = new Label();
 
-                lblInfoE.Text = "--no data--";
+                Label lblInfoE = new Label
+                {
+                    Text = "--no data--",
+                    CssClass = "LabelText"
+                };
 
-                lblInfoE.CssClass = "LabelText";
                 tblCellE.Controls.Add(lblInfoE);
                 tblRowE.Cells.Add(tblCellE);
                 myTable.Rows.Insert(0, tblRowE);
@@ -276,10 +279,13 @@ namespace sselIndReports
                 //2008-02-07 Add billing type info
                 tblRow = new HtmlTableRow();
                 tblCell = new HtmlTableCell();
-                lblInfo = new Label();
 
-                lblInfo.Text = "-------------------------------------------------------------";
-                lblInfo.CssClass = "LabelText";
+                lblInfo = new Label
+                {
+                    Text = "-------------------------------------------------------------",
+                    CssClass = "LabelText"
+                };
+
                 tblCell.Controls.Add(lblInfo);
                 tblRow.Cells.Add(tblCell);
                 myTable.Rows.Insert(rowCntr, tblRow);
@@ -288,10 +294,13 @@ namespace sselIndReports
 
                 tblRow = new HtmlTableRow();
                 tblCell = new HtmlTableCell();
-                lblInfo = new Label();
 
-                lblInfo.Text = "<b>Organization:</b> " + GetOrgName(codr.Field<int>("OrgID"));
-                lblInfo.CssClass = "ReportHeader";
+                lblInfo = new Label
+                {
+                    Text = "<b>Organization:</b> " + GetOrgName(codr.Field<int>("OrgID")),
+                    CssClass = "ReportHeader"
+                };
+
                 tblCell.Controls.Add(lblInfo);
                 tblRow.Cells.Add(tblCell);
                 myTable.Rows.Insert(rowCntr, tblRow);
@@ -344,10 +353,13 @@ namespace sselIndReports
 
                 tblRow = new HtmlTableRow();
                 tblCell = new HtmlTableCell();
-                lblInfo = new Label();
 
-                lblInfo.Text = strMgrs;
-                lblInfo.CssClass = "LabelText";
+                lblInfo = new Label
+                {
+                    Text = strMgrs,
+                    CssClass = "LabelText"
+                };
+
                 tblCell.Controls.Add(lblInfo);
                 tblRow.Cells.Add(tblCell);
                 myTable.Rows.Insert(rowCntr, tblRow);
@@ -357,10 +369,13 @@ namespace sselIndReports
                 //2008-02-07 Add billing type info
                 tblRow = new HtmlTableRow();
                 tblCell = new HtmlTableCell();
-                lblInfo = new Label();
 
-                lblInfo.Text = "<b>Billing Type:</b> " + AppCode.BLL.BillingTypeManager.GetBillingTypeName(Convert.ToInt32(codr["ClientOrgID"]));
-                lblInfo.CssClass = "LabelText";
+                lblInfo = new Label
+                {
+                    Text = "<b>Billing Type:</b> " + AppCode.BLL.BillingTypeManager.GetBillingTypeName(Convert.ToInt32(codr["ClientOrgID"])),
+                    CssClass = "LabelText"
+                };
+
                 tblCell.Controls.Add(lblInfo);
                 tblRow.Cells.Add(tblCell);
                 myTable.Rows.Insert(rowCntr, tblRow);
@@ -389,10 +404,13 @@ namespace sselIndReports
 
                 tblRow = new HtmlTableRow();
                 tblCell = new HtmlTableCell();
-                lblInfo = new Label();
 
-                lblInfo.Text = strAccts;
-                lblInfo.CssClass = "LabelText";
+                lblInfo = new Label
+                {
+                    Text = strAccts,
+                    CssClass = "LabelText"
+                };
+
                 tblCell.Controls.Add(lblInfo);
                 tblRow.Cells.Add(tblCell);
                 myTable.Rows.Insert(rowCntr, tblRow);

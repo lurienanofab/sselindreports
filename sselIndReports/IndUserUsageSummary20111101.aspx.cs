@@ -2,6 +2,7 @@
 using LNF.CommonTools;
 using LNF.Data;
 using LNF.Models.Data;
+using LNF.Models.Scheduler;
 using LNF.Repository;
 using LNF.Repository.Billing;
 using LNF.Repository.Data;
@@ -46,6 +47,8 @@ namespace sselIndReports
         {
             hidAjaxUrl.Value = VirtualPathUtility.ToAbsolute("~/ajax/index.ashx");
 
+            base.OnLoad(e);
+
             if (!Page.IsPostBack)
             {
                 ShowDisclaimer();
@@ -56,8 +59,6 @@ namespace sselIndReports
             {
                 lblGlobalMsg.Text = string.Empty;
             }
-
-            base.OnLoad(e);
         }
 
         public GlobalSettings ShowDisclaimerSetting
@@ -124,7 +125,7 @@ namespace sselIndReports
         private void PopulateRoomDetailData(DateTime period, int clientId)
         {
             // gets either current or prior period data
-            DataTable dtRoom = RoomBillingBL.GetRoomBillingDataByClientID(period, clientId);
+            DataTable dtRoom = RoomBillingBL.GetRoomBillingDataByClientID(ContextBase, period, clientId);
 
             if (!dtRoom.Columns.Contains("IsParent"))
                 dtRoom.Columns.Add("IsParent", typeof(bool));
@@ -207,10 +208,12 @@ namespace sselIndReports
             else
                 query = DA.Current.Query<ToolBilling>().Where(x => x.Period == period && x.ClientID == clientId).ToArray();
 
-            DataTable dtTool = ToolBillingBL.GetAggreateByTool(query);
+            var resources = DA.Current.Query<LNF.Repository.Scheduler.ResourceInfo>().Where(x => x.ResourceIsActive).CreateModels<ResourceItem>();
+
+            DataTable dtTool = ToolBillingBL.GetAggreateByTool(query, resources);
             dtTool.DefaultView.Sort = "RoomName ASC, ResourceName ASC";
-            gvToolDetail.DataSource = dtTool;
-            gvToolDetail.DataBind();
+            rptToolDetail.DataSource = dtTool;
+            rptToolDetail.DataBind();
 
             decimal subTotalActivated = 0;
 
@@ -235,7 +238,7 @@ namespace sselIndReports
         private void PopulateStoreDetailData(DateTime period, int clientId)
         {
             // gets either current or prior period data
-            DataTable dtStore = StoreBillingBL.GetStoreBillingDataByClientID(period, clientId);
+            DataTable dtStore = StoreBillingBL.GetStoreBillingDataByClientID(ContextBase, period, clientId);
 
             gvStoreDetail.DataSource = dtStore;
             gvStoreDetail.DataBind();
@@ -294,40 +297,40 @@ namespace sselIndReports
             PopulateStoreDetailData(period, clientId);
 
             // 04) Aggregate by Organization: Room
-            gvAggByOrgRoom.DataSource = RoomBillingByOrgBL.GetDataByPeriodAndClientID(period.Year, period.Month, clientId);
+            gvAggByOrgRoom.DataSource = RoomBillingByOrgBL.GetDataByPeriodAndClientID(ContextBase, period.Year, period.Month, clientId);
             gvAggByOrgRoom.DataBind();
 
             // 05) Aggregate by Organization: Tool
-            gvToolOrg20110701.DataSource = ToolBillingByOrgBL.GetDataByPeriodAndClientID(period.Year, period.Month, clientId);
+            gvToolOrg20110701.DataSource = ToolBillingByOrgBL.GetDataByPeriodAndClientID(ContextBase, period.Year, period.Month, clientId);
             gvToolOrg20110701.DataBind();
             gvToolOrg20110701.Visible = true;
 
             // 06) Aggregate by Organization: Store
-            var dtStore = BillingTablesBL.GetMultipleTables(period.Year, period.Month, clientId, BillingTableType.StoreByOrg);
+            var dtStore = BillingTablesBL.GetMultipleTables(ContextBase, period.Year, period.Month, clientId, BillingTableType.StoreByOrg);
             gvStoreOrg.DataSource = dtStore;
             gvStoreOrg.DataBind();
 
             // 07) Aggregate by Organization: Subsidy
-            var dtSubsidy = TieredSubsidyBillingBL.GetDataByPeriodAndClientID(period.Year, period.Month, clientId);
+            var dtSubsidy = TieredSubsidyBillingBL.GetDataByPeriodAndClientID(ContextBase, period.Year, period.Month, clientId);
             AddStoreChargesToSubsidyTable(dtStore, dtSubsidy);
             gvSubsidy.DataSource = dtSubsidy;
             gvSubsidy.DataBind();
 
             // 08) Aggregate by Accounts: Room
-            gvRoomAccount.DataSource = RoomBillingByAccountBL.GetDataByPeriodAndClientID(period.Year, period.Month, clientId);
+            gvRoomAccount.DataSource = RoomBillingByAccountBL.GetDataByPeriodAndClientID(ContextBase, period.Year, period.Month, clientId);
             gvRoomAccount.DataBind();
 
             // 09) Aggregate by Accounts: Tool
-            gvToolAccount20110701.DataSource = ToolBillingByAccountBL.GetDataByPeriodAndClientID20110701(period.Year, period.Month, clientId);
+            gvToolAccount20110701.DataSource = ToolBillingByAccountBL.GetDataByPeriodAndClientID20110701(ContextBase, period.Year, period.Month, clientId);
             gvToolAccount20110701.DataBind();
             gvToolAccount20110701.Visible = true;
 
             // 10) Aggregate by Accounts: Store
-            gvStoreAccount.DataSource = StoreBillingByAccountBL.GetDataByPeriodAndClientID(period.Year, period.Month, clientId);
+            gvStoreAccount.DataSource = StoreBillingByAccountBL.GetDataByPeriodAndClientID(ContextBase, period.Year, period.Month, clientId);
             gvStoreAccount.DataBind();
 
             // 11) Billing Details: Misc
-            gvMisc.DataSource = MiscBillingBL.GetMiscBillingByClientID(period.Year, period.Month, clientId);
+            gvMisc.DataSource = MiscBillingBL.GetMiscBillingByClientID(ContextBase, period.Year, period.Month, clientId);
             gvMisc.DataBind();
 
             PopulateReportInfo(divReportInfo, SelectedClientID, pp1.SelectedPeriod);
@@ -367,7 +370,7 @@ namespace sselIndReports
             }
         }
 
-        protected void gvToolDetail_RowDataBound(object sender, GridViewRowEventArgs e)
+        protected void GvToolDetail_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.Header)
             {
@@ -426,6 +429,11 @@ namespace sselIndReports
         protected override void OnSelectedPeriodChanged(PeriodChangedEventArgs e)
         {
             ShowDisclaimer();
+        }
+
+        protected string GetResourceDetailUrl(DataRowView dr)
+        {
+            return $"ResourceDetail.aspx?ResourceID={dr["ResourceID"]}&Period={SelectedPeriod:yyyy-MM-dd}&ClientID={dr["ClientID"]}&AccountID={dr["AccountID"]}";
         }
     }
 

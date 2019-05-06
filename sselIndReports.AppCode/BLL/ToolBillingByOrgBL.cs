@@ -1,15 +1,16 @@
 ﻿using LNF.Repository.Billing;
 using System;
 using System.Data;
+using System.Web;
 
 namespace sselIndReports.AppCode.BLL
 {
     public static class ToolBillingByOrgBL
     {
-        public static DataTable GetDataByPeriodAndClientID(int year, int month, int clientId)
+        public static DataTable GetDataByPeriodAndClientID(HttpContextBase context, int year, int month, int clientId)
         {
             BillingTableType btt = BillingTablesBL.GetToolByOrgBillingTableType(new DateTime(year, month, 1));
-            DataTable dtSource = BillingTablesBL.GetMultipleTables(year, month, clientId, btt);
+            DataTable dtSource = BillingTablesBL.GetMultipleTables(context, year, month, clientId, btt);
 
             if (!dtSource.Columns.Contains("UsageFeeDisplay"))
                 dtSource.Columns.Add("UsageFeeDisplay", typeof(double));
@@ -47,11 +48,11 @@ namespace sselIndReports.AppCode.BLL
             return dtSource;
         }
 
-        public static DataTable GetDataByPeriodAndClientID20110401(int year, int month, int clientId)
+        public static DataTable GetDataByPeriodAndClientID20110401(HttpContextBase context, int year, int month, int clientId)
         {
             BillingTableType bt = BillingTablesBL.GetToolByOrgBillingTableType(new DateTime(year, month, 1));
 
-            DataTable dtSource = BillingTablesBL.GetMultipleTables(year, month, clientId, bt);
+            DataTable dtSource = BillingTablesBL.GetMultipleTables(context, year, month, clientId, bt);
 
             foreach (DataRow dr in dtSource.Rows)
             {

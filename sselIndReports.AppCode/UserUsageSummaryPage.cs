@@ -1,6 +1,4 @@
-﻿using LNF.Cache;
-using LNF.CommonTools;
-using LNF.Data;
+﻿using LNF.CommonTools;
 using LNF.Models.Data;
 using LNF.Repository;
 using LNF.Repository.Data;
@@ -54,12 +52,14 @@ namespace sselIndReports.AppCode
                     SelectedPeriod = p.Value;
 
                 PopulateUserDropDownList(ClientDropDownList, SelectedPeriod, RetrieveDataButton);
-                ShowEstimateMessage();
+                ShowEstimateMessage(GetHolidays());
                 RunReportOnLoad();
             }
 
             base.OnLoad(e);
         }
+
+        private IEnumerable<Holiday> GetHolidays() => Utility.GetHolidays(SelectedPeriod, SelectedPeriod.AddMonths(1));
 
         private int GetClientIDFromQueryString()
         {
@@ -120,11 +120,11 @@ namespace sselIndReports.AppCode
             return OrgManager.GetPrimaryOrg().OrgID == orgId;
         }
 
-        protected void ShowEstimateMessage()
+        protected void ShowEstimateMessage(IEnumerable<Holiday> holidays)
         {
             if (SummaryApproximateLabel != null)
             {
-                if (Utility.IsBeforeNextBusinessDay(DateTime.Now) && DateTime.Now.AddMonths(-1).Year == SelectedPeriod.Year && DateTime.Now.AddMonths(-1).Month == SelectedPeriod.Month)
+                if (Utility.IsBeforeNextBusinessDay(DateTime.Now, holidays) && DateTime.Now.AddMonths(-1).Year == SelectedPeriod.Year && DateTime.Now.AddMonths(-1).Month == SelectedPeriod.Month)
                     SummaryApproximateLabel.Visible = true;
                 else
                     SummaryApproximateLabel.Visible = false;
@@ -201,7 +201,7 @@ namespace sselIndReports.AppCode
         {
             // get all accounts of this manager Client.Current
             // get all users in each of these accounts
-            var client = CacheManager.Current.CurrentUser;
+            var client = CurrentUser;
             //if (client.HasPriv(ClientPrivilege.Executive))
             //return DA.Current.Query<ClientAccount>().Where(x => x.ClientOrg.ClientOrgID == clientOrgId).ToArray();
 
@@ -248,7 +248,7 @@ namespace sselIndReports.AppCode
         protected void pp1_SelectedPeriodChanged(object sender, PeriodChangedEventArgs e)
         {
             PopulateUserDropDownList(ClientDropDownList, SelectedPeriod, RetrieveDataButton);
-            ShowEstimateMessage();
+            ShowEstimateMessage(GetHolidays());
             OnSelectedPeriodChanged(e);
         }
 
@@ -265,7 +265,7 @@ namespace sselIndReports.AppCode
 
         protected void PopulateReportInfo(HtmlControl div, int clientId, DateTime period)
         {
-            var client = CacheManager.Current.GetClient(clientId);
+            var client = GetClientDataSource(SelectedPeriod).First(x => x.ClientID == clientId);
 
             if (client != null)
             {

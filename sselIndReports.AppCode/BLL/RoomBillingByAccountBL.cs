@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using LNF.Repository.Billing;
 using System.Data;
-using LNF.Billing;
-using LNF.Repository;
-using LNF.Repository.Billing;
+using System.Web;
 
 namespace sselIndReports.AppCode.BLL
 {
     public static class RoomBillingByAccountBL
     {
-        public static DataTable GetDataByPeriodAndClientID(int year, int month, int clientId)
+        public static DataTable GetDataByPeriodAndClientID(HttpContextBase context, int year, int month, int clientId)
         {
-            DataTable dtSource = BillingTablesBL.GetMultipleTables(year, month, clientId, BillingTableType.RoomByAccount);
+            DataTable dtSource = BillingTablesBL.GetMultipleTables(context, year, month, clientId, BillingTableType.RoomByAccount);
 
             if (!dtSource.Columns.Contains("SubsidyDiscount"))
                 dtSource.Columns.Add("SubsidyDiscount", typeof(double));

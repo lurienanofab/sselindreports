@@ -1,9 +1,7 @@
 ﻿using LNF.Cache;
-using LNF.CommonTools;
 using LNF.Data;
 using LNF.Models.Data;
 using LNF.Repository;
-using LNF.Repository.Billing;
 using LNF.Repository.Data;
 using LNF.Web.Controls;
 using sselIndReports.AppCode;
@@ -42,7 +40,7 @@ namespace sselIndReports
                     var command = DA.Command()
                         .Param("sDate", sDate)
                         .Param("eDate", eDate)
-                        .Param("ClientID", CacheManager.Current.CurrentUser.ClientID);
+                        .Param("ClientID", CurrentUser.ClientID);
 
                     //Depending on the user prives, we need to retrieve different set of data
                     if (CurrentUser.HasPriv(ClientPrivilege.Administrator | ClientPrivilege.Staff))
@@ -59,7 +57,7 @@ namespace sselIndReports
 
                     using (var reader = command.ExecuteReader("dbo.Client_Select"))
                     {
-                        ddlUser.DataSource = reader;
+                        ddlUser.DataSource = reader.GetReader();
                         ddlUser.DataTextField = "DisplayName";
                         ddlUser.DataValueField = "ClientID";
                         ddlUser.DataBind();
@@ -72,84 +70,85 @@ namespace sselIndReports
             }
         }
 
-        private ActivityDate[] GetActivityData(int clientId, DateTime startDate, DateTime endDate)
+        private IEnumerable<ActivityDate> GetActivityDates(int clientId, DateTime sd, DateTime ed, IDictionary<string, double> summary)
         {
             List<ActivityDate> result = new List<ActivityDate>();
 
             string desc = string.Empty;
 
-            //first fill the table with room events
-            IList<RoomDataImport> roomData;
+            // RoomDataClean contains prior months and same month data
 
-            if (startDate >= new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1))
-                //get this month data from RoomDataImport
-                roomData = DA.Current.Query<RoomDataImport>().Where(x => x.ClientID == clientId && x.EventDate >= startDate && x.EventDate < endDate).ToList();
-            else
+            var roomEvents = new List<RoomEvent>();
+            var cleanData = DA.Current.Query<RoomDataClean>().Where(x => (x.EntryDT >= sd && x.EntryDT < ed) && x.ClientID == clientId).ToList();
+
+            var rooms = DA.Current.Query<Room>().ToList();
+
+            foreach (var item in cleanData)
             {
-                //get prior month data from RoomDataClean but make it look like RoomDataImport
-                roomData = new List<RoomDataImport>();
-                var cleanData = DA.Current.Query<RoomDataClean>().Where(x => (x.EntryDT >= startDate && x.EntryDT < endDate) && x.ClientID == clientId).ToList();
+                var room = rooms.First(x => x.RoomID == item.RoomID);
 
-                var rooms = DA.Current.Query<Room>().ToList();
-
-                foreach (var item in cleanData)
+                if (room.PassbackRoom)
                 {
-                    var room = rooms.First(x => x.RoomID == item.RoomID);
-
-                    if (room.PassbackRoom)
+                    // add entry
+                    roomEvents.Add(new RoomEvent
                     {
-                        RoomDataImport entry = new RoomDataImport
-                        {
-                            ClientID = item.ClientID,
-                            RoomName = room.RoomName,
-                            EventDate = item.EntryDT,
-                            EventDescription = EVENT_ANTIPASSBACK_IN
-                        };
+                        ClientID = item.ClientID,
+                        RoomDisplayName = room.DisplayName,
+                        RoomBillable = room.Billable,
+                        RoomActive = room.Active,
+                        EventDate = item.EntryDT,
+                        EventDescription = EVENT_ANTIPASSBACK_IN
+                    });
 
-                        roomData.Add(entry);
+                    if (!item.ExitDT.HasValue)
+                        throw new Exception($"No ExitDT for RoomDataID = {item.RoomDataID} in RoomDataClean");
 
-                        RoomDataImport exit = new RoomDataImport
-                        {
-                            ClientID = item.ClientID,
-                            RoomName = room.RoomName,
-                            EventDate = item.ExitDT.GetValueOrDefault(),
-                            EventDescription = EVENT_ANTIPASSBACK_OUT
-                        };
-
-                        roomData.Add(exit);
-                    }
-                    else
+                    // add exit
+                    roomEvents.Add(new RoomEvent
                     {
-                        RoomDataImport entry = new RoomDataImport
-                        {
-                            ClientID = item.ClientID,
-                            RoomName = room.RoomName,
-                            EventDate = item.EntryDT,
-                            EventDescription = EVENT_NO_ANTIPASSBACK
-                        };
+                        ClientID = item.ClientID,
+                        RoomDisplayName = room.DisplayName,
+                        RoomBillable = room.Billable,
+                        RoomActive = room.Active,
+                        EventDate = item.ExitDT.Value,
+                        EventDescription = EVENT_ANTIPASSBACK_OUT
+                    });
 
-                        roomData.Add(entry);
-                    }
+                    if (!summary.ContainsKey(room.DisplayName))
+                        summary.Add(room.DisplayName, 0);
+
+                    summary[room.DisplayName] += (item.ExitDT.Value - item.EntryDT).TotalHours;
+                }
+                else
+                {
+                    // add entry only, because not antipassback room
+                    roomEvents.Add(new RoomEvent
+                    {
+                        ClientID = item.ClientID,
+                        RoomDisplayName = room.RoomName,
+                        RoomBillable = room.Billable,
+                        RoomActive = room.Active,
+                        EventDate = item.EntryDT,
+                        EventDescription = EVENT_NO_ANTIPASSBACK
+                    });
                 }
             }
 
-            foreach (var item in roomData)
+            foreach (var item in roomEvents)
             {
-                Room r = DA.Current.Query<Room>().FirstOrDefault(x => x.RoomName == item.RoomName && x.Active && x.Billable);
-
-                if (r != null)
+                if (item.RoomActive && item.RoomBillable)
                 {
                     if (item.EventDescription == EVENT_ANTIPASSBACK_IN)
-                        desc = "Entered the " + item.RoomName;
+                        desc = $"Entered {item.RoomDisplayName}";
                     else if (item.EventDescription == EVENT_ANTIPASSBACK_OUT)
-                        desc = "Exited the " + item.RoomName;
+                        desc = $"Exited {item.RoomDisplayName}";
                     else if (item.EventDescription == EVENT_NO_ANTIPASSBACK)
-                        desc = "Opened the " + item.RoomName + " door";
+                        desc = $"Opened {item.RoomDisplayName} door";
 
                     if (result.FirstOrDefault(x => x.Date == item.EventDate.Date) == null)
                         result.Add(new ActivityDate() { Date = item.EventDate.Date, Items = new List<ActivityItem>() });
 
-                    result.First(x => x.Date == item.EventDate.Date).Items.Add(new ActivityItem()
+                    result.First(x => x.Date == item.EventDate.Date).Items.Add(new ActivityItem
                     {
                         ActivityDateTime = item.EventDate,
                         Description = desc
@@ -157,7 +156,7 @@ namespace sselIndReports
                 }
             }
 
-            var toolData = ReservationManager.SelectByDateRange(startDate, endDate, clientId);
+            var toolData = ReservationManager.SelectByDateRange(sd, ed, clientId);
             var filteredToolData = ReservationManager.FilterCancelledReservations(toolData, false);
 
             DateTime startTime;
@@ -169,23 +168,25 @@ namespace sselIndReports
                 if (item.Reservation.IsStarted)
                 {
                     startTime = item.Reservation.ActualBeginDateTime.Value;
-                    duration = item.Reservation.ActualDuration();
-                    reservationUsage = "Used the ";
+                    duration = item.Reservation.GetActualDuration().TotalMinutes;
+                    reservationUsage = "Used ";
                 }
                 else
                 {
                     startTime = item.Reservation.BeginDateTime;
-                    duration = item.Reservation.ReservedDuration();
-                    reservationUsage = "Reserved (but did not use) the ";
+                    duration = item.Reservation.GetReservedDuration().TotalMinutes;
+                    reservationUsage = "Reserved (but did not use) ";
                 }
 
-                string account = item.Reservation.Account.Name;
-                string resource = item.Reservation.Resource.ResourceName;
+                string account = item.Reservation.AccountName;
+                string resource = item.Reservation.ResourceName;
+
+                double hours = duration / 60D;
 
                 if (startTime < DateTime.Now)
-                    desc = reservationUsage + resource + " for " + (duration / 60.0).ToString("#.00") + " hours on account " + account;
+                    desc = reservationUsage + resource + $" for {hours:0.00} hours on account {account}";
                 else
-                    desc = "Reserved the " + resource + " for " + (duration / 60.0).ToString("#.00") + " hours on account " + account;
+                    desc = $"Reserved {resource} for {hours:0.00} hours on account {account}";
 
                 if (result.FirstOrDefault(x => x.Date == startTime.Date) == null)
                     result.Add(new ActivityDate() { Date = startTime.Date, Items = new List<ActivityItem>() });
@@ -197,29 +198,51 @@ namespace sselIndReports
                 });
             }
 
-            return result.ToArray();
+            return result;
         }
 
         private void DisplayUsage()
         {
-            litNoData.Text = "";
+            litNoData.Text = string.Empty;
+            litSummaryNoData.Text = string.Empty;
 
             int clientId = Convert.ToInt32(ddlUser.SelectedValue);
-            DateTime sDate = pp1.SelectedPeriod;
-            DateTime eDate = sDate.AddMonths(1);
+            DateTime sd = pp1.SelectedPeriod;
+            DateTime ed = sd.AddMonths(1);
 
             litMessage.Text = GetDisplayName(clientId);
-            var data = GetActivityData(clientId, sDate, eDate);
+
+            var summary = new Dictionary<string, double>();
+            var data = GetActivityDates(clientId, sd, ed, summary);
+
+            phAntipassbackSummary.Visible = false;
+            rptAntipassbackSummary.Visible = false;
+
             if (data.Count() > 0)
             {
                 dgActDate.DataSource = data.OrderBy(x => x.Date);
                 dgActDate.DataBind();
                 dgActDate.Visible = true;
+
+                if (summary.Count > 0)
+                {
+                    rptAntipassbackSummary.DataSource = summary.OrderBy(x => x.Key);
+                    rptAntipassbackSummary.DataBind();
+                    rptAntipassbackSummary.Visible = true;
+                }
+                else
+                {
+                    rptAntipassbackSummary.Visible = false;
+                    litSummaryNoData.Text = "<div class=\"nodata\">No antipassback rooms found.</div>";
+                }
+
+                phAntipassbackSummary.Visible = true;
             }
             else
             {
                 dgActDate.Visible = false;
-                litNoData.Text = "<div class=\"nodata\">No activity found</div>";
+                rptAntipassbackSummary.Visible = false;
+                litNoData.Text = "<div class=\"nodata\">No activity found.</div>";
             }
         }
 
@@ -259,10 +282,10 @@ namespace sselIndReports
             //but sometimes the user him/herself is not belong to this group of people
 
             //remove first so we don't show the same user twice in the list
-            var item = ddlUser.Items.FindByValue(CacheManager.Current.CurrentUser.ClientID.ToString());
+            var item = ddlUser.Items.FindByValue(CurrentUser.ClientID.ToString());
             if (item != null) ddlUser.Items.Remove(item);
 
-            ddlUser.Items.Insert(0, new ListItem(CacheManager.Current.CurrentUser.DisplayName, CacheManager.Current.CurrentUser.ClientID.ToString()));
+            ddlUser.Items.Insert(0, new ListItem(CurrentUser.DisplayName, CurrentUser.ClientID.ToString()));
 
             if (ddlUser.Items.FindByValue(selectedValue) != null)
                 ddlUser.SelectedValue = selectedValue;
@@ -295,5 +318,15 @@ namespace sselIndReports
         }
 
         public string Description { get; set; }
+    }
+
+    public class RoomEvent
+    {
+        public int ClientID { get; set; }
+        public string RoomDisplayName { get; set; }
+        public bool RoomBillable { get; set; }
+        public bool RoomActive { get; set; }
+        public DateTime EventDate { get; set; }
+        public string EventDescription { get; set; }
     }
 }

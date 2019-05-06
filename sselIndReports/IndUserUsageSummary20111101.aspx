@@ -1,6 +1,10 @@
 ﻿<%@ Page Title="User Usage Summary" Language="C#" MasterPageFile="~/IndReportsMaster.Master" AutoEventWireup="true" CodeBehind="IndUserUsageSummary20111101.aspx.cs" Inherits="sselIndReports.IndUserUsageSummary20111101" %>
 
+<%@ Import Namespace="System.Data" %>
+
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+    <link rel="stylesheet" href="scripts/featherlight-1.7.13/featherlight.min.css" />
+
     <style type="text/css">
         .detail-link {
             color: #000000;
@@ -429,7 +433,55 @@
                         <h5>
                             <asp:Label ID="lblTool" runat="server"></asp:Label>
                         </h5>
-                        <asp:GridView runat="server" ID="gvToolDetail" CssClass="gridview" GridLines="None" AutoGenerateColumns="false" OnRowDataBound="gvToolDetail_RowDataBound">
+
+                        <asp:Repeater runat="server" ID="rptToolDetail">
+                            <HeaderTemplate>
+                                <table class="gridview striped" style="border-collapse: collapse;">
+                                    <thead>
+                                        <tr class="header">
+                                            <th style="width: 220px;">Tool</th>
+                                            <th style="width: 100px;">Lab</th>
+                                            <th style="width: 80px;" title="Actual start time - actual end time">Activated Used (hours)</th>
+                                            <th style="width: 80px;" title="Time for unused, but activated reservation">Activated Unused (hours)</th>
+                                            <th style="width: 80px;" title="Overtime - used time after original end time">Overtime (hours)</th>
+                                            <th style="width: 80px;" title="Reserved reservation that has not been used">Overtime Fee</th>
+                                            <th style="width: 80px;" title="10% of all cancellations before 2 hours of starting time">Unactivated (hours)</th>
+                                            <th style="width: 80px;" title="Time used by subsequent users">Booking Fee</th>
+                                            <th style="width: 60px;">Transferred (hours)</th>
+                                            <th style="width: 80px;">Forgiven (hours)</th>
+                                            <th style="width: 80px;">Rate</th>
+                                            <th style="min-width: 250px;">Account</th>
+                                            <th style="width: 70px;">Short Code</th>
+                                            <th style="width: 80px;">Line Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                            </HeaderTemplate>
+                            <ItemTemplate>
+                                <tr data-featherlight='<%#GetResourceDetailUrl((DataRowView)Container.DataItem)%>'>
+                                    <td style="text-align: center;"><%#Eval("ResourceName")%></td>
+                                    <td style="text-align: center;"><%#Eval("RoomName")%></td>
+                                    <td style="text-align: center;"><%#Eval("ActivatedUsed", "{0:F2}")%></td>
+                                    <td style="text-align: center;"><%#Eval("ActivatedUnused", "{0:F2}")%></td>
+                                    <td style="text-align: center;"><%#Eval("TotalOverTime", "{0:F2}")%></td>
+                                    <td style="text-align: right;"><%#Eval("OverTimePenaltyFee", "{0:C}")%></td>
+                                    <td style="text-align: center;"><%#Eval("UnstartedUnused", "{0:F2}")%></td>
+                                    <td style="text-align: right;"><%#Eval("BookingFee", "{0:C}")%></td>
+                                    <td style="text-align: center;"><%#Eval("TotalTransferredDuration", "{0:F2}")%></td>
+                                    <td style="text-align: center;"><%#Eval("TotalForgivenDuration", "{0:F2}")%></td>
+                                    <td style="text-align: right;"><%#Eval("ResourceRate", "{0:C}")%></td>
+                                    <td style="text-align: center;"><%#Eval("AccountName")%></td>
+                                    <td style="text-align: center;"><%#Eval("ShortCode")%></td>
+                                    <td style="text-align: right;"><%#Eval("LineCost", "{0:C}")%></td>
+                                </tr>
+                            </ItemTemplate>
+                            <FooterTemplate>
+                                </tbody>
+                                </table>
+                            </FooterTemplate>
+                        </asp:Repeater>
+
+                        <asp:GridView runat="server" ID="zgvToolDetail" CssClass="gridview" GridLines="None" AutoGenerateColumns="false" OnRowDataBound="GvToolDetail_RowDataBound">
                             <HeaderStyle CssClass="header" />
                             <RowStyle CssClass="row" />
                             <AlternatingRowStyle CssClass="altrow" />
@@ -534,6 +586,8 @@
 </asp:Content>
 
 <asp:Content runat="server" ID="Content3" ContentPlaceHolderID="scripts">
+    <script src="scripts/featherlight-1.7.13/featherlight.min.js"></script>
+
     <script type="text/javascript">
         $('.detail-link').click(function (event) {
             event.preventDefault();
@@ -586,5 +640,9 @@
             }
             return result;
         }
+
+        $("tr[data-resource-id]").on('click', function (e) {
+            console.log($(this).data('resource-id'));
+        });
     </script>
 </asp:Content>

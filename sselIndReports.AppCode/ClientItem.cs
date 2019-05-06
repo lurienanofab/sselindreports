@@ -1,5 +1,4 @@
-﻿using LNF.Models.Data;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace sselIndReports.AppCode
 {

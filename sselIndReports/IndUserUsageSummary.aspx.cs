@@ -68,7 +68,7 @@ namespace sselIndReports
             }
 
             //Room
-            dtRoom = RoomBillingBL.GetRoomBillingDataByClientID(period, clientId);
+            dtRoom = RoomBillingBL.GetRoomBillingDataByClientID(ContextBase, period, clientId);
             gvRoom.DataSource = dtRoom;
             gvRoom.DataBind();
 
@@ -84,7 +84,7 @@ namespace sselIndReports
             lblRoom.Visible = true;
 
             //Tool
-            DataSet dsTool = ToolBillingBL.GetToolBillingDataByClientID20110401(period, clientId);
+            DataSet dsTool = ToolBillingBL.GetToolBillingDataByClientID20110401(ContextBase, period, clientId);
             dtToolActivated  = dsTool.Tables[0];
             dtToolUncancelled = dsTool.Tables[1];
             dtToolForgiven = dsTool.Tables[2];
@@ -127,7 +127,7 @@ namespace sselIndReports
             divTool.Visible = true;
 
             //Store
-            dtStore = StoreBillingBL.GetStoreBillingDataByClientID(period, clientId);
+            dtStore = StoreBillingBL.GetStoreBillingDataByClientID(ContextBase, period, clientId);
             gvStore.DataSource = dtStore;
             gvStore.DataBind();
 
@@ -282,7 +282,7 @@ namespace sselIndReports
             divTool.Visible = true;
 
             //Store
-            dtStore = StoreBillingBL.GetStoreBillingDataByClientID(period, clientId);
+            dtStore = StoreBillingBL.GetStoreBillingDataByClientID(ContextBase, period, clientId);
             gvStore.DataSource = dtStore;
             gvStore.DataBind();
 

@@ -5,6 +5,7 @@ using LNF.Data;
 using LNF.Models.Data;
 using LNF.Repository;
 using LNF.Repository.Billing;
+using LNF.Web;
 using sselIndReports.AppCode;
 using sselIndReports.AppCode.BLL;
 using sselIndReports.AppCode.DAL;
@@ -101,7 +102,7 @@ namespace sselIndReports
 
             dsReport.Tables["Org"].PrimaryKey = new[] { dsReport.Tables["Org"].Columns["OrgID"] };
 
-            CacheManager.Current.CacheData(dsReport);
+            ContextBase.CacheData(dsReport);
 
             //2007-02-01 Add report button
             //So have to move the ddlUser populated code here
@@ -172,18 +173,18 @@ namespace sselIndReports
 
             //'the call to UpdateDataType is overly broad, but it would be hard to narrow its scope to match the user priv. And, it doesn't hurt.
             //'Wen: this will be called only when user want to see report that's in current month
-            if ((sDate <= DateTime.Now.Date && eDate > DateTime.Now.Date) && !CacheManager.Current.Updated())
+            if ((sDate <= DateTime.Now.Date && eDate > DateTime.Now.Date) && !ContextBase.Updated())
             {
                 WriteData wd = new WriteData();
                 string[] types = { "Tool", "Room", "Store" };
                 //wd.UpdateTable(types, 0, 0, UpdateDataType.CleanData | UpdateDataType.Data);
                 using (StreamWriter file = new StreamWriter(File.OpenWrite(Request.PhysicalApplicationPath + "\\log.txt")))
                 {
-                    file.WriteLine("Time: " + DateTime.Now.ToString() + " Name: " + CacheManager.Current.CurrentUser.DisplayName);
+                    file.WriteLine("Time: " + DateTime.Now.ToString() + " Name: " + CurrentUser.DisplayName);
                     file.Close();
                 }
 
-                CacheManager.Current.Updated(true);
+                ContextBase.Updated(true);
             }
         }
 
@@ -284,7 +285,7 @@ namespace sselIndReports
                 //**************** NAP room handling ******************
                 //Get all active NAP Rooms with their costs, all chargetypes are returned
                 //This is a temporary table, it's used to derive the really useful table below
-                DataTable dtNAPRoomForAllChargeType = RoomManager.GetAllNAPRoomsWithCosts(period);
+                DataTable dtNAPRoomForAllChargeType = AppCode.BLL.RoomManager.GetAllNAPRoomsWithCosts(period);
 
                 //filter out the chargetype so that we only have Internal costs with each NAP room
                 //2009-04-05 the chartype id is difficult to get here, so we assume everyone is interanl.  This is okay, because we need to find out the percentage, not the actual cost
@@ -602,14 +603,16 @@ namespace sselIndReports
 
             double sumCost = 0.0;
 
-            gvRoom.DataSource = BillingManager.GetRoomCost(period, clientId, SummaryTable, ref sumCost);
+            var dsReport = ContextBase.CacheData();
+
+            gvRoom.DataSource = BillingManager.GetRoomCost(dsReport, period, clientId, SummaryTable, ref sumCost);
             gvRoom.DataBind();
             lblRoom2.Text = string.Format("Total lab usage fees: {0:C}", sumCost);
 
             DataTable dtCancelled = null;
             DataTable dtForgiven = null;
 
-            gvTool2.DataSource = BillingManager.GetToolCost(period, clientId, SummaryTable, ref sumCost, dtCancelled, dtForgiven);
+            gvTool2.DataSource = BillingManager.GetToolCost(dsReport, period, clientId, SummaryTable, ref sumCost, dtCancelled, dtForgiven);
             gvTool2.DataBind();
 
             gvToolCancelled2.DataSource = dtCancelled;

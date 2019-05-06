@@ -3,6 +3,7 @@ using LNF.CommonTools;
 using LNF.Models.Billing;
 using LNF.Models.Data;
 using LNF.Repository;
+using LNF.Web;
 using sselIndReports.AppCode;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace sselIndReports
         {
             if (!Page.IsPostBack)
             {
-                CacheManager.Current.Updated(false);
+                ContextBase.Updated(false);
                 ShowReport();
             }
         }
@@ -54,16 +55,17 @@ namespace sselIndReports
             if (sDate > DateTime.Now.Date) return;
 
             //draw from RoomData - need to upadte tool first due to apportionment
-            if (sDate <= DateTime.Now && eDate > DateTime.Now && !CacheManager.Current.Updated())
+            if (sDate <= DateTime.Now && eDate > DateTime.Now && !ContextBase.Updated())
             {
-                try //to handle missing data error
+                try
                 {
+                    // to handle missing data error
                     WriteData writeData = new WriteData();
-                    writeData.UpdateTables(new string[] { "Tool", "Room" }, UpdateDataType.DataClean | UpdateDataType.Data, DateTime.Now.FirstOfMonth(), 0);
+                    writeData.UpdateTables(BillingCategory.Tool | BillingCategory.Room, UpdateDataType.DataClean | UpdateDataType.Data, DateTime.Now.FirstOfMonth(), 0);
                 }
                 catch { }
 
-                CacheManager.Current.Updated(true);
+                ContextBase.Updated(true);
             }
 
             //client info
@@ -153,8 +155,8 @@ namespace sselIndReports
 
         protected void btnBack_Click(object sender, EventArgs e)
         {
-            CacheManager.Current.RemoveSessionValue("Updated");
-            CacheManager.Current.RemoveCacheData(); //remove anything left in cache
+            ContextBase.Session.Remove("Updated");
+            ContextBase.RemoveCacheData(); //remove anything left in cache
             Response.Redirect("~");
         }
     }

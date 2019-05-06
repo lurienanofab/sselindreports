@@ -1,23 +1,24 @@
-﻿using LNF.Billing;
-using LNF.Repository;
+﻿using LNF;
+using LNF.Billing;
 using sselIndReports.AppCode.DAL;
 using System;
 using System.Data;
+using System.Web;
 
 namespace sselIndReports.AppCode.BLL
 {
     public static class RoomBillingBL
     {
-        public static IBillingTypeManager BillingTypeManager => DA.Use<IBillingTypeManager>();
+        public static IBillingTypeManager BillingTypeManager => ServiceProvider.Current.BillingTypeManager;
 
-        public static DataTable GetRoomBillingDataByClientID(DateTime period, int clientId)
+        public static DataTable GetRoomBillingDataByClientID(HttpContextBase context, DateTime period, int clientId)
         {
             DataTable dt;
 
             if (period.Month == DateTime.Now.Month && period.Year == DateTime.Now.Year)
                 dt = RoomBillingDA.GetRoomBillingTempDataByClientID(period, clientId);
             else
-                dt = BillingTablesBL.GetMultipleTables(period.Year, period.Month, clientId, BillingTableType.RoomBilling);
+                dt = BillingTablesBL.GetMultipleTables(context, period.Year, period.Month, clientId, BillingTableType.RoomBilling);
 
             if (!dt.Columns.Contains("DailyFee"))
                 dt.Columns.Add("DailyFee", typeof(decimal));

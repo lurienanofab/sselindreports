@@ -11,6 +11,7 @@ using System.Data;
 using System.Linq;
 using System.Web.UI.WebControls;
 using System.Diagnostics;
+using LNF.Web;
 
 namespace sselIndReports
 {
@@ -32,7 +33,7 @@ namespace sselIndReports
             }
             else if (CurrentUser.HasPriv(ClientPrivilege.Executive))
             {
-                var allClientOrgs = CacheManager.Current.GetCurrentUserClientOrgs();
+                var allClientOrgs = ContextBase.GetCurrentUserClientOrgs();
                 dataSource = allClientOrgs.Select(x => new OrgListItem() { OrgID = x.OrgID, OrgName = x.OrgName }).OrderBy(x => x.OrgName);
             }
 

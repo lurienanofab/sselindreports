@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace sselIndReports.Tests
 {
@@ -7,10 +6,10 @@ namespace sselIndReports.Tests
     public class UserUsageSummaryTests
     {
         [TestMethod]
-        public void UserUsageSummaryTests_CanPopulateToolDetailData()
+        public void CanPopulateToolDetailData()
         {
-            var page = new IndUserUsageSummary20111101();
-            page.PopulateToolDetailData(DateTime.Parse("2016-04-01"), 81);
+            //var page = new IndUserUsageSummary20111101();
+            //page.PopulateToolDetailData(DateTime.Parse("2016-04-01"), 81);
         }
     }
 }

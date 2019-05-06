@@ -5,6 +5,8 @@ using LNF.Repository.Billing;
 using System;
 using System.Data;
 using System.Linq;
+using LNF.Web;
+using System.Web;
 
 namespace sselIndReports.AppCode.BLL
 {
@@ -19,7 +21,7 @@ namespace sselIndReports.AppCode.BLL
                 .FillDataTable("dbo.RoomData_Select");
         }
 
-        public static DataTable GetRoomCost(DateTime period, int clientId, DataTable dtSummary, ref double sumCost)
+        public static DataTable GetRoomCost(DataSet dsReport, DateTime period, int clientId, DataTable dtSummary, ref double sumCost)
         {
             //Room realted
 
@@ -33,7 +35,7 @@ namespace sselIndReports.AppCode.BLL
             //5	"TotalEntries"	
             //6	"TotalHours"	
 
-            DataSet dsReport = CacheManager.Current.CacheData();
+            //DataSet dsReport = context.CacheData();
 
             Compile compile = new Compile();
             DataTable dtRoomCost = compile.CalcCost2("Room", string.Empty, string.Empty, 0, period, 0, clientId, Compile.AggType.CliAcctType);
@@ -144,7 +146,7 @@ namespace sselIndReports.AppCode.BLL
             }
         }
 
-        public static DataTable GetToolCost(DateTime period, int clientId, DataTable dtSummary, ref double sumCost, DataTable dtCloneCancelled, DataTable dtCloneForgiven)
+        public static DataTable GetToolCost(DataSet dsReport, DateTime period, int clientId, DataTable dtSummary, ref double sumCost, DataTable dtCloneCancelled, DataTable dtCloneForgiven)
         {
             //***************** Tool related *******************************
             //2007-02-23 Must handle the exception here because if the user doesn't exist on that period, a error occur inside the CalcCost function
@@ -157,7 +159,7 @@ namespace sselIndReports.AppCode.BLL
             //4 TotalCalcCost
             //5 TotalUses
             //6 TotalActDuration
-            DataSet dsReport = CacheManager.Current.CacheData();
+            //DataSet dsReport = context.CacheData();
 
             Compile compile = new Compile();
             dtToolCost = compile.CalcCost2("Tool", string.Empty, string.Empty, 0, period, 0, clientId, Compile.AggType.CliAcctType);

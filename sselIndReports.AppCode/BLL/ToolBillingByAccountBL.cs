@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using LNF.Repository.Billing;
+using System;
 using System.Data;
-using LNF.Billing;
-using LNF.Repository;
-using LNF.Repository.Billing;
-using LNF.CommonTools;
+using System.Web;
 
 namespace sselIndReports.AppCode.BLL
 {
     public static class ToolBillingByAccountBL
     {
-        public static DataTable GetDataByPeriodAndClientID(int year, int month, int clientId)
+        public static DataTable GetDataByPeriodAndClientID(HttpContextBase context, int year, int month, int clientId)
         {
-            DataTable dtSource = BillingTablesBL.GetMultipleTables(year, month, clientId, BillingTableType.ToolByAccount);
+            DataTable dtSource = BillingTablesBL.GetMultipleTables(context, year, month, clientId, BillingTableType.ToolByAccount);
 
             foreach (DataRow dr in dtSource.Rows)
             {
@@ -33,9 +28,9 @@ namespace sselIndReports.AppCode.BLL
             return dtSource;
         }
 
-        public static DataTable GetDataByPeriodAndClientID20110401(int year, int month, int clientId)
+        public static DataTable GetDataByPeriodAndClientID20110401(HttpContextBase context, int year, int month, int clientId)
         {
-            DataTable dtSource = BillingTablesBL.GetMultipleTables(year, month, clientId, BillingTableType.ToolByAccount20110401);
+            DataTable dtSource = BillingTablesBL.GetMultipleTables(context, year, month, clientId, BillingTableType.ToolByAccount20110401);
             
             foreach (DataRow dr in dtSource.Rows)
             {
@@ -53,10 +48,10 @@ namespace sselIndReports.AppCode.BLL
             return dtSource;
         }
 
-        public static DataTable GetDataByPeriodAndClientID20110701(int year, int month, int clientId)
+        public static DataTable GetDataByPeriodAndClientID20110701(HttpContextBase context, int year, int month, int clientId)
         {
             var btt = BillingTablesBL.GetToolByAccountBillingTableType(new DateTime(year, month, 1));
-            DataTable dt = BillingTablesBL.GetMultipleTables(year, month, clientId, btt);
+            DataTable dt = BillingTablesBL.GetMultipleTables(context, year, month, clientId, btt);
 
             if (!dt.Columns.Contains("UsageFeeDisplay"))
                 dt.Columns.Add("UsageFeeDisplay", typeof(double));

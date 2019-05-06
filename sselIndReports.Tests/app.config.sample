@@ -2,35 +2,31 @@
 <configuration>
   <configSections>
     <sectionGroup name="lnf">
-      <section name="providers" type="LNF.ProvidersSection, LNF" />
-      <section name="redis" type="LNF.Impl.Redis.RedisConfigurationSection, LNF.Impl" />
+      <section name="provider" type="LNF.ServiceProviderSection, LNF"/>
     </sectionGroup>
   </configSections>
 
   <lnf>
-    <providers production="false">
-      <context type="LNF.Impl.AppContextProvider, LNF.Impl" loginUrl="/login" />
-      <dataAccess type="LNF.Impl.NHibernateWebDataAccess, LNF.Impl" />
-      <serialization type="LNF.Impl.Serialization.SerializationProvider, LNF.Impl" />
-      <physicalAccess type="LNF.Impl.PhysicalAccess.ProwatchPhysicalAccess, LNF.Impl" />
-      <encryption type="LNF.Impl.EncryptionProvider, LNF.Impl" />
-      <email type="LNF.Impl.Email.EmailProvider, LNF.Impl" host="127.0.0.1" />
-      <log type="LNF.Impl.Logging.ServiceLogProvider, LNF.Impl" name="sselIndReports.Tests" enabled="true" />
-    </providers>
-    <redis>
-      <connection host="cachesvr" databaseId="3" />
-    </redis>
+    <provider production="false">
+      <context loginUrl="/login"/>
+      <dataAccess showSql="true"/>
+      <email host="localhost" log="true"/>
+      <control host="http://wagosvr:7778/"/>
+      <log name="sselIndReports.Tests" enabled="true"/>
+    </provider>
   </lnf>
 
   <appSettings>
-    <add key="MongoConnectionString" value="mongodb://*****:*****@localhost/" />
+    <add key="ApiBaseUrl" value="xxxxx"/>
+    <add key="BasicAuthUsername" value="xxxxx"/>
+    <add key="BasicAuthPassword" value="xxxxx"/>
   </appSettings>
 
   <connectionStrings>
-    <add name="cnSselData" providerName="System.Data.SqlClient" connectionString="Server=*****;Database=*****;User ID=*****;Password=*****" />
+    <add name="cnSselData" providerName="System.Data.SqlClient" connectionString="xxxxx" />
   </connectionStrings>
 
   <startup>
-    <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.6.1" />
+    <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.7" />
   </startup>
 </configuration>

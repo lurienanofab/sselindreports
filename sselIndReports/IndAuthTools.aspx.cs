@@ -1,8 +1,6 @@
-﻿using LNF.Cache;
-using LNF.Data;
+﻿using LNF.Data;
 using LNF.Models.Data;
 using LNF.Repository;
-using LNF.Web;
 using sselIndReports.AppCode;
 using System;
 using System.Data;
@@ -27,9 +25,9 @@ namespace sselIndReports
                     LoadUserList();
                 }
                 else
-                    ddlUser.Items.Insert(0, new ListItem(CacheManager.Current.CurrentUser.DisplayName, CacheManager.Current.CurrentUser.ClientID.ToString()));
+                    ddlUser.Items.Insert(0, new ListItem(CurrentUser.DisplayName, CurrentUser.ClientID.ToString()));
 
-                ddlUser.SelectedValue = CacheManager.Current.CurrentUser.ClientID.ToString();
+                ddlUser.SelectedValue = CurrentUser.ClientID.ToString();
 
                 RetrieveData();
             }
@@ -40,7 +38,7 @@ namespace sselIndReports
             //client info - gets put into ddl, not needed in dataset
             var command = DA.Command();
 
-            command.Param("ClientID", Context.CurrentUser().ClientID);
+            command.Param("ClientID", CurrentUser.ClientID);
 
             if (CurrentUser.HasPriv(ClientPrivilege.Administrator | ClientPrivilege.Staff))
             {

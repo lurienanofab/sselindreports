@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data;
+﻿using System.Data;
+using System.Web;
 
 namespace sselIndReports.AppCode.BLL
 {
     public static class MiscBillingBL
     {
-        public static DataTable GetMiscBillingByClientID(int year, int month, int clientId)
+        public static DataTable GetMiscBillingByClientID(HttpContextBase context, int year, int month, int clientId)
         {
-            DataTable dtSource = BillingTablesBL.GetMultipleTables(year, month, clientId, BillingTableType.MiscDetail);
+            DataTable dtSource = BillingTablesBL.GetMultipleTables(context, year, month, clientId, BillingTableType.MiscDetail);
             return dtSource;
         }
     }

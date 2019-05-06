@@ -58,6 +58,33 @@ namespace sselIndReports {
         protected global::System.Web.UI.HtmlControls.HtmlInputHidden hidSelectedUser;
         
         /// <summary>
+        /// phAntipassbackSummary control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.PlaceHolder phAntipassbackSummary;
+        
+        /// <summary>
+        /// rptAntipassbackSummary control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Repeater rptAntipassbackSummary;
+        
+        /// <summary>
+        /// litSummaryNoData control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litSummaryNoData;
+        
+        /// <summary>
         /// litMessage control.
         /// </summary>
         /// <remarks>

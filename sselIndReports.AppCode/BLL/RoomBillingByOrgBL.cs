@@ -1,16 +1,17 @@
 ﻿using LNF.Repository.Billing;
 using System;
 using System.Data;
+using System.Web;
 
 namespace sselIndReports.AppCode.BLL
 {
     public static class RoomBillingByOrgBL
     {
-        public static DataTable GetDataByPeriodAndClientID(int year, int month, int clientId)
+        public static DataTable GetDataByPeriodAndClientID(HttpContextBase context, int year, int month, int clientId)
         {
             DateTime period = new DateTime(year, month, 1);
 
-            DataTable dtSource = BillingTablesBL.GetMultipleTables(year, month, clientId, BillingTableType.RoomByOrg);
+            DataTable dtSource = BillingTablesBL.GetMultipleTables(context, year, month, clientId, BillingTableType.RoomByOrg);
 
             if (!dtSource.Columns.Contains("TotalCharge"))
                 dtSource.Columns.Add("TotalCharge", typeof(double));

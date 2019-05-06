@@ -48,7 +48,7 @@ namespace sselIndReports
 
         protected void LoadManagers()
         {
-            LNF.Models.Data.ClientItem client = CacheManager.Current.CurrentUser;
+            var client = CurrentUser;
 
             IEnumerable<ClientOrg> allClientOrgs = null;
 

@@ -1,6 +1,5 @@
 ﻿using LNF;
 using LNF.Billing;
-using LNF.Cache;
 using LNF.Data;
 using LNF.Models.Data;
 using LNF.Repository;
@@ -29,9 +28,15 @@ namespace sselIndReports.AppCode
         [SetterProperty]
         public IReservationManager ReservationManager { get; set; }
 
+        protected IEnumerable<ClientItem> GetClientDataSource(DateTime period, bool displayAllUsersToStaff = false)
+        {
+            var allClientAccountsActiveInPeriod = GetClientSelectItems(period);
+            return FilterUsers(CurrentUser, allClientAccountsActiveInPeriod, displayAllUsersToStaff); //checks for administrator, manager, or normal user
+        }
+
         public ReportPage()
         {
-            ServiceProvider.Current.Resolver.BuildUp(this);
+            ServiceProvider.Current.BuildUp(this);
         }
 
         public virtual bool ShowButton
@@ -41,8 +46,8 @@ namespace sselIndReports.AppCode
 
         protected void BackButton_Click(object sender, EventArgs e)
         {
-            CacheManager.Current.RemoveSessionValue("Updated");
-            CacheManager.Current.RemoveCacheData(); // remove anything left in cache
+            ContextBase.Session.Remove("Updated");
+            ContextBase.RemoveCacheData(); // remove anything left in cache
             Response.Redirect("~");
         }
 
@@ -88,20 +93,18 @@ namespace sselIndReports.AppCode
             //used to store temporary selected user because we want to keep the same user when date has been changed
             string origSelectedValue = ddl.SelectedValue;
 
-            //populate the user dropdown list            
-            var allClientAccountsActiveInPeriod = GetClientSelectItems(period);
-
-            ClientItem[] filtered = FilterUsers(CacheManager.Current.CurrentUser, allClientAccountsActiveInPeriod, displayAllUsersToStaff); //checks for administrator, manager, or normal user
-            ddl.DataSource = filtered;
+            //populate the user dropdown list
+            var dataSource = GetClientDataSource(period, displayAllUsersToStaff);
+            ddl.DataSource = dataSource;
             ddl.DataBind();
 
-            if (filtered.Length == 0)
+            if (dataSource.Count() == 0)
             {
                 ddl.Items.Insert(0, new ListItem("-- You were not active in this period --", "0"));
                 ddl.Enabled = false;
                 btnRetrieveData.Enabled = false;
             }
-            else if (filtered.Length > 1)
+            else if (dataSource.Count() > 1)
             {
                 ddl.Items.Insert(0, new ListItem("-- Select --", "0"));
             }
@@ -111,7 +114,7 @@ namespace sselIndReports.AppCode
                 ddl.SelectedValue = origSelectedValue;
         }
 
-        private static ClientItem[] FilterUsers(LNF.Models.Data.ClientItem client, UserClientSelectItem[] items, bool displayAllUsersToStaff)
+        private static ClientItem[] FilterUsers(IClient client, UserClientSelectItem[] items, bool displayAllUsersToStaff)
         {
             List<ClientItem> dataSource = new List<ClientItem>();
             bool isUserStaffAndAllowedAllUserInfo = client.HasPriv(ClientPrivilege.Staff) && displayAllUsersToStaff;

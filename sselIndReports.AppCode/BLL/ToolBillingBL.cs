@@ -1,4 +1,5 @@
-﻿using LNF.Billing;
+﻿using LNF;
+using LNF.Billing;
 using LNF.Cache;
 using LNF.CommonTools;
 using LNF.Data;
@@ -7,11 +8,12 @@ using LNF.Models.Scheduler;
 using LNF.Repository;
 using LNF.Repository.Billing;
 using LNF.Repository.Data;
-using LNF.Scheduler;
 using sselIndReports.AppCode.DAL;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Web;
 
 namespace sselIndReports.AppCode.BLL
 {
@@ -19,7 +21,7 @@ namespace sselIndReports.AppCode.BLL
     {
         // Call this after 2011-07-01
 
-        public static IBillingTypeManager BillingTypeManager => DA.Use<IBillingTypeManager>();
+        public static IBillingTypeManager BillingTypeManager => ServiceProvider.Current.BillingTypeManager;
 
         private static void AddToColumn(DataRow dr, string columnName, double value)
         {
@@ -48,7 +50,7 @@ namespace sselIndReports.AppCode.BLL
 
         public static string GetRoomDisplayName(int roomId)
         {
-            RoomItem room = CacheManager.Current.GetRoom(roomId);
+            IRoom room = CacheManager.Current.GetRoom(roomId);
 
             string result = "n/a";
 
@@ -58,7 +60,7 @@ namespace sselIndReports.AppCode.BLL
             return result;
         }
 
-        public static DataTable GetAggreateByTool(IToolBilling[] query)
+        public static DataTable GetAggreateByTool(IToolBilling[] query, IEnumerable<IResource> resources)
         {
             // This method creates a view of ToolBilling data where totals are aggregated by resource and account.
             // In addition extra columns are added for activated used, activated unused, and unstarted unused durations - which depend on the IsStarted and IsCancelledBeforeAllowedTime
@@ -86,14 +88,12 @@ namespace sselIndReports.AppCode.BLL
             dt.Columns.Add("UsageFeeCharged", typeof(decimal));
             dt.Columns.Add("OverTimePenaltyFee", typeof(decimal));
             dt.Columns.Add("BookingFee", typeof(decimal));
-            dt.Columns.Add("ActivatedUsed", typeof(decimal));
-            dt.Columns.Add("ActivatedUnused", typeof(decimal));
-            dt.Columns.Add("UnstartedUnused", typeof(decimal));
+            dt.Columns.Add("ActivatedUsed", typeof(double));
+            dt.Columns.Add("ActivatedUnused", typeof(double));
+            dt.Columns.Add("UnstartedUnused", typeof(double));
             dt.Columns.Add("LineCost", typeof(decimal));
 
-            //var accounts = CacheManager.Current.Accounts();
-            var accounts = DA.Current.Query<AccountInfo>().Model<AccountItem>();
-            var resources = CacheManager.Current.ResourceTree().Resources();
+            var accounts = DA.Current.Query<AccountInfo>().CreateModels<IAccount>();
 
             foreach (IToolBilling item in query.OrderBy(x => x.AccountID).ThenBy(x => x.ResourceID))
             {
@@ -101,7 +101,7 @@ namespace sselIndReports.AppCode.BLL
 
                 if (dr == null)
                 {
-                    AccountItem acct = accounts.FirstOrDefault(x => x.AccountID == item.AccountID);
+                    IAccount acct = accounts.FirstOrDefault(x => x.AccountID == item.AccountID);
 
                     string acctName, shortCode;
 
@@ -116,7 +116,7 @@ namespace sselIndReports.AppCode.BLL
                         shortCode = acct.ShortCode.Trim();
                     }
 
-                    ResourceTreeItem res = resources.First(x => x.ResourceID == item.ResourceID);
+                    IResource res = resources.First(x => x.ResourceID == item.ResourceID);
                    
                     dr = dt.NewRow();
                     dr.SetField("ClientID", item.ClientID);
@@ -141,9 +141,9 @@ namespace sselIndReports.AppCode.BLL
                     dr.SetField("UsageFeeCharged", 0M);
                     dr.SetField("OverTimePenaltyFee", 0M);
                     dr.SetField("BookingFee", 0M);
-                    dr.SetField("ActivatedUsed", 0M);
-                    dr.SetField("ActivatedUnused", 0M);
-                    dr.SetField("UnstartedUnused", 0M);
+                    dr.SetField("ActivatedUsed", 0D);
+                    dr.SetField("ActivatedUnused", 0D);
+                    dr.SetField("UnstartedUnused", 0D);
                     dr.SetField("LineCost", 0M);
                     dt.Rows.Add(dr);
                 }
@@ -160,14 +160,14 @@ namespace sselIndReports.AppCode.BLL
                 AddToColumn(dr, "BookingFee", item.BookingFee); //no need to check IsCancelledBeforeAllowedTime, will be zero if not true
 
                 // Activated Used (hours)
-                decimal activatedUsed = (item.IsStarted && !item.IsCancelledBeforeAllowedTime) ? (item.ActDuration - item.OverTime) / 60 : 0;
+                var activatedUsed = item.ActivatedUsed().TotalHours;
 
                 // Activated Unused (hours)
-                decimal activatedUnused = (item.IsStarted && !item.IsCancelledBeforeAllowedTime) ? Math.Max(item.ChargeDuration - item.ActDuration, 0) / 60 : 0;
+                var activatedUnused = item.ActivatedUnused().TotalHours;
 
                 // Unactivated (hours)
-                decimal unstartedUnused = (!item.IsStarted && !item.IsCancelledBeforeAllowedTime) ? item.ChargeDuration / 60 : 0;
-
+                var unstartedUnused = item.UnstartedUnused().TotalHours;
+                
                 AddToColumn(dr, "ActivatedUsed", activatedUsed);
                 AddToColumn(dr, "ActivatedUnused", activatedUnused);
                 AddToColumn(dr, "UnstartedUnused", unstartedUnused);
@@ -179,7 +179,7 @@ namespace sselIndReports.AppCode.BLL
         }
 
         [Obsolete("Use ToolBillingBL.GetAggreateByTool instead.")]
-        public static DataTable GetToolBillingDataByClientID20110701(DateTime period, int clientId)
+        public static DataTable GetToolBillingDataByClientID20110701(HttpContextBase context, DateTime period, int clientId)
         {
             DataTable dt, dtUnStarted, dtCancelled;
 
@@ -194,10 +194,10 @@ namespace sselIndReports.AppCode.BLL
             else
             {
                 //started reservations
-                dt = BillingTablesBL.GetMultipleTables(period.Year, period.Month, clientId, BillingTableType.ToolBillingStarted);
+                dt = BillingTablesBL.GetMultipleTables(context, period.Year, period.Month, clientId, BillingTableType.ToolBillingStarted);
                 //unstarted reservations
-                dtUnStarted = BillingTablesBL.GetMultipleTables(period.Year, period.Month, clientId, BillingTableType.ToolBillingUnStarted);
-                dtCancelled = BillingTablesBL.GetMultipleTables(period.Year, period.Month, clientId, BillingTableType.ToolBillingCancelled);
+                dtUnStarted = BillingTablesBL.GetMultipleTables(context, period.Year, period.Month, clientId, BillingTableType.ToolBillingUnStarted);
+                dtCancelled = BillingTablesBL.GetMultipleTables(context, period.Year, period.Month, clientId, BillingTableType.ToolBillingCancelled);
             }
 
             dt.Columns.Add("TotalUnStartedUnusedDuration", typeof(double));
@@ -331,7 +331,7 @@ namespace sselIndReports.AppCode.BLL
         }
 
         // Call this function if period is between 2011-04-01 and 2011-06-01
-        public static DataSet GetToolBillingDataByClientID20110401(DateTime period, int clientId)
+        public static DataSet GetToolBillingDataByClientID20110401(HttpContextBase context, DateTime period, int clientId)
         {
             DataSet ds = null;
             DataTable dt1, dt2, dt3;
@@ -360,9 +360,9 @@ namespace sselIndReports.AppCode.BLL
                     t3 = BillingTableType.ToolBilling20110401Forgiven;
                 }
 
-                dt1 = BillingTablesBL.GetMultipleTables(period.Year, period.Month, clientId, t1);
-                dt2 = BillingTablesBL.GetMultipleTables(period.Year, period.Month, clientId, t2);
-                dt3 = BillingTablesBL.GetMultipleTables(period.Year, period.Month, clientId, t3);
+                dt1 = BillingTablesBL.GetMultipleTables(context, period.Year, period.Month, clientId, t1);
+                dt2 = BillingTablesBL.GetMultipleTables(context, period.Year, period.Month, clientId, t2);
+                dt3 = BillingTablesBL.GetMultipleTables(context, period.Year, period.Month, clientId, t3);
                 ds.Tables.Add(dt1.Copy());
                 ds.Tables.Add(dt2.Copy());
                 ds.Tables.Add(dt3.Copy());

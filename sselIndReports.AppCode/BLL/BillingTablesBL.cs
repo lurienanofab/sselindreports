@@ -22,7 +22,7 @@ namespace sselIndReports.AppCode.BLL
             return result;
         }
 
-        public static DataSet GetDataSet(int year, int month, int clientId)
+        public static DataSet GetDataSet(HttpContextBase context, int year, int month, int clientId)
         {
             DateTime period = new DateTime(year, month, 1);
 
@@ -30,23 +30,23 @@ namespace sselIndReports.AppCode.BLL
 
             if (period < NewBillingStartPeriod)
             {
-                if (HttpContext.Current.Session["UserUsageSummaryTables"] == null)
-                    HttpContext.Current.Session["UserUsageSummaryTables"] = BillingTablesDA.GetMultipleTables(year, month, clientId);
-                ds = (DataSet)HttpContext.Current.Session["UserUsageSummaryTables"];
+                if (context.Session["UserUsageSummaryTables"] == null)
+                    context.Session["UserUsageSummaryTables"] = BillingTablesDA.GetMultipleTables(year, month, clientId);
+                ds = (DataSet)context.Session["UserUsageSummaryTables"];
             }
             else
             {
-                if (HttpContext.Current.Session["UserUsageSummaryTables20110701"] == null)
-                    HttpContext.Current.Session["UserUsageSummaryTables20110701"] = BillingTablesDA.GetMultipleTables20110701(year, month, clientId);
-                ds = (DataSet)HttpContext.Current.Session["UserUsageSummaryTables20110701"];
+                if (context.Session["UserUsageSummaryTables20110701"] == null)
+                    context.Session["UserUsageSummaryTables20110701"] = BillingTablesDA.GetMultipleTables20110701(year, month, clientId);
+                ds = (DataSet)context.Session["UserUsageSummaryTables20110701"];
             }
 
             return ds;
         }
 
-        public static DataTable GetMultipleTables(int year, int month, int clientId, BillingTableType bt)
+        public static DataTable GetMultipleTables(HttpContextBase context, int year, int month, int clientId, BillingTableType bt)
         {
-            DataSet ds = GetDataSet(year, month, clientId);
+            DataSet ds = GetDataSet(context, year, month, clientId);
             return ds.Tables[(int)bt];
         }
     }

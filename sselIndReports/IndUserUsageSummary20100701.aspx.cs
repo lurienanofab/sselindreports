@@ -92,31 +92,31 @@ namespace sselIndReports
             divReportContent.Visible = true;
             lblClientID.Text = clientId.ToString();
 
-            gvRoomOrg.DataSource = RoomBillingByOrgBL.GetDataByPeriodAndClientID(period.Year, period.Month, clientId);
+            gvRoomOrg.DataSource = RoomBillingByOrgBL.GetDataByPeriodAndClientID(ContextBase, period.Year, period.Month, clientId);
             gvRoomOrg.DataBind();
 
-            gvStoreOrg.DataSource = BillingTablesBL.GetMultipleTables(period.Year, period.Month, clientId, BillingTableType.StoreByOrg);
+            gvStoreOrg.DataSource = BillingTablesBL.GetMultipleTables(ContextBase, period.Year, period.Month, clientId, BillingTableType.StoreByOrg);
             gvStoreOrg.DataBind();
 
-            gvSubsidy.DataSource = TieredSubsidyBillingBL.GetDataByPeriodAndClientID(period.Year, period.Month, clientId);
+            gvSubsidy.DataSource = TieredSubsidyBillingBL.GetDataByPeriodAndClientID(ContextBase, period.Year, period.Month, clientId);
             gvSubsidy.DataBind();
 
-            gvRoomAccount.DataSource = RoomBillingByAccountBL.GetDataByPeriodAndClientID(period.Year, period.Month, clientId);
+            gvRoomAccount.DataSource = RoomBillingByAccountBL.GetDataByPeriodAndClientID(ContextBase, period.Year, period.Month, clientId);
             gvRoomAccount.DataBind();
 
-            gvStoreAccount.DataSource = StoreBillingByAccountBL.GetDataByPeriodAndClientID(period.Year, period.Month, clientId);
+            gvStoreAccount.DataSource = StoreBillingByAccountBL.GetDataByPeriodAndClientID(ContextBase, period.Year, period.Month, clientId);
             gvStoreAccount.DataBind();
 
-            gvMisc.DataSource = MiscBillingBL.GetMiscBillingByClientID(period.Year, period.Month, clientId);
+            gvMisc.DataSource = MiscBillingBL.GetMiscBillingByClientID(ContextBase, period.Year, period.Month, clientId);
             gvMisc.DataBind();
 
             if (period < CutoffEnd)
             {
-                gvToolOrg.DataSource = ToolBillingByOrgBL.GetDataByPeriodAndClientID(period.Year, period.Month, clientId);
+                gvToolOrg.DataSource = ToolBillingByOrgBL.GetDataByPeriodAndClientID(ContextBase, period.Year, period.Month, clientId);
                 gvToolOrg.DataBind();
                 gvToolOrg.Visible = true;
 
-                gvToolAccount.DataSource = ToolBillingByAccountBL.GetDataByPeriodAndClientID(period.Year, period.Month, clientId);
+                gvToolAccount.DataSource = ToolBillingByAccountBL.GetDataByPeriodAndClientID(ContextBase, period.Year, period.Month, clientId);
                 gvToolAccount.DataBind();
                 gvToolAccount.Visible = true;
 
@@ -125,11 +125,11 @@ namespace sselIndReports
             }
             else
             {
-                gvToolOrg20110401.DataSource = ToolBillingByOrgBL.GetDataByPeriodAndClientID(period.Year, period.Month, clientId);
+                gvToolOrg20110401.DataSource = ToolBillingByOrgBL.GetDataByPeriodAndClientID(ContextBase, period.Year, period.Month, clientId);
                 gvToolOrg20110401.DataBind();
                 gvToolOrg20110401.Visible = true;
 
-                gvToolAccount20110401.DataSource = ToolBillingByAccountBL.GetDataByPeriodAndClientID20110401(period.Year, period.Month, clientId);
+                gvToolAccount20110401.DataSource = ToolBillingByAccountBL.GetDataByPeriodAndClientID20110401(ContextBase, period.Year, period.Month, clientId);
                 gvToolAccount20110401.DataBind();
                 gvToolAccount20110401.Visible = true;
 
@@ -140,7 +140,7 @@ namespace sselIndReports
 
         private void PopulateRoomData(DateTime period, int clientId)
         {
-            dtRoom = RoomBillingBL.GetRoomBillingDataByClientID(period, clientId);
+            dtRoom = RoomBillingBL.GetRoomBillingDataByClientID(ContextBase, period, clientId);
             gvRoom.DataSource = dtRoom;
             gvRoom.DataBind();
 
@@ -257,7 +257,7 @@ namespace sselIndReports
 
         private void PopulateStoreData(DateTime period, int clientId)
         {
-            dtStore = StoreBillingBL.GetStoreBillingDataByClientID(period, clientId);
+            dtStore = StoreBillingBL.GetStoreBillingDataByClientID(ContextBase, period, clientId);
             gvStore.DataSource = dtStore;
             gvStore.DataBind();
 

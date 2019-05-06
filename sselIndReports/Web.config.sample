@@ -10,7 +10,7 @@
     <provider production="false">
       <context loginUrl="/login" />
       <dataAccess showSql="true" />
-      <email host="127.0.0.1" log="true" />
+      <email host="xxxxx" log="true" />
       <control host="xxxxx" />
       <log name="sselIndReports" enabled="true" />
     </provider>
@@ -20,6 +20,7 @@
     <add key="DisclaimerText" value="Please note: The data for {PreviousMonth} usage has not yet been finalized." />
     <add key="Debug" value="false" />
     <add key="ShowMenu" value="false" />
+    <add key="ApiBaseUrl" value="xxxxx" />
     <add key="MongoConnectionString" value="xxxxx" />
     <add key="ValidationSettings:UnobtrusiveValidationMode" value="None" />
     <add key="owin:appStartup" value="sselIndReports.Startup, sselIndReports" />

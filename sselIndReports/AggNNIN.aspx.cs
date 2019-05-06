@@ -110,7 +110,9 @@ namespace sselIndReports
             }
 
             //find out if today is within 4 business days of beginning of month
-            DateTime businessDay = Utility.NextBusinessDay(repDate.AddMonths(1));
+            var sd = repDate.AddMonths(1);
+            var ed = sd.AddMonths(1);
+            DateTime businessDay = Utility.NextBusinessDay(sd, Utility.GetHolidays(sd, ed));
 
             if (DateTime.Now < businessDay)
             {

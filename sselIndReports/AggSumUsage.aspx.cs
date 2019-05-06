@@ -23,7 +23,7 @@ namespace sselIndReports
         {
             if (!Page.IsPostBack)
             {
-                CacheManager.Current.Updated(false);
+                ContextBase.Updated(false);
                 cblPriv.Items.LoadPrivs();
             }
         }
@@ -59,16 +59,17 @@ namespace sselIndReports
                 return;
             }
 
-            if (pp1.SelectedPeriod <= DateTime.Now && pp1.SelectedPeriod.AddMonths(1) > DateTime.Now && !CacheManager.Current.Updated())
+            if (pp1.SelectedPeriod <= DateTime.Now && pp1.SelectedPeriod.AddMonths(1) > DateTime.Now && !ContextBase.Updated())
             {
-                try //to handle missing data error
+                try
                 {
+                    // to handle missing data error
                     WriteData writeData = new WriteData();
-                    writeData.UpdateTables(new string[] { "Tool", "Room" }, UpdateDataType.DataClean | UpdateDataType.Data, DateTime.Now.FirstOfMonth(), 0);
+                    writeData.UpdateTables(BillingCategory.Tool | BillingCategory.Room, UpdateDataType.DataClean | UpdateDataType.Data, DateTime.Now.FirstOfMonth(), 0);
                 }
                 catch { }
 
-                CacheManager.Current.Updated(true);
+                ContextBase.Updated(true);
             }
 
             //get all access data for period
@@ -79,7 +80,7 @@ namespace sselIndReports
                 .Param("Period", pp1.SelectedPeriod)
                 .Param("Privs", (int)selectedPriv)
                 .Param("SelOrg", userOrgId >= 0, userOrgId)
-                .Param("OrgID", CacheManager.Current.CurrentUser.HasPriv(ClientPrivilege.Executive), orgId)
+                .Param("OrgID", CurrentUser.HasPriv(ClientPrivilege.Executive), orgId)
                 .FillDataSet("dbo.AggUsage_Select");
 
             var dtRaw = ds.Tables[0];
@@ -203,7 +204,7 @@ namespace sselIndReports
 
         protected void btnBack_Click(object sender, EventArgs e)
         {
-            CacheManager.Current.RemoveSessionValue("Updated");
+            ContextBase.Session.Remove("Updated");
             Response.Redirect("~/");
         }
 
