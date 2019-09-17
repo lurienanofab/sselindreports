@@ -1,7 +1,9 @@
 ﻿using LNF;
 using LNF.Billing;
 using LNF.Data;
+using LNF.Models.Billing;
 using LNF.Models.Data;
+using LNF.Models.Scheduler;
 using LNF.Repository;
 using LNF.Repository.Data;
 using LNF.Scheduler;
@@ -23,7 +25,7 @@ namespace sselIndReports.AppCode
         public IBillingTypeManager BillingTypeManager { get; set; }
 
         [SetterProperty]
-        public IClientOrgManager ClientOrgManager { get; set; }
+        public IClientManager ClientManager { get; set; }
 
         [SetterProperty]
         public IReservationManager ReservationManager { get; set; }

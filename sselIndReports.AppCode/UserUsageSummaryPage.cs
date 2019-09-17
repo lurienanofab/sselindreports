@@ -59,7 +59,7 @@ namespace sselIndReports.AppCode
             base.OnLoad(e);
         }
 
-        private IEnumerable<Holiday> GetHolidays() => Utility.GetHolidays(SelectedPeriod, SelectedPeriod.AddMonths(1));
+        private IEnumerable<IHoliday> GetHolidays() => Utility.GetHolidays(SelectedPeriod, SelectedPeriod.AddMonths(1));
 
         private int GetClientIDFromQueryString()
         {
@@ -120,7 +120,7 @@ namespace sselIndReports.AppCode
             return OrgManager.GetPrimaryOrg().OrgID == orgId;
         }
 
-        protected void ShowEstimateMessage(IEnumerable<Holiday> holidays)
+        protected void ShowEstimateMessage(IEnumerable<IHoliday> holidays)
         {
             if (SummaryApproximateLabel != null)
             {

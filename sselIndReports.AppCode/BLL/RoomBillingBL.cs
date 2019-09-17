@@ -1,5 +1,5 @@
 ﻿using LNF;
-using LNF.Billing;
+using LNF.Models.Billing;
 using sselIndReports.AppCode.DAL;
 using System;
 using System.Data;
@@ -9,7 +9,7 @@ namespace sselIndReports.AppCode.BLL
 {
     public static class RoomBillingBL
     {
-        public static IBillingTypeManager BillingTypeManager => ServiceProvider.Current.BillingTypeManager;
+        public static IBillingTypeManager BillingType => ServiceProvider.Current.Billing.BillingType;
 
         public static DataTable GetRoomBillingDataByClientID(HttpContextBase context, DateTime period, int clientId)
         {
@@ -29,7 +29,7 @@ namespace sselIndReports.AppCode.BLL
             if (!dt.Columns.Contains("LineCost"))
                 dt.Columns.Add("LineCost", typeof(decimal));
 
-            BillingTypeManager.CalculateRoomLineCost(dt);
+            BillingType.CalculateRoomLineCost(dt);
 
             return dt;
         }

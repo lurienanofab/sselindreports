@@ -1,12 +1,11 @@
 ﻿using LNF;
-using LNF.Billing;
 using LNF.Cache;
 using LNF.CommonTools;
 using LNF.Data;
+using LNF.Models.Billing;
 using LNF.Models.Data;
 using LNF.Models.Scheduler;
 using LNF.Repository;
-using LNF.Repository.Billing;
 using LNF.Repository.Data;
 using sselIndReports.AppCode.DAL;
 using System;
@@ -21,7 +20,7 @@ namespace sselIndReports.AppCode.BLL
     {
         // Call this after 2011-07-01
 
-        public static IBillingTypeManager BillingTypeManager => ServiceProvider.Current.BillingTypeManager;
+        public static IBillingTypeManager BillingType => ServiceProvider.Current.Billing.BillingType;
 
         private static void AddToColumn(DataRow dr, string columnName, double value)
         {
@@ -60,7 +59,7 @@ namespace sselIndReports.AppCode.BLL
             return result;
         }
 
-        public static DataTable GetAggreateByTool(IToolBilling[] query, IEnumerable<IResource> resources)
+        public static DataTable GetAggreateByTool(IEnumerable<LNF.Models.Billing.IToolBilling> query, IEnumerable<IResource> resources)
         {
             // This method creates a view of ToolBilling data where totals are aggregated by resource and account.
             // In addition extra columns are added for activated used, activated unused, and unstarted unused durations - which depend on the IsStarted and IsCancelledBeforeAllowedTime
@@ -95,7 +94,7 @@ namespace sselIndReports.AppCode.BLL
 
             var accounts = DA.Current.Query<AccountInfo>().CreateModels<IAccount>();
 
-            foreach (IToolBilling item in query.OrderBy(x => x.AccountID).ThenBy(x => x.ResourceID))
+            foreach (var item in query.OrderBy(x => x.AccountID).ThenBy(x => x.ResourceID))
             {
                 DataRow dr = dt.Select(string.Format("ClientID = {0} AND ResourceID = {1} AND AccountID = {2}", item.ClientID, item.ResourceID, item.AccountID)).FirstOrDefault();
 
@@ -172,7 +171,7 @@ namespace sselIndReports.AppCode.BLL
                 AddToColumn(dr, "ActivatedUnused", activatedUnused);
                 AddToColumn(dr, "UnstartedUnused", unstartedUnused);
 
-                AddToColumn(dr, "LineCost", BillingTypeManager.GetLineCost(item));
+                AddToColumn(dr, "LineCost", BillingType.GetLineCost(item));
             }
 
             return dt;
@@ -299,7 +298,7 @@ namespace sselIndReports.AppCode.BLL
                 int billingTypeId = dr.Field<int>("BillingTypeID");
                 bool isCancelledBeforeAllowedTime = dr.Field<bool>("IsCancelledBeforeAllowedTime");
 
-                if (billingTypeId == BillingType.Other)
+                if (billingTypeId == LNF.Repository.Billing.BillingType.Other)
                     dr["LineCost"] = 0;
                 else
                 {
@@ -380,7 +379,7 @@ namespace sselIndReports.AppCode.BLL
                         Rooms room = RoomUtility.GetRoom(dr.Field<int>("RoomID"));
                         bool isStarted = dr.Field<bool>("IsStarted");
 
-                        if (BillingTypeManager.IsMonthlyUserBillingType(billingTypeId))
+                        if (BillingType.IsMonthlyUserBillingType(billingTypeId))
                         {
                             if (period >= new DateTime(2010, 7, 1))
                             {
@@ -429,7 +428,7 @@ namespace sselIndReports.AppCode.BLL
                                 }
                             }
                         }
-                        else if (billingTypeId == BillingType.Other)
+                        else if (billingTypeId == LNF.Repository.Billing.BillingType.Other)
                             dr["LineCost"] = 0;
                         else
                         {
@@ -471,7 +470,7 @@ namespace sselIndReports.AppCode.BLL
                         int billingTypeId = dr.Field<int>("BillingTypeID");
                         bool isCancelledBeforeAllowedTime = dr.Field<bool>("IsCancelledBeforeAllowedTime");
 
-                        if (billingTypeId == BillingType.Other)
+                        if (billingTypeId == LNF.Repository.Billing.BillingType.Other)
                             dr["LineCost"] = 0;
                         else
                         {
@@ -519,7 +518,7 @@ namespace sselIndReports.AppCode.BLL
                     int roomId = dr.Field<int>("RoomID");
                     bool isStarted = dr.Field<bool>("IsStarted");
 
-                    if (billingTypeId == BillingType.Other)
+                    if (billingTypeId == LNF.Repository.Billing.BillingType.Other)
                         dr["LineCost"] = 0;
                     else
                     {

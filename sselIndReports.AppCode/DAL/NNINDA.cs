@@ -38,7 +38,7 @@ namespace sselIndReports.AppCode.DAL
             return DA.Command()
                 .Param("@Action", "DataCheck")
                 .Param("@eDate", period)
-                .ExecuteScalar<bool>("dbo.CumUserForNNIN_Select");
+                .ExecuteScalar<bool>("dbo.CumUserForNNIN_Select").Value;
         }
 
         public static DataTable GetCumulativeUserAggregateData(DateTime sDate, DateTime eDate)

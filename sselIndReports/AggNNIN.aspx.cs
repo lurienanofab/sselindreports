@@ -124,7 +124,7 @@ namespace sselIndReports
             bool makeAggData = DA.Command()
                 .Param("Action", "DataCheck")
                 .Param("eDate", repDate)
-                .ExecuteScalar<bool>("dbo.CumUser_Select");
+                .ExecuteScalar<bool>("dbo.CumUser_Select").Value;
 
             //clean up old files
             DirectoryInfo dirInfo = new DirectoryInfo(xlsFilePath);

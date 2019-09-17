@@ -1,5 +1,4 @@
-﻿using LNF.Cache;
-using LNF.Data;
+﻿using LNF.Data;
 using LNF.Models.Data;
 using LNF.Repository;
 using LNF.Repository.Data;
@@ -57,7 +56,7 @@ namespace sselIndReports
 
                     using (var reader = command.ExecuteReader("dbo.Client_Select"))
                     {
-                        ddlUser.DataSource = reader.GetReader();
+                        ddlUser.DataSource = reader;
                         ddlUser.DataTextField = "DisplayName";
                         ddlUser.DataValueField = "ClientID";
                         ddlUser.DataBind();
@@ -156,7 +155,7 @@ namespace sselIndReports
                 }
             }
 
-            var toolData = ReservationManager.SelectByDateRange(sd, ed, clientId);
+            var toolData = ReservationManager.SelectByClient(clientId, sd, ed, true);
             var filteredToolData = ReservationManager.FilterCancelledReservations(toolData, false);
 
             DateTime startTime;

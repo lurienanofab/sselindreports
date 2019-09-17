@@ -4,8 +4,8 @@ using LNF.Data;
 using LNF.Models.Data;
 using LNF.Models.Scheduler;
 using LNF.Repository;
-using LNF.Repository.Billing;
 using LNF.Repository.Data;
+using LNF.Repository.Scheduler;
 using LNF.Web.Controls;
 using sselIndReports.AppCode;
 using sselIndReports.AppCode.BLL;
@@ -201,14 +201,10 @@ namespace sselIndReports
         {
             //Tool - despite the word 'Detail' in the function name this is actually an aggregate by tool
             //DataTable dtTool = ToolBillingBL.GetToolBillingDataByClientID20110701(period, clientId);
-            IToolBilling[] query;
+            var query = Provider.Billing.Tool.GetToolBilling(period, clientId);
 
-            if (DateTime.Now.FirstOfMonth() == period)
-                query = DA.Current.Query<ToolBillingTemp>().Where(x => x.Period == period && x.ClientID == clientId).ToArray();
-            else
-                query = DA.Current.Query<ToolBilling>().Where(x => x.Period == period && x.ClientID == clientId).ToArray();
-
-            var resources = DA.Current.Query<LNF.Repository.Scheduler.ResourceInfo>().Where(x => x.ResourceIsActive).CreateModels<ResourceItem>();
+            // need all resources, not just active, because we may be looking at historical data
+            var resources = DA.Current.Query<ResourceInfo>().CreateModels<IResource>();
 
             DataTable dtTool = ToolBillingBL.GetAggreateByTool(query, resources);
             dtTool.DefaultView.Sort = "RoomName ASC, ResourceName ASC";

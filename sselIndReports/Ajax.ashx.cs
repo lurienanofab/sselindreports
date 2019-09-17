@@ -189,7 +189,7 @@ namespace sselIndReports
                 .Param("eDate", eDate)
                 .Param("OrgID", orgId);
 
-            recordsTotal = command.ExecuteScalar<int>(sql);
+            recordsTotal = command.ExecuteScalar<int>(sql).Value;
 
             if (req.Search != null && !string.IsNullOrEmpty(req.Search.Value))
             {
@@ -210,7 +210,7 @@ namespace sselIndReports
                     )";
 
                 sql = string.Format(select, "COUNT(*)") + where;
-                recordsFiltered = command.ExecuteScalar<int>(sql);
+                recordsFiltered = command.ExecuteScalar<int>(sql).Value;
             }
             else
             {

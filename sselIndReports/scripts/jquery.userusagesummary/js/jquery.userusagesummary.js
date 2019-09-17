@@ -3,13 +3,10 @@
         return this.each(function () {
             var $this = $(this);
 
-            $(".report-button", $this).click(function (e) {
-                var btn = $(this);
-                var container = btn.closest(".report-controls");
-                container.hide();
+            $("form").on("submit", function (e) {
+                $(".report-controls", $this).hide();
                 $(".spinner", $this).show();
             });
-
         });
     };
 }(jQuery));

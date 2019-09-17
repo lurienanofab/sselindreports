@@ -11,7 +11,7 @@ namespace sselIndReports.AppCode.DAL
             string technicalField = string.Empty;
             try
             {
-                technicalField = DA.Command().Param("Action", "GetTechnicalInterest").Param("ClientID", clientId).ExecuteScalar<string>("dbo.Client_Select");
+                technicalField = DA.Command().Param("Action", "GetTechnicalInterest").Param("ClientID", clientId).ExecuteScalar<string>("dbo.Client_Select").Value;
             }
             catch
             {
@@ -32,7 +32,7 @@ namespace sselIndReports.AppCode.DAL
         {
             return DA.Command()
                 .Param(new { Action = "GetOrgIDByClientOrgID", ClientOrgID })
-                .ExecuteScalar<int>("dbo.ClientOrg_Select");
+                .ExecuteScalar<int>("dbo.ClientOrg_Select").Value;
         }
 
         public static DataTable GetAllAccountsByClientOrgID(int clientOrgId)

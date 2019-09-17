@@ -1,13 +1,11 @@
 ﻿using LNF;
-using LNF.Billing;
-using LNF.Cache;
 using LNF.CommonTools;
+using LNF.Models.Billing;
 using LNF.Models.Data;
 using LNF.Models.Scheduler;
 using LNF.Repository;
 using LNF.Repository.Billing;
 using LNF.Repository.Data;
-using LNF.Scheduler;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -21,7 +19,7 @@ namespace sselIndReports
     {
         private readonly IDictionary<string, double> _totals = new Dictionary<string, double>();
 
-        protected IBillingTypeManager BillingTypeManager => ServiceProvider.Current.BillingTypeManager;
+        protected IBillingTypeManager BillingType => ServiceProvider.Current.Billing.BillingType;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -32,10 +30,10 @@ namespace sselIndReports
                 var clientId = GetRequiredParamAsInt32("ClientID");
                 var accountId = GetRequiredParamAsInt32("AccountID");
 
-                ResourceItem res = ServiceProvider.Current.Scheduler.GetResource(resourceId);
+                IResource res = ServiceProvider.Current.Scheduler.Resource.GetResource(resourceId);
                 litHeaderResource.Text = res.ToString();
 
-                IAccount acct = ServiceProvider.Current.Data.GetAccount(accountId);
+                IAccount acct = ServiceProvider.Current.Data.Account.GetAccount(accountId);
                 litHeaderAccount.Text = acct.ToString();
 
                 var data = GetData(resourceId, clientId, accountId, period);
@@ -47,7 +45,7 @@ namespace sselIndReports
 
         private IEnumerable<ResourceDetailItem> GetData(int resourceId, int clientId, int accountId, DateTime period)
         {
-            IQueryable<IToolBilling> query;
+            IQueryable<LNF.Repository.Billing.IToolBilling> query;
 
             if (period == DateTime.Now.FirstOfMonth())
                 query = DA.Current.Query<ToolBillingTemp>();
@@ -77,7 +75,7 @@ namespace sselIndReports
                     Transferred = Convert.ToDouble(x.Sum(g => g.ToolBilling.TransferredDuration / 60M)),
                     Forgiven = Convert.ToDouble(x.Sum(g => g.ToolBilling.ForgivenDuration / 60M)),
                     ResourceRate = x.Key.ResourceRate,
-                    LineTotal = x.Sum(g => BillingTypeManager.GetLineCost(g.ToolBilling)),
+                    LineTotal = x.Sum(g => GetLineCost(g.ToolBilling)),
                 })
                 .OrderBy(x => x.ActDate)
                 .ThenBy(x => x.ReservationID)
@@ -94,6 +92,12 @@ namespace sselIndReports
             _totals.Add("LineTotal", result.Sum(x => Convert.ToDouble(x.LineTotal)));
 
             return result;
+        }
+
+        private decimal GetLineCost(LNF.Repository.Billing.IToolBilling tb)
+        {
+            var model = tb.CreateModel<LNF.Models.Billing.IToolBilling>();
+            return BillingType.GetLineCost(model);
         }
 
         private string GetRequiredParamAsString(string key)

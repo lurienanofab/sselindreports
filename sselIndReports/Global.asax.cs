@@ -12,9 +12,8 @@ namespace sselIndReports
     {
         void Application_Start(object sender, EventArgs e)
         {
-            var ctx = new WebContext(new WebContextFactory());
-            var ioc = new IOC(ctx);
-            ServiceProvider.Current = ioc.Resolver.GetInstance<ServiceProvider>();
+            var ioc = new IOC();
+            ServiceProvider.Configure(ioc.Resolver);
 
             // Code that runs on application startup
             if (ServiceProvider.Current.IsProduction())

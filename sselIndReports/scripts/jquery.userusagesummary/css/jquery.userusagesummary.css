@@ -1,5 +1,5 @@
 .spinner {
-    background: url('images/ajax-loader.gif') no-repeat #FFF;
+    background: url(images/ajax-loader.gif) no-repeat #FFF;
     width: 31px;
     height: 31px;
     padding: 0;
