@@ -311,10 +311,10 @@ namespace sselIndReports
                 tblCell = new HtmlTableCell();
                 lblInfo = new Label();
 
-                string strDept = dsReport.Tables["Department"].Select(string.Format("DepartmentID = {0}", codr["DepartmentID"]))[0]["Department"].ToString();
-                string strRole = dsReport.Tables["Role"].Select(string.Format("RoleID = {0}", codr["RoleID"]))[0]["Role"].ToString();
+                string dept = dsReport.Tables["Department"].Select(string.Format("DepartmentID = {0}", codr["DepartmentID"]))[0]["Department"].ToString();
+                string role = dsReport.Tables["Role"].Select(string.Format("RoleID = {0}", codr["RoleID"]))[0]["Role"].ToString();
 
-                lblInfo.Text = "<b>Department:</b> " + strDept + ", <b>Role:</b> " + strRole;
+                lblInfo.Text = "<b>Department:</b> " + dept + ", <b>Role:</b> " + role;
                 lblInfo.CssClass = "LabelText";
                 tblCell.Controls.Add(lblInfo);
                 tblRow.Cells.Add(tblCell);
@@ -339,16 +339,16 @@ namespace sselIndReports
 
                 rowCntr += 1;
 
-                string strMgrs = "<b>Managers:</b> ";
+                string mgrs = "<b>Managers:</b> ";
                 if (Convert.ToBoolean(codr["IsManager"]))
-                    strMgrs = "Client is a manager for this Organization";
+                    mgrs += "Client is a manager for this organization";
                 else
                 {
                     DataRow[] cmdrs = dsReport.Tables["ClientManager"].Select(string.Format("ClientOrgID = {0}", codr["ClientOrgID"]));
                     if (cmdrs.Length == 0)
-                        strMgrs = "No managers assigned";
+                        mgrs += "No managers assigned";
                     else
-                        strMgrs = string.Join("; ", cmdrs.Select(dr => dr["DisplayName"].ToString()));
+                        mgrs += string.Join("; ", cmdrs.Select(dr => dr["DisplayName"].ToString()));
                 }
 
                 tblRow = new HtmlTableRow();
@@ -356,7 +356,7 @@ namespace sselIndReports
 
                 lblInfo = new Label
                 {
-                    Text = strMgrs,
+                    Text = mgrs,
                     CssClass = "LabelText"
                 };
 
@@ -382,10 +382,10 @@ namespace sselIndReports
 
                 rowCntr += 1;
 
-                string strAccts = "<b>Accounts:</b> ";
+                string accts = "<b>Accounts:</b> ";
                 DataRow[] cadrs = dsReport.Tables["ClientAccount"].Select(string.Format("ClientOrgID = {0}", codr["ClientOrgID"]));
                 if (cadrs.Length == 0)
-                    strAccts = "No accounts assigned<br>";
+                    accts = "No accounts assigned<br>";
                 else
                 {
                     for (int j = 0; j < cadrs.Length; j++)
@@ -395,10 +395,10 @@ namespace sselIndReports
                         {
                             int accountId = Convert.ToInt32(cadrs[j]["AccountID"]);
                             Account acct = DA.Current.Single<Account>(accountId);
-                            strAccts += string.Format(@"{0} <span style=""color: #FF0000;"">[inactive]</span><br />", acct.Name);
+                            accts += string.Format(@"{0} <span style=""color: #FF0000;"">[inactive]</span><br />", acct.Name);
                         }
                         else
-                            strAccts += string.Format("{0}<br />", dr["Name"]);
+                            accts += string.Format("{0}<br />", dr["Name"]);
                     }
                 }
 
@@ -407,7 +407,7 @@ namespace sselIndReports
 
                 lblInfo = new Label
                 {
-                    Text = strAccts,
+                    Text = accts,
                     CssClass = "LabelText"
                 };
 
