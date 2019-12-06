@@ -44,10 +44,7 @@ namespace sselIndReports
             {
                 command.Param("Privs", (int)ClientPrivilege.PhysicalAccess);
                 if (chkActive.Checked)
-                {
-                    command.Param("SDate", new DateTime(1999, 1, 1))
-                        .Param("EDate", DateTime.Now.AddDays(1));
-                }
+                    command.Param("sDate", new DateTime(1999, 1, 1)).Param("eDate", DateTime.Now.AddDays(1));
                 command.Param("Action", "All");
             }
             else if (CurrentUser.HasPriv(ClientPrivilege.Executive))
