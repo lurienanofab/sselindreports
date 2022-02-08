@@ -1,10 +1,7 @@
 ﻿using LNF;
-using LNF.Cache;
+using LNF.Billing;
 using LNF.CommonTools;
 using LNF.Data;
-using LNF.Models.Data;
-using LNF.Repository;
-using LNF.Repository.Billing;
 using LNF.Web;
 using sselIndReports.AppCode;
 using sselIndReports.AppCode.BLL;
@@ -60,25 +57,25 @@ namespace sselIndReports
             dsReport = new DataSet("IndSumUsage");
 
             // get account, resource and item info info
-            DA.Command()
+            DataCommand()
                 .Param("Action", "All")
                 .FillDataSet(dsReport, "dbo.Account_Select", "Account");
 
             dsReport.Tables["Account"].PrimaryKey = new[] { dsReport.Tables["Account"].Columns["AccountID"] };
 
-            DA.Command()
+            DataCommand()
                 .Param("Action", "All")
                 .FillDataSet(dsReport, "dbo.Room_Select", "Room");
 
             dsReport.Tables["Room"].PrimaryKey = new[] { dsReport.Tables["Room"].Columns["RoomID"] };
 
-            DA.Command()
+            DataCommand()
                 .Param("Action", "AllResources")
                 .FillDataSet(dsReport, "dbo.sselScheduler_Select", "Resource");
 
             dsReport.Tables["Resource"].PrimaryKey = new[] { dsReport.Tables["Resource"].Columns["ResourceID"] };
 
-            DA.Command()
+            DataCommand()
                 .Param("Action", "Item")
                 .FillDataSet(dsReport, "dbo.sselMAS_Select", "Item");
 
@@ -91,7 +88,7 @@ namespace sselIndReports
             //   IsActive=1, if False then only IsActive=0, if DBNull then both are returned. If no parameter
             //   is passed to GetBillingTypes the results are the same as they always were - only IsActive=1
             //   are returned.
-            dsReport.Tables.Add(AppCode.BLL.BillingTypeManager.GetBillingTypes(DBNull.Value));
+            dsReport.Tables.Add(BillingTypeManager.GetBillingTypes(DBNull.Value));
             dsReport.Tables[4].TableName = "BillingType";
 
             dsReport.Tables["BillingType"].PrimaryKey = new[] { dsReport.Tables["BillingType"].Columns["BillingTypeID"] };
@@ -102,7 +99,7 @@ namespace sselIndReports
 
             dsReport.Tables["Org"].PrimaryKey = new[] { dsReport.Tables["Org"].Columns["OrgID"] };
 
-            ContextBase.CacheData(dsReport);
+            ContextBase.SetCacheData(dsReport);
 
             //2007-02-01 Add report button
             //So have to move the ddlUser populated code here
@@ -111,7 +108,7 @@ namespace sselIndReports
                 DateTime sDate = period;
                 DateTime eDate = sDate.AddMonths(1);
 
-                var command = DA.Command()
+                var command = DataCommand()
                     .Param("sDate", sDate)
                     .Param("eDate", eDate)
                     .Param("ClientID", clientId);
@@ -160,7 +157,7 @@ namespace sselIndReports
                 catch
                 {
                     Session.Abandon();
-                    Response.Redirect(ServiceProvider.Current.Context.LoginUrl + "?Action=Exit");
+                    Response.Redirect(ServiceProvider.Current.LoginUrl() + "?Action=Exit");
                 }
             }
         }
@@ -175,8 +172,6 @@ namespace sselIndReports
             //'Wen: this will be called only when user want to see report that's in current month
             if ((sDate <= DateTime.Now.Date && eDate > DateTime.Now.Date) && !ContextBase.Updated())
             {
-                WriteData wd = new WriteData();
-                string[] types = { "Tool", "Room", "Store" };
                 //wd.UpdateTable(types, 0, 0, UpdateDataType.CleanData | UpdateDataType.Data);
                 using (StreamWriter file = new StreamWriter(File.OpenWrite(Request.PhysicalApplicationPath + "\\log.txt")))
                 {
@@ -246,7 +241,7 @@ namespace sselIndReports
                 int currentBillingTypeId = dtRoomCost.Rows[0].Field<int>("BillingTypeID");
                 decimal totalCleanRoomHours = 0; //this stores the total clean room hours for this user at this month
                 decimal totalChemRoomHours = 0; //this stores the total chem room hours
-                int[] specialBillingTypesForSomeUnknownReason = { BillingType.ExtAc_Ga, BillingType.ExtAc_Si, BillingType.Int_Si, BillingType.Int_Ga };
+                int[] specialBillingTypesForSomeUnknownReason = { BillingTypes.ExtAc_Ga, BillingTypes.ExtAc_Si, BillingTypes.Int_Si, BillingTypes.Int_Ga };
                 if (specialBillingTypesForSomeUnknownReason.Contains(currentBillingTypeId))
                 {
                     try
@@ -271,7 +266,6 @@ namespace sselIndReports
                 }
 
                 int previousOrgId = dtRoomCost.Rows[0].Field<int>("OrgID");
-                int currentOrgId = previousOrgId;
 
                 DataRow nr = SummaryTable.NewRow();
                 nr["OrgID"] = previousOrgId;
@@ -280,6 +274,7 @@ namespace sselIndReports
                 nr["RoomTotal"] = 0;
                 nr["ToolTotal"] = 0;
                 nr["StoreTotal"] = 0;
+
                 SummaryTable.Rows.Add(nr);
 
                 //**************** NAP room handling ******************
@@ -342,9 +337,9 @@ namespace sselIndReports
                     else if (dr.Field<int>("RoomID") == 25)
                         tempTotalHours = totalChemRoomHours;
 
-                    dr["LineCost"] = AppCode.BLL.BillingTypeManager.GetTotalCostByBillingType(dr.Field<int>("BillingType"), dr.Field<decimal>("TotalHours"), dr.Field<decimal>("TotalEntries"), dr.Field<Rooms>("RoomID"), dr.Field<decimal>("TotalCalcCost"), tempTotalHours);
+                    dr["LineCost"] = BillingTypeManager.GetTotalCostByBillingType(dr.Field<int>("BillingType"), dr.Field<decimal>("TotalHours"), dr.Field<decimal>("TotalEntries"), dr.Field<LabRoom>("RoomID"), dr.Field<decimal>("TotalCalcCost"), tempTotalHours);
 
-                    currentOrgId = dr.Field<int>("OrgID");
+                    int currentOrgId = dr.Field<int>("OrgID");
                     if (previousOrgId != currentOrgId)
                     {
                         nr = SummaryTable.NewRow();
@@ -380,7 +375,7 @@ namespace sselIndReports
 
             //***************** Tool related *******************************
             //2007-02-23 Must handle the exception here because if the user doesn't exist on that period, a error occur inside the CalcCost function
-            DataTable dtToolCost = null;
+            DataTable dtToolCost;
 
             //0 ClientID
             //1 AccountID
@@ -576,7 +571,7 @@ namespace sselIndReports
             foreach (DataRow r in SummaryTable.Rows)
             {
                 int billingTypeId = r.Field<int>("BillingTypeID");
-                int[] specialBillingTypesForSomeUnknownReason = { BillingType.NonAc, BillingType.ExtAc_Ga, BillingType.ExtAc_Si, BillingType.Int_Ga, BillingType.Int_Si, BillingType.Other };
+                int[] specialBillingTypesForSomeUnknownReason = { BillingTypes.NonAc, BillingTypes.ExtAc_Ga, BillingTypes.ExtAc_Si, BillingTypes.Int_Ga, BillingTypes.Int_Si, BillingTypes.Other };
                 if (specialBillingTypesForSomeUnknownReason.Contains(billingTypeId))
                     r["ToolTotal"] = 0.0;
             }
@@ -603,7 +598,7 @@ namespace sselIndReports
 
             double sumCost = 0.0;
 
-            var dsReport = ContextBase.CacheData();
+            var dsReport = ContextBase.GetCacheData();
 
             gvRoom.DataSource = BillingManager.GetRoomCost(dsReport, period, clientId, SummaryTable, ref sumCost);
             gvRoom.DataBind();
@@ -621,8 +616,8 @@ namespace sselIndReports
             gvToolForgiven2.DataSource = dtForgiven;
             gvToolForgiven2.DataBind();
 
-            double cancelledCost = 0;
-            double forgivenCost = 0;
+            double cancelledCost;
+            double forgivenCost;
 
             if (dtCancelled == null || dtCancelled.Rows.Count == 0)
                 cancelledCost = 0;

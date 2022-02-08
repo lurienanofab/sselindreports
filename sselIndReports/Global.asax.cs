@@ -1,22 +1,34 @@
-﻿using LNF;
-using LNF.Impl.Context;
-using LNF.Impl.DependencyInjection.Web;
+﻿using LNF.Impl.DependencyInjection;
+using LNF.Web;
 using System;
+using System.Linq;
+using System.Reflection;
 using System.Security.Principal;
 using System.Web;
+using System.Web.Compilation;
 using System.Web.Security;
 
 namespace sselIndReports
 {
     public class Global : HttpApplication
     {
+        public static WebApp WebApp { get; private set; }
+
         void Application_Start(object sender, EventArgs e)
         {
-            var ioc = new IOC();
-            ServiceProvider.Configure(ioc.Resolver);
+            WebApp = new WebApp();
 
-            // Code that runs on application startup
-            if (ServiceProvider.Current.IsProduction())
+            // setup up dependency injection container
+            WebApp.Context.EnablePropertyInjection();
+
+            var wcc = new WebContainerConfiguration(WebApp.Context);
+            wcc.RegisterAllTypes();
+
+            // setup web dependency injection
+            Assembly[] assemblies = BuildManager.GetReferencedAssemblies().Cast<Assembly>().ToArray();
+            WebApp.Bootstrap(assemblies);
+
+            if (LNF.Configuration.Current.Production)
                 Application["AppServer"] = "http://" + Environment.MachineName + ".eecs.umich.edu/";
             else
                 Application["AppServer"] = "/";

@@ -1,6 +1,5 @@
 ﻿using sselIndReports.AppCode;
 using sselIndReports.AppCode.BLL;
-using sselIndReports.AppCode.DAL;
 using System;
 using System.Data;
 using System.Web.UI.WebControls;
@@ -279,113 +278,6 @@ namespace sselIndReports
                 lblStore.Text = "No store usage in this period";
 
             lblStore.Visible = true;
-        }
-
-        private void PopulateSummaryDataList(DateTime period, int clientId)
-        {
-            DataTable dtSubsidy = SubsidyBillingDA.GetSubsidyBillingDataByClientID(period, clientId);
-            DataTable dtMisc = MiscBillingChargeDA.GetDataByPeriodAndClientID(period, clientId);
-
-            DataTable dtSummary = new DataTable();
-            dtSummary.Columns.Add("OrgID", typeof(int));
-            dtSummary.Columns.Add("OrgName", typeof(string));
-            dtSummary.Columns.Add("RoomTotal", typeof(double));
-            dtSummary.Columns.Add("ToolTotal", typeof(double));
-            dtSummary.Columns.Add("StoreTotal", typeof(double));
-            dtSummary.Columns.Add("RoomMiscTotal", typeof(double));
-            dtSummary.Columns.Add("ToolMiscTotal", typeof(double));
-            dtSummary.Columns.Add("StoreMiscTotal", typeof(double));
-            dtSummary.Columns.Add("SubsidizedAmount", typeof(double));
-            dtSummary.Columns.Add("TotalCostSubsidized", typeof(double));
-
-            int currentOrgId, previousOrgId = -1;
-            DataView dv = dtRoom.DefaultView;
-            dv.Sort = "OrgID";
-
-            foreach (DataRowView drv in dv)
-            {
-                currentOrgId = Convert.ToInt32(drv["OrgID"]);
-                if (currentOrgId != previousOrgId)
-                {
-                    DataRow nr = dtSummary.NewRow();
-                    nr["OrgID"] = currentOrgId;
-                    nr["OrgName"] = drv["OrgName"];
-                    nr["RoomTotal"] = 0;
-                    nr["ToolTotal"] = 0;
-                    nr["StoreTotal"] = 0;
-
-                    DataRow[] rows = dtMisc.Select(string.Format("OrgID = {0}", currentOrgId));
-
-                    if (rows.Length > 0)
-                    {
-                        foreach (DataRow row in rows)
-                        {
-                            if (row["SUBType"].ToString() == "Room")
-                                nr["RoomMiscTotal"] = rows[0]["MiscCost"];
-                            else if (row["SUBType"].ToString() == "Tool")
-                                nr["ToolMiscTotal"] = rows[0]["MiscCost"];
-                            else if (row["SUBType"].ToString() == "Store")
-                                nr["StoreMiscTotal"] = rows[0]["MiscCost"];
-                        }
-                    }
-                    else
-                    {
-                        nr["RoomMiscTotal"] = 0;
-                        nr["ToolMiscTotal"] = 0;
-                        nr["StoreMiscTotal"] = 0;
-                    }
-
-                    if (IsPrimaryOrg(currentOrgId))
-                    {
-                        if (dtSubsidy.Rows.Count == 1)
-                        {
-                            nr["SubsidizedAmount"] = dtSubsidy.Rows[0].Field<double>("UserTotalSum") - dtSubsidy.Rows[0].Field<double>("UserPaymentSum");
-                            nr["TotalCostSubsidized"] = dtSubsidy.Rows[0]["UserPaymentSum"];
-                        }
-                    }
-
-                    dtSummary.Rows.Add(nr);
-                }
-
-                previousOrgId = currentOrgId;
-            }
-
-            object totalRoomChargePerOrg;
-            object totalToolActivatedPerOrg;
-            object totalToolUncancelledPerOrg;
-            object totalStorePerOrg;
-
-            foreach (DataRow dr in dtSummary.Rows)
-            {
-                totalRoomChargePerOrg = DBNull.Value;
-                totalToolActivatedPerOrg = DBNull.Value;
-                totalToolUncancelledPerOrg = DBNull.Value;
-                totalStorePerOrg = DBNull.Value;
-
-                if (dtRoom.Rows.Count > 0)
-                    totalRoomChargePerOrg = dtRoom.Compute("SUM(LineCost)", string.Format("OrgID = {0}", dr["OrgID"]));
-
-                if (totalRoomChargePerOrg != DBNull.Value)
-                    dr["RoomTotal"] = Convert.ToDouble(totalRoomChargePerOrg);
-
-                if (dtToolActivated.Rows.Count > 0)
-                    totalToolActivatedPerOrg = dtToolActivated.Compute("SUM(LineCost)", string.Format("OrgID = {0}", dr["OrgID"]));
-
-                if (dtToolUncancelled.Rows.Count > 0)
-                    totalToolUncancelledPerOrg = dtToolUncancelled.Compute("SUM(LineCost)", string.Format("OrgID = {0}", dr["OrgID"]));
-
-                if (totalToolActivatedPerOrg != DBNull.Value)
-                    dr["ToolTotal"] = Convert.ToDouble(totalToolActivatedPerOrg);
-
-                if (totalToolUncancelledPerOrg != DBNull.Value)
-                    dr["ToolTotal"] = dr.Field<double>("ToolTotal") + Convert.ToDouble(totalToolUncancelledPerOrg);
-
-                if (dtStore.Rows.Count > 0)
-                    totalStorePerOrg = dtStore.Compute("SUM(LineCost)", string.Format("OrgID = {0}", dr["OrgID"]));
-
-                if (totalStorePerOrg != DBNull.Value)
-                    dr["StoreTotal"] = Convert.ToDouble(totalStorePerOrg);
-            }
         }
     }
 }

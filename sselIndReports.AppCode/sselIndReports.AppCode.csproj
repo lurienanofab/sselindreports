@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>sselIndReports.AppCode</RootNamespace>
     <AssemblyName>sselIndReports.AppCode</AssemblyName>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -33,9 +33,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="StructureMap, Version=4.7.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\StructureMap.4.7.0\lib\net45\StructureMap.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
@@ -91,9 +88,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\lnf\LNF.Models\LNF.Models.csproj">
-      <Project>{98c7f73d-ef9d-4a87-8b79-a1208085cfbd}</Project>
-      <Name>LNF.Models</Name>
+    <ProjectReference Include="..\..\LNF\LNF.Impl\LNF.Impl.csproj">
+      <Project>{F490B789-B824-4A8C-90FC-AC447C3277F0}</Project>
+      <Name>LNF.Impl</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\LNF\LNF.Web\LNF.Web.csproj">
       <Project>{f79683ff-e524-4107-a6e1-29579ee544e1}</Project>
@@ -106,7 +103,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

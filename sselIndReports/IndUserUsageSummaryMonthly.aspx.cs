@@ -1,4 +1,4 @@
-﻿using LNF.Models.Data;
+﻿using LNF.Data;
 using sselIndReports.AppCode;
 
 namespace sselIndReports

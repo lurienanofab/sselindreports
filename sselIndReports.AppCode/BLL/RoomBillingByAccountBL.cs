@@ -1,4 +1,4 @@
-﻿using LNF.Repository.Billing;
+﻿using LNF.Billing;
 using System.Data;
 using System.Web;
 
@@ -17,7 +17,7 @@ namespace sselIndReports.AppCode.BLL
             {
                 int billingTypeId = dr.Field<int>("BillingTypeID");
 
-                if (billingTypeId == BillingType.Other)
+                if (billingTypeId == BillingTypes.Other)
                 {
                     dr["RoomCharge"] = 0;
                     dr["EntryCharge"] = 0;

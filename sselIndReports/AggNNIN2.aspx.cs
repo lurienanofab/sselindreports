@@ -1,6 +1,6 @@
 ﻿using GemBox.ExcelLite;
 using LNF.CommonTools;
-using LNF.Models.Data;
+using LNF.Data;
 using sselIndReports.AppCode;
 using sselIndReports.AppCode.DAL;
 using System;
@@ -40,13 +40,7 @@ namespace sselIndReports
             }
         }
 
-        public string CurrentFilesPattern
-        {
-            get
-            {
-                return string.Format("AS*_{0}.xls", litCurrentThreshold.Text);
-            }
-        }
+        public string GetCurrentFilesPattern() => string.Format("AS*_{0}.xls", litCurrentThreshold.Text);
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -54,7 +48,8 @@ namespace sselIndReports
 
             if (!Page.IsPostBack)
             {
-                litCurrentThreshold.Text = "240";
+                double threshold = 240;
+                litCurrentThreshold.Text = threshold.ToString();
                 Refresh();
                 litDebug.Text = Debug ? DebugText : string.Empty;
             }
@@ -85,7 +80,7 @@ namespace sselIndReports
             }
         }
 
-        protected void ppAgg_SelectedPeriodChanged(object sender, EventArgs e)
+        protected void PpAgg_SelectedPeriodChanged(object sender, EventArgs e)
         {
             DateTime aggStartDate = ppAgg.SelectedPeriod;
             DateTime repDate = GetReportDateBasedOnGeneratedReports(aggStartDate);
@@ -131,7 +126,19 @@ namespace sselIndReports
             return repDate; //the maximum allowable date for the report
         }
 
-        protected void btnReport_Command(object sender, CommandEventArgs e)
+        protected void Report_Command(object sender, CommandEventArgs e)
+        {
+            switch (e.CommandName)
+            {
+                case "ViewReport":
+                    ViewReport();
+                    break;
+                default:
+                    throw new Exception($"Unknown command name: {e.CommandName}");
+            }
+        }
+
+        private void ViewReport()
         {
             litWarning.Text = string.Empty;
 
@@ -301,7 +308,7 @@ namespace sselIndReports
 
             SpreadSheet.SaveXls(xlsReportPath);
             SpreadSheet = null;
-            System.GC.Collect();
+            GC.Collect();
 
             return xlsReportPath;
         }
@@ -348,7 +355,7 @@ namespace sselIndReports
 
             DirectoryInfo dirInfo = new DirectoryInfo(XlsFilePath);
             int id = 0;
-            foreach (FileSystemInfo fileInfo in dirInfo.GetFileSystemInfos(CurrentFilesPattern))
+            foreach (FileSystemInfo fileInfo in dirInfo.GetFileSystemInfos(GetCurrentFilesPattern()))
             {
                 dt.Rows.Add(id, fileInfo.Name, fileInfo.CreationTime, fileInfo.LastWriteTime);
                 id += 1;
@@ -357,7 +364,7 @@ namespace sselIndReports
             return dt;
         }
 
-        protected void btnDeleteCheckedFiles_Click(object sender, EventArgs e)
+        protected void BtnDeleteCheckedFiles_Click(object sender, EventArgs e)
         {
             foreach (RepeaterItem item in rptCurrentFiles.Items)
             {
@@ -390,11 +397,10 @@ namespace sselIndReports
             return result;
         }
 
-        protected void btnChangeThreshold_Click(object sender, EventArgs e)
+        protected void BtnChangeThreshold_Click(object sender, EventArgs e)
         {
             int CurrentThreshold = 240;
-            int temp;
-            if (int.TryParse(txtMinMinutes.Text, out temp))
+            if (int.TryParse(txtMinMinutes.Text, out int temp))
                 CurrentThreshold = temp;
             litCurrentThreshold.Text = CurrentThreshold.ToString();
             txtMinMinutes.Text = string.Empty;

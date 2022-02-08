@@ -1,6 +1,6 @@
 ﻿using GemBox.ExcelLite;
 using LNF.CommonTools;
-using LNF.Models.Data;
+using LNF.Data;
 using LNF.Repository;
 using sselIndReports.AppCode;
 using sselIndReports.AppCode.DAL;
@@ -121,7 +121,7 @@ namespace sselIndReports
             }
 
             //need to check to see if data exists for selected report month
-            bool makeAggData = DA.Command()
+            bool makeAggData = DataCommand()
                 .Param("Action", "DataCheck")
                 .Param("eDate", repDate)
                 .ExecuteScalar<bool>("dbo.CumUser_Select").Value;
@@ -180,7 +180,7 @@ namespace sselIndReports
             DataTable dtToolCost = dsCostTables.Tables[1];
 
             //get Client info
-            DataSet ds = DA.Command()
+            DataSet ds = DataCommand()
                 .Param("Action", "GetAllTables")
                 .Param("Period", period)
                 .Param("Privs", (int)ClientPrivilege.LabUser)
@@ -228,7 +228,7 @@ namespace sselIndReports
             }
 
             //get raw cumulative user data
-            DA.Command()
+            DataCommand()
                 .Param("Action", "Aggregate")
                 .Param("sDate", aggStartDate)
                 .Param("eDate", repDate)

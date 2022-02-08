@@ -1,7 +1,5 @@
 ﻿using LNF.CommonTools;
-using LNF.Models.Data;
-using LNF.Repository;
-using LNF.Repository.Data;
+using LNF.Data;
 using LNF.Web.Controls;
 using System;
 using System.Collections;
@@ -93,7 +91,7 @@ namespace sselIndReports.AppCode
             GetRoomSums(dt, out object lnfSum, out object cleanRoomSum, out object wetChemSum, out object testLabSum);
             UpdateSumLabel(lnfSum, lbl, "LNF");
             UpdateSumLabel(cleanRoomSum, lbl, "Clean Room");
-            UpdateSumLabel(wetChemSum, lbl, "Wet Chemistry");
+            UpdateSumLabel(wetChemSum, lbl, "ROBIN");
             UpdateSumLabel(testLabSum, lbl, "DC Lab");
         }
 
@@ -117,7 +115,7 @@ namespace sselIndReports.AppCode
 
         protected bool IsPrimaryOrg(int orgId)
         {
-            return OrgManager.GetPrimaryOrg().OrgID == orgId;
+            return Provider.Data.Org.GetPrimaryOrg().OrgID == orgId;
         }
 
         protected void ShowEstimateMessage(IEnumerable<IHoliday> holidays)
@@ -197,55 +195,12 @@ namespace sselIndReports.AppCode
             return dataSource.Distinct(new ClientItemEqualityComparer()).OrderBy(x => x.DisplayName).ToArray();
         }*/
 
-        private Client[] FilterForExecutive(ClientAccount[] baseQuery)
-        {
-            // get all accounts of this manager Client.Current
-            // get all users in each of these accounts
-            var client = CurrentUser;
-            //if (client.HasPriv(ClientPrivilege.Executive))
-            //return DA.Current.Query<ClientAccount>().Where(x => x.ClientOrg.ClientOrgID == clientOrgId).ToArray();
-
-            //var allClientAccountsActiveInPeriod = ActiveLog.GetActive<ClientAccount>(x => x.ClientAccountID, SelectedPeriod, SelectedPeriod.AddMonths(1)).ToArray();
-
-            ClientAccount[] managerClientAccounts = baseQuery.Where(x => x.ClientOrg.Client.ClientID == client.ClientID).ToArray();
-
-            List<Client> dataSource = new List<Client>();
-
-            foreach (ClientAccount ca in managerClientAccounts)
-            {
-                //ClientOrg[] clientOrgs = DA.Current.Query<ClientOrg>().Where(x => x.Org == ca.ClientOrg.Org).ToArray();
-                //dataSource.AddRange(clientOrgs.Select(x => x.Client));
-
-                ClientAccount[] clientAccts = baseQuery.Where(x => x.Account == ca.Account).ToArray();
-                dataSource.AddRange(clientAccts.Select(x => x.ClientOrg.Client));
-            }
-
-            //managerClientAccounts.SelectMany(x => DA.Current.Query<Client>().Where(y => y.ClientID == x.ClientOrg.Client.ClientID && y.ClientID != client.ClientID)).Distinct().ToArray();
-
-            return dataSource.Distinct().ToArray();
-        }
-        private static DataTable GetAllClient(DateTime sDate, DateTime eDate, int privs)
-        {
-            var dt = DA.Command()
-                .Param("Action", "AllUniqueName")
-                .Param("sDate", sDate)
-                .Param("eDate", eDate)
-                .Param("Privs", privs)
-                .FillDataTable("dbo.Client_Select");
-
-            //Must set primary key because the client code need to find data in this table
-            //should this code below to business logic or data access?
-            dt.PrimaryKey = new DataColumn[] { dt.Columns["ClientID"] };
-
-            return dt;
-        }
-
         protected void ReportButton_Click(object sender, EventArgs e)
         {
             RunReport(SelectedPeriod, SelectedClientID);
         }
 
-        protected void pp1_SelectedPeriodChanged(object sender, PeriodChangedEventArgs e)
+        protected void Pp1_SelectedPeriodChanged(object sender, PeriodChangedEventArgs e)
         {
             PopulateUserDropDownList(ClientDropDownList, SelectedPeriod, RetrieveDataButton);
             ShowEstimateMessage(GetHolidays());

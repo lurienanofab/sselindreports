@@ -1,4 +1,4 @@
-﻿using LNF.Repository.Billing;
+﻿using LNF.Billing;
 using System;
 using System.Data;
 using System.Web;
@@ -15,7 +15,7 @@ namespace sselIndReports.AppCode.BLL
             {
                 int billingTypeId = dr.Field<int>("BillingTypeID");
 
-                if (billingTypeId == BillingType.Other)
+                if (billingTypeId == BillingTypes.Other)
                 {
                     dr["UsageFeeCharged"] = 0;
                     dr["OverTimePenaltyFee"] = 0;
@@ -36,7 +36,7 @@ namespace sselIndReports.AppCode.BLL
             {
                 int billingTypeId = dr.Field<int>("BillingTypeID");
 
-                if (billingTypeId == BillingType.Other)
+                if (billingTypeId == BillingTypes.Other)
                 {
                     dr["UsageFeeCharged"] = 0;
                     dr["OverTimePenaltyFee"] = 0;
@@ -66,9 +66,9 @@ namespace sselIndReports.AppCode.BLL
             {
                 int billingTypeId = dr.Field<int>("BillingTypeID");
 
-                if (billingTypeId == BillingType.Grower_Observer)
+                if (billingTypeId == BillingTypes.Grower_Observer)
                     dr["UsageFeeDisplay"] = dr["UsageFeeCharged"];
-                else if (billingTypeId == BillingType.Other)
+                else if (billingTypeId == BillingTypes.Other)
                 {
                     dr["UsageFeeCharged"] = 0;
                     dr["OverTimePenaltyFee"] = 0;

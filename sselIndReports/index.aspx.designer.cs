@@ -7,11 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace sselIndReports {
-    
-    
-    public partial class index {
-        
+namespace sselIndReports
+{
+
+
+    public partial class Index
+    {
+
         /// <summary>
         /// lblName control.
         /// </summary>
@@ -20,7 +22,16 @@ namespace sselIndReports {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblName;
-        
+
+        /// <summary>
+        /// divInd control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divInd;
+
         /// <summary>
         /// lblInd control.
         /// </summary>
@@ -29,25 +40,7 @@ namespace sselIndReports {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblInd;
-        
-        /// <summary>
-        /// lblAgg control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblAgg;
-        
-        /// <summary>
-        /// lblDat control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblDat;
-        
+
         /// <summary>
         /// btnIndDetUsage control.
         /// </summary>
@@ -56,25 +49,7 @@ namespace sselIndReports {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnIndDetUsage;
-        
-        /// <summary>
-        /// btnAggSumUsage control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnAggSumUsage;
-        
-        /// <summary>
-        /// btnDatClient control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnDatClient;
-        
+
         /// <summary>
         /// btnIndSumUsage control.
         /// </summary>
@@ -83,7 +58,7 @@ namespace sselIndReports {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnIndSumUsage;
-        
+
         /// <summary>
         /// btnIndUserUsageSummary control.
         /// </summary>
@@ -92,7 +67,7 @@ namespace sselIndReports {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnIndUserUsageSummary;
-        
+
         /// <summary>
         /// btnIndUserUsageSummary20100701 control.
         /// </summary>
@@ -101,7 +76,7 @@ namespace sselIndReports {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnIndUserUsageSummary20100701;
-        
+
         /// <summary>
         /// btnIndUserUsageSummary20110401 control.
         /// </summary>
@@ -110,7 +85,7 @@ namespace sselIndReports {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnIndUserUsageSummary20110401;
-        
+
         /// <summary>
         /// btnIndUserUsageSummary20111101 control.
         /// </summary>
@@ -119,25 +94,16 @@ namespace sselIndReports {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnIndUserUsageSummary20111101;
-        
+
         /// <summary>
-        /// btnAggDemographic control.
+        /// btnIndUserUsageSummaryAudit control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnAggDemographic;
-        
-        /// <summary>
-        /// btnDatAccount control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnDatAccount;
-        
+        protected global::System.Web.UI.WebControls.Button btnIndUserUsageSummaryAudit;
+
         /// <summary>
         /// btnIndAuthTools control.
         /// </summary>
@@ -146,25 +112,7 @@ namespace sselIndReports {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnIndAuthTools;
-        
-        /// <summary>
-        /// btnAggNNIN control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnAggNNIN;
-        
-        /// <summary>
-        /// btnDatOrganization control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnDatOrganization;
-        
+
         /// <summary>
         /// btnIndClientAccount control.
         /// </summary>
@@ -173,7 +121,52 @@ namespace sselIndReports {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnIndClientAccount;
-        
+
+        /// <summary>
+        /// divAgg control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divAgg;
+
+        /// <summary>
+        /// lblAgg control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblAgg;
+
+        /// <summary>
+        /// btnAggSumUsage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnAggSumUsage;
+
+        /// <summary>
+        /// btnAggDemographic control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnAggDemographic;
+
+        /// <summary>
+        /// btnAggNNIN control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnAggNNIN;
+
         /// <summary>
         /// btnAggNNIN2 control.
         /// </summary>
@@ -182,16 +175,7 @@ namespace sselIndReports {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnAggNNIN2;
-        
-        /// <summary>
-        /// btnDatHistory control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnDatHistory;
-        
+
         /// <summary>
         /// btnAggFeeComparison control.
         /// </summary>
@@ -200,7 +184,7 @@ namespace sselIndReports {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnAggFeeComparison;
-        
+
         /// <summary>
         /// btnAggSubsidyByFacultyGroup control.
         /// </summary>
@@ -209,7 +193,61 @@ namespace sselIndReports {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnAggSubsidyByFacultyGroup;
-        
+
+        /// <summary>
+        /// divDat control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divDat;
+
+        /// <summary>
+        /// lblDat control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblDat;
+
+        /// <summary>
+        /// btnDatClient control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnDatClient;
+
+        /// <summary>
+        /// btnDatAccount control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnDatAccount;
+
+        /// <summary>
+        /// btnDatOrganization control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnDatOrganization;
+
+        /// <summary>
+        /// btnDatHistory control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnDatHistory;
+
         /// <summary>
         /// btnLogout control.
         /// </summary>

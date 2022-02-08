@@ -1,9 +1,6 @@
-﻿using LNF.Cache;
+﻿using LNF.Billing;
 using LNF.CommonTools;
-using LNF.Models.Billing;
-using LNF.Models.Data;
-using LNF.Repository;
-using LNF.Web;
+using LNF.Data;
 using sselIndReports.AppCode;
 using System;
 using System.Collections.Generic;
@@ -28,7 +25,7 @@ namespace sselIndReports
             }
         }
 
-        protected void pp1_SelectedPeriodChanged(object sender, EventArgs e)
+        protected void Pp1_SelectedPeriodChanged(object sender, EventArgs e)
         {
             ShowReport();
         }
@@ -38,12 +35,14 @@ namespace sselIndReports
             DateTime sDate = pp1.SelectedPeriod;
             DateTime eDate = sDate.AddMonths(1);
 
-            Dictionary<string, DataGrid> grids = new Dictionary<string, DataGrid>();
-            grids.Add("DemGender", dgGender);
-            grids.Add("DemRace", dgRace);
-            grids.Add("DemEthnic", dgEthnic);
-            grids.Add("DemDisability", dgDisability);
-            grids.Add("DemCitizen", dgCitizen);
+            Dictionary<string, DataGrid> grids = new Dictionary<string, DataGrid>
+            {
+                { "DemGender", dgGender },
+                { "DemRace", dgRace },
+                { "DemEthnic", dgEthnic },
+                { "DemDisability", dgDisability },
+                { "DemCitizen", dgCitizen }
+            };
 
             foreach (var kvp in grids)
             {
@@ -60,24 +59,16 @@ namespace sselIndReports
                 try
                 {
                     // to handle missing data error
-                    WriteData writeData = new WriteData();
-                    writeData.UpdateTables(BillingCategory.Tool | BillingCategory.Room, UpdateDataType.DataClean | UpdateDataType.Data, DateTime.Now.FirstOfMonth(), 0);
+                    WriteData writeData = new WriteData(Provider);
+                    writeData.UpdateTables(BillingCategory.Tool | BillingCategory.Room);
                 }
                 catch { }
 
                 ContextBase.Updated(true);
             }
 
-            //client info
-            var dtClient = DA.Command()
-                .Param("Action", "All")
-                .Param("sDate", sDate)
-                .Param("eDate", eDate)
-                .Param("Privs", (int)ClientPrivilege.LabUser)
-                .FillDataTable("dbo.Client_Select");
-
             //room info
-            var dtRoom = DA.Command()
+            var dtRoom = DataCommand()
                 .Param("Action", "PassbackRooms")
                 .FillDataTable("dbo.Room_Select");
 
@@ -85,7 +76,7 @@ namespace sselIndReports
             {
                 string type = kvp.Key;
 
-                var ds = DA.Command()
+                var ds = DataCommand()
                     .Param("Action", "DemReport")
                     .Param("demType", type)
                     .Param("sDate", sDate)
@@ -138,7 +129,7 @@ namespace sselIndReports
             }
         }
 
-        protected void dgItemBound(object sender, DataGridItemEventArgs e)
+        protected void DataGrid_ItemBoundBound(object sender, DataGridItemEventArgs e)
         {
             if (e.Item.ItemType == ListItemType.AlternatingItem || e.Item.ItemType == ListItemType.Item)
             {
@@ -151,13 +142,6 @@ namespace sselIndReports
                     tc.Text = string.Format("{0:#,##0.0}", drv[i]);
                 }
             }
-        }
-
-        protected void btnBack_Click(object sender, EventArgs e)
-        {
-            ContextBase.Session.Remove("Updated");
-            ContextBase.RemoveCacheData(); //remove anything left in cache
-            Response.Redirect("~");
         }
     }
 }

@@ -11,7 +11,7 @@ namespace sselIndReports.AppCode.DAL
             string technicalField = string.Empty;
             try
             {
-                technicalField = DA.Command().Param("Action", "GetTechnicalInterest").Param("ClientID", clientId).ExecuteScalar<string>("dbo.Client_Select").Value;
+                technicalField = DataCommand.Create().Param("Action", "GetTechnicalInterest").Param("ClientID", clientId).ExecuteScalar<string>("dbo.Client_Select").Value;
             }
             catch
             {
@@ -23,21 +23,21 @@ namespace sselIndReports.AppCode.DAL
 
         public static DataTable GetClientsByManagerOrgID(DateTime sDate, DateTime eDate, int managerOrgId)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param(new { Action = "GetUsersByManagerOrgID", sDate, eDate, ManagerOrgID = managerOrgId })
                 .FillDataTable("dbo.ClientManager_Select");
         }
 
         public static int GetOrgIDByClientOrgID(int ClientOrgID)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param(new { Action = "GetOrgIDByClientOrgID", ClientOrgID })
                 .ExecuteScalar<int>("dbo.ClientOrg_Select").Value;
         }
 
         public static DataTable GetAllAccountsByClientOrgID(int clientOrgId)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "GetAllAccountsByClientOrgID")
                 .Param("ClientOrgID", clientOrgId)
                 .FillDataTable("dbo.Account_Select");
@@ -46,7 +46,7 @@ namespace sselIndReports.AppCode.DAL
         [Obsolete("do not use!")]
         public static DataTable GetAllClientsByDateAndPrivs(DateTime sDate, DateTime eDate, int privs)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "All")
                 .Param("sDate", sDate)
                 .Param("eDate", eDate)
@@ -56,7 +56,7 @@ namespace sselIndReports.AppCode.DAL
 
         public static DataTable GetClientsByManagerID(DateTime sDate, DateTime eDate, int clientId)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "ByMgr")
                 .Param("sDate", sDate)
                 .Param("eDate", eDate)

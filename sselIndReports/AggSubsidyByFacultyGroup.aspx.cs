@@ -1,4 +1,4 @@
-﻿using LNF.Models.Data;
+﻿using LNF.Data;
 using sselIndReports.AppCode;
 using sselIndReports.AppCode.BLL;
 using sselIndReports.AppCode.DAL;

@@ -1,6 +1,5 @@
-﻿using LNF.Models.Data;
-using LNF.Repository;
-using LNF.Repository.Data;
+﻿using LNF.Data;
+using LNF.Impl.Repository.Data;
 using LNF.Web;
 using sselIndReports.AppCode;
 using sselIndReports.AppCode.DAL;
@@ -25,7 +24,7 @@ namespace sselIndReports
         {
             if (Page.IsPostBack)
             {
-                dsReport = ContextBase.CacheData();
+                dsReport = ContextBase.GetCacheData();
                 if (dsReport == null)
                     Response.Redirect("~");
                 else if (dsReport.DataSetName != "DatClient")
@@ -36,21 +35,21 @@ namespace sselIndReports
                 dsReport = new DataSet("DatClient");
 
                 //get Role info
-                DA.Command()
+                DataCommand()
                     .Param("TableName", "Role")
                     .FillDataSet(dsReport, "dbo.Global_Select", "Role");
 
                 //get UserType info
-                DA.Command()
+                DataCommand()
                     .Param("TableName", "Community")
                     .FillDataSet(dsReport, "dbo.Global_Select", "Communities");
 
                 //grab all departments
-                DA.Command()
+                DataCommand()
                     .Param("Action", "All")
                     .FillDataSet(dsReport, "dbo.Department_Select", "Department");
 
-                ContextBase.CacheData(dsReport);
+                ContextBase.SetCacheData(dsReport);
 
                 UpdateClientDDL();
             }
@@ -61,7 +60,7 @@ namespace sselIndReports
             MakeClientReport();
         }
 
-        protected void pp1_SelectedPeriodChanged(object sender, EventArgs e)
+        protected void Pp1_SelectedPeriodChanged(object sender, EventArgs e)
         {
             UpdateClientDDL();
             ClearReport();
@@ -77,13 +76,6 @@ namespace sselIndReports
 
         private void UpdateClientDDL()
         {
-            int selectedClientId = 0;
-
-            if (!IsDDLUserEmptyOrZero())
-            {
-                selectedClientId = Convert.ToInt32(ddlUser.SelectedValue);
-            }
-
             PopulateUserDropDownList(ddlUser, pp1.SelectedPeriod, btnReport, true);
 
             // The following is to generate report
@@ -104,7 +96,7 @@ namespace sselIndReports
             if (dsReport.Tables.Contains("DemRace")) dsReport.Tables.Remove(dsReport.Tables["DemRace"]);
 
             //display name column is appended to facilitate manager display
-            DA.Command()
+            DataCommand()
                 .Param("Action", "AllActive")
                 .Param("sDate", sDate)
                 .Param("eDate", eDate)
@@ -113,14 +105,14 @@ namespace sselIndReports
             dsReport.Tables["ClientOrg"].PrimaryKey = new[] { dsReport.Tables["ClientOrg"].Columns["ClientOrgID"] };
 
             //Manager info
-            DA.Command()
+            DataCommand()
                 .Param("Action", "AllActive")
                 .Param("sDate", sDate)
                 .Param("eDate", eDate)
                 .FillDataSet(dsReport, "dbo.ClientManager_Select", "ClientManager");
 
             //get Org info
-            DA.Command()
+            DataCommand()
                 .MapSchema()
                 .Param("Action", "AllActive")
                 .Param("sDate", sDate)
@@ -130,7 +122,7 @@ namespace sselIndReports
             dsReport.Tables["Org"].PrimaryKey = new[] { dsReport.Tables["Org"].Columns["OrgID"] };
 
             //get Account info
-            DA.Command()
+            DataCommand()
                 .Param("Action", "AllActive")
                 .Param("sDate", sDate)
                 .Param("eDate", eDate)
@@ -139,14 +131,14 @@ namespace sselIndReports
             dsReport.Tables["Account"].PrimaryKey = new[] { dsReport.Tables["Account"].Columns["AccountID"] };
 
             //get ClientAccount info
-            DA.Command()
+            DataCommand()
                 .Param("Action", "AllActive")
                 .Param("sDate", sDate)
                 .Param("eDate", eDate)
                 .FillDataSet(dsReport, "dbo.ClientAccount_Select", "ClientAccount");
 
             //Client info - gets put into ddl, not needed in dataset
-            DA.Command()
+            DataCommand()
                 .Param("Action", "All")
                 .Param("sDate", sDate)
                 .Param("eDate", eDate)
@@ -156,7 +148,7 @@ namespace sselIndReports
 
             //fill in demographics RBL - could be prettier...
 
-            var command = DA.Command().MapSchema(); //select command
+            var command = DataCommand().MapSchema(); //select command
 
             command.Param("Action", "All");
 
@@ -180,12 +172,12 @@ namespace sselIndReports
             command.FillDataSet(dsReport, "dbo.Dem_Select", "DemRace");
             dsReport.Tables["DemRace"].PrimaryKey = new[] { dsReport.Tables["DemRace"].Columns["DemRaceID"] };
 
-            ContextBase.CacheData(dsReport);
+            ContextBase.SetCacheData(dsReport);
         }
 
         private string GetOrgName(int orgId)
         {
-            var org = DA.Current.Single<Org>(orgId);
+            var org = DataSession.Single<Org>(orgId);
 
             if (org == null)
             {
@@ -394,7 +386,7 @@ namespace sselIndReports
                         if (dr == null)
                         {
                             int accountId = Convert.ToInt32(cadrs[j]["AccountID"]);
-                            Account acct = DA.Current.Single<Account>(accountId);
+                            Account acct = DataSession.Single<Account>(accountId);
                             accts += string.Format(@"{0} <span style=""color: #FF0000;"">[inactive]</span><br />", acct.Name);
                         }
                         else
@@ -421,7 +413,8 @@ namespace sselIndReports
 
         private string GetClientName(DataRow dr)
         {
-            string result = string.Empty;
+            string result;
+
             if (string.IsNullOrEmpty(dr["MName"].ToString()))
                 result = string.Format("{0} {1} ({2} {3})", dr["FName"], dr["LName"], dr["UserName"], dr["ClientID"]);
             else if (dr["MName"].ToString().Length == 1)
@@ -450,14 +443,17 @@ namespace sselIndReports
 
         private string GetDemographicInfo(DataRow dr)
         {
-            string result = string.Empty;
+            string result;
+
             string citizen = "<b>US Citizenship: </b> " + dsReport.Tables["DemCitizen"].Rows.Find(dr["DemCitizenID"])["DemCitizen"].ToString() + "<br />";
             string gender = "<b>Gender: </b> " + dsReport.Tables["DemGender"].Rows.Find(dr["DemGenderID"])["DemGender"].ToString() + "<br />";
             string race = "<b>Race: </b> " + dsReport.Tables["DemRace"].Rows.Find(dr["DemRaceID"])["DemRace"].ToString() + "<br />";
             string ethnic = "<b>Ethnicity: </b> " + dsReport.Tables["DemEthnic"].Rows.Find(dr["DemEthnicID"])["DemEthnic"].ToString() + "<br />";
             string disability = "<b>Disability: </b> " + dsReport.Tables["DemDisability"].Rows.Find(dr["DemDisabilityID"])["DemDisability"].ToString() + "<br />";
             string techInterest = "<b>Technical Interest: </b> " + ClientDA.GetTechnicalInterestByClientID(Convert.ToInt32(dr["ClientID"])) + "<br />";
+
             result = citizen + gender + race + ethnic + disability + techInterest;
+
             return result;
         }
 

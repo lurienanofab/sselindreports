@@ -13,6 +13,7 @@
         }
     </style>
 </asp:Content>
+
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="NormalText">
         <div class="section">
@@ -22,7 +23,7 @@
                     <tr>
                         <td>Select period:</td>
                         <td>
-                            <lnf:PeriodPicker runat="server" ID="pp1" AutoPostBack="true" OnSelectedPeriodChanged="pp1_SelectedPeriodChanged" />
+                            <lnf:PeriodPicker runat="server" ID="pp1" AutoPostBack="true" OnSelectedPeriodChanged="Pp1_SelectedPeriodChanged" />
                         </td>
                     </tr>
                     <tr>
@@ -38,7 +39,7 @@
                     <div runat="server" id="divBillingSystemLinks" visible="false">
                         <asp:LinkButton runat="server" ID="btnCurrent" Visible="false">Current Billing System</asp:LinkButton>
                         &nbsp;&nbsp;&nbsp;&nbsp;
-                        <asp:LinkButton runat="server" ID="btnFuture" Visible="false" OnClick="btnFuture_Click">Future Billing System</asp:LinkButton>
+                        <asp:LinkButton runat="server" ID="btnFuture" Visible="false" OnClick="BtnFuture_Click">Future Billing System</asp:LinkButton>
                     </div>
                 </div>
             </div>
@@ -68,7 +69,7 @@
             <h4>
                 <asp:Label ID="lblRoom" ForeColor="Red" runat="server">Lab Usage</asp:Label></h4>
             <div class="lab-usage" style="display: inline-block;">
-                <asp:GridView runat="server" ID="gvRoom" CssClass="gridview" GridLines="None" AutoGenerateColumns="False" OnRowDataBound="gvRoom_RowDataBound">
+                <asp:GridView runat="server" ID="gvRoom" CssClass="gridview" GridLines="None" AutoGenerateColumns="False" OnRowDataBound="GvRoom_RowDataBound">
                     <HeaderStyle CssClass="header" />
                     <RowStyle CssClass="row" />
                     <AlternatingRowStyle CssClass="altrow" />

@@ -1,7 +1,6 @@
 ﻿using LNF.CommonTools;
 using LNF.Data;
 using LNF.Data.ClientAccountMatrix;
-using LNF.Models.Data;
 using sselIndReports.AppCode;
 using System;
 using System.Collections.Generic;
@@ -54,7 +53,7 @@ namespace sselIndReports
             }
             else
             {
-                litMatrix.Text = $@"<div class=""nodata"">You are currently not a manager in the {Utility.GetGlobalSetting("CompanyName")} online system.</div>";
+                litMatrix.Text = $@"<div class=""nodata"">You are currently not a manager in the {Provider.Data.GlobalSetting.GetGlobalSetting("CompanyName")} online system.</div>";
                 phCriteria.Visible = false;
             }
         }
@@ -74,9 +73,9 @@ namespace sselIndReports
             IEnumerable<IClient> allClientOrgs = null;
 
             if (client.HasPriv(ClientPrivilege.Administrator))
-                allClientOrgs = ClientManager.GetActiveManagers(true);
+                allClientOrgs = Provider.Data.Client.GetActiveManagers(true);
             else if (client.HasPriv(ClientPrivilege.Executive))
-                allClientOrgs = ClientManager.GetActiveManagers(true).Where(x => x.ClientID == client.ClientID).ToList();
+                allClientOrgs = Provider.Data.Client.GetActiveManagers(true).Where(x => x.ClientID == client.ClientID).ToList();
 
             var list = new List<ManagerItem>();
 

@@ -1,4 +1,4 @@
-﻿using LNF.Repository.Billing;
+﻿using LNF.Billing;
 using System.Data;
 using System.Web;
 
@@ -17,11 +17,11 @@ namespace sselIndReports.AppCode.BLL
             {
                 int billingTypeId = dr.Field<int>("BillingTypeID");
 
-                if (billingTypeId == BillingType.Grower_Observer)
+                if (billingTypeId == BillingTypes.Grower_Observer)
                 {
                     //???
                 }
-                else if (billingTypeId == BillingType.Other)
+                else if (billingTypeId == BillingTypes.Other)
                 {
                     dr["RoomSum"] = 0;
                     dr["ToolSum"] = 0;

@@ -10,7 +10,7 @@ namespace sselIndReports.AppCode.DAL
         {
             DateTime period = new DateTime(year, month, 1);
 
-            var ds = DA.Command()
+            var ds = DataCommand.Create()
                 .Param("Action", "UserUsageSummary")
                 .Param("Period", period)
                 .Param("ClientID", clientId)
@@ -23,7 +23,7 @@ namespace sselIndReports.AppCode.DAL
         {
             DateTime period = new DateTime(year, month, 1);
 
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "UserUsageSummary")
                 .Param("Period", period)
                 .Param("ClientID", clientId)

@@ -1,13 +1,13 @@
 ﻿using LNF.Web;
-using System.Web.Routing;
+using Owin;
 
 namespace sselIndReports
 {
-    public class Startup : OwinStartup
+    public class Startup
     {
-        public override void ConfigureRoutes(RouteCollection routes)
+        public void Configuration(IAppBuilder app)
         {
-            // nothing to do here...
+            app.UseDataAccess(Global.WebApp.Context);
         }
     }
 }

@@ -1,11 +1,10 @@
-﻿using LNF;
+﻿using LNF.Billing;
 using LNF.CommonTools;
-using LNF.Models.Billing;
-using LNF.Models.Data;
-using LNF.Models.Scheduler;
-using LNF.Repository;
-using LNF.Repository.Billing;
-using LNF.Repository.Data;
+using LNF.Data;
+using LNF.Impl.Repository.Billing;
+using LNF.Impl.Repository.Data;
+using LNF.Scheduler;
+using LNF.Web.Content;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -15,11 +14,12 @@ using System.Web.UI.WebControls;
 
 namespace sselIndReports
 {
-    public partial class ResourceDetail : System.Web.UI.Page
+    public partial class ResourceDetail : OnlineServicesPage
     {
         private readonly IDictionary<string, double> _totals = new Dictionary<string, double>();
 
-        protected IBillingTypeManager BillingType => ServiceProvider.Current.Billing.BillingType;
+        protected IToolBillingRepository ToolBilling => Provider.Billing.Tool;
+        protected IBillingTypeRepository BillingType => Provider.Billing.BillingType;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -30,10 +30,10 @@ namespace sselIndReports
                 var clientId = GetRequiredParamAsInt32("ClientID");
                 var accountId = GetRequiredParamAsInt32("AccountID");
 
-                IResource res = ServiceProvider.Current.Scheduler.Resource.GetResource(resourceId);
+                IResource res = Provider.Scheduler.Resource.GetResource(resourceId);
                 litHeaderResource.Text = res.ToString();
 
-                IAccount acct = ServiceProvider.Current.Data.Account.GetAccount(accountId);
+                IAccount acct = Provider.Data.Account.GetAccount(accountId);
                 litHeaderAccount.Text = acct.ToString();
 
                 var data = GetData(resourceId, clientId, accountId, period);
@@ -45,16 +45,16 @@ namespace sselIndReports
 
         private IEnumerable<ResourceDetailItem> GetData(int resourceId, int clientId, int accountId, DateTime period)
         {
-            IQueryable<LNF.Repository.Billing.IToolBilling> query;
+            IQueryable<IToolBilling> query;
 
             if (period == DateTime.Now.FirstOfMonth())
-                query = DA.Current.Query<ToolBillingTemp>();
+                query = DataSession.Query<ToolBillingTemp>();
             else
-                query = DA.Current.Query<ToolBilling>();
+                query = DataSession.Query<ToolBilling>();
 
             var join = query
                 .Where(x => x.Period == period && x.ClientID == clientId && x.ResourceID == resourceId && x.AccountID == accountId)
-                .Join(DA.Current.Query<Account>(), o => o.AccountID, i => i.AccountID, (o, i) => new { ToolBilling = o, Account = i })
+                .Join(DataSession.Query<Account>(), o => o.AccountID, i => i.AccountID, (o, i) => new { ToolBilling = o, Account = i })
                 .ToList();
 
             var result = join
@@ -94,10 +94,9 @@ namespace sselIndReports
             return result;
         }
 
-        private decimal GetLineCost(LNF.Repository.Billing.IToolBilling tb)
+        private decimal GetLineCost(IToolBilling tb)
         {
-            var model = tb.CreateModel<LNF.Models.Billing.IToolBilling>();
-            return BillingType.GetLineCost(model);
+            return ToolBilling.GetLineCost(new ToolLineCostParameters(tb));
         }
 
         private string GetRequiredParamAsString(string key)

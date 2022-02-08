@@ -15,13 +15,13 @@
                 <tr>
                     <td>Select period:</td>
                     <td>
-                        <lnf:PeriodPicker runat="server" ID="pp1" AutoPostBack="true" OnSelectedPeriodChanged="pp1_SelectedPeriodChanged" />
+                        <lnf:PeriodPicker runat="server" ID="pp1" AutoPostBack="true" OnSelectedPeriodChanged="Pp1_SelectedPeriodChanged" />
                     </td>
                 </tr>
                 <tr>
                     <td rowspan="2">Users to include in report:</td>
                     <td>
-                        <asp:RadioButtonList runat="server" ID="rblUserOrg" Width="295" AutoPostBack="True" RepeatDirection="Horizontal" TextAlign="Left" OnSelectedIndexChanged="rbUserOrg_SelectedIndexChanged">
+                        <asp:RadioButtonList runat="server" ID="rblUserOrg" Width="295" AutoPostBack="True" RepeatDirection="Horizontal" TextAlign="Left" OnSelectedIndexChanged="RbUserOrg_SelectedIndexChanged">
                             <asp:ListItem Value="1" Selected="True">UMich Only</asp:ListItem>
                             <asp:ListItem Value="0">External Only</asp:ListItem>
                             <asp:ListItem Value="-1">All</asp:ListItem>
@@ -30,7 +30,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <asp:CheckBoxList runat="server" ID="cblPriv" Width="600" AutoPostBack="True" RepeatDirection="Horizontal" TextAlign="Left" RepeatColumns="4" OnSelectedIndexChanged="cblPriv_SelectedIndexChanged">
+                        <asp:CheckBoxList runat="server" ID="cblPriv" Width="600" AutoPostBack="True" RepeatDirection="Horizontal" TextAlign="Left" RepeatColumns="4" OnSelectedIndexChanged="CblPriv_SelectedIndexChanged">
                         </asp:CheckBoxList>
                     </td>
                 </tr>
@@ -41,7 +41,7 @@
         </div>
     </div>
     <div class="section">
-        <asp:GridView runat="server" ID="dgAccess" CssClass="gridview highlight" GridLines="None" EnableViewState="false" AutoGenerateColumns="false" OnRowDataBound="dgAccess_RowDataBound">
+        <asp:GridView runat="server" ID="dgAccess" CssClass="gridview highlight" GridLines="None" EnableViewState="false" AutoGenerateColumns="false" OnRowDataBound="DgAccess_RowDataBound">
             <HeaderStyle CssClass="header" />
             <RowStyle CssClass="row" />
             <AlternatingRowStyle CssClass="altrow" />

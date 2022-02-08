@@ -1,13 +1,13 @@
-﻿using LNF.Cache;
+﻿using LNF;
+using LNF.Billing;
 using LNF.CommonTools;
 using LNF.Data;
-using LNF.Models.Billing;
-using LNF.Models.Data;
-using LNF.Repository;
 using LNF.Web;
 using sselIndReports.AppCode;
 using System;
+using System.Configuration;
 using System.Data;
+using System.Data.SqlClient;
 using System.Web.UI.WebControls;
 
 namespace sselIndReports
@@ -24,21 +24,21 @@ namespace sselIndReports
             if (!Page.IsPostBack)
             {
                 ContextBase.Updated(false);
-                cblPriv.Items.LoadPrivs();
+                cblPriv.Items.LoadPrivs(Provider);
             }
         }
 
-        protected void pp1_SelectedPeriodChanged(object sender, EventArgs e)
+        protected void Pp1_SelectedPeriodChanged(object sender, EventArgs e)
         {
             ShowLabAccess();
         }
 
-        protected void rbUserOrg_SelectedIndexChanged(object sender, EventArgs e)
+        protected void RbUserOrg_SelectedIndexChanged(object sender, EventArgs e)
         {
             ShowLabAccess();
         }
 
-        protected void cblPriv_SelectedIndexChanged(object sender, EventArgs e)
+        protected void CblPriv_SelectedIndexChanged(object sender, EventArgs e)
         {
             ShowLabAccess();
         }
@@ -49,6 +49,7 @@ namespace sselIndReports
             dgAccess.DataBind();
 
             ClientPrivilege selectedPriv = cblPriv.Items.CalculatePriv();
+
             if (selectedPriv == 0)
             {
                 return;
@@ -64,24 +65,37 @@ namespace sselIndReports
                 try
                 {
                     // to handle missing data error
-                    WriteData writeData = new WriteData();
-                    writeData.UpdateTables(BillingCategory.Tool | BillingCategory.Room, UpdateDataType.DataClean | UpdateDataType.Data, DateTime.Now.FirstOfMonth(), 0);
+                    WriteData writeData = new WriteData(Provider);
+                    writeData.UpdateTables(BillingCategory.Tool | BillingCategory.Room);
+                    ContextBase.Updated(true);
                 }
-                catch { }
-
-                ContextBase.Updated(true);
+                catch (Exception ex)
+                {
+                    SendEmail.SendDebugEmail(CurrentUser.ClientID, "sselIndReports.AggSumUsage.ShowLabAccess", "An error occurred in WriteData.UpdateTables while trying to display the Aggregate User Summary Report.", ex);
+                    ContextBase.Updated(false);
+                }
             }
 
             //get all access data for period
-            int orgId = Convert.ToInt32(Session["OrgID"]);
-            int userOrgId = Convert.ToInt32(rblUserOrg.SelectedValue);
 
-            var ds = DA.Command()
-                .Param("Period", pp1.SelectedPeriod)
-                .Param("Privs", (int)selectedPriv)
-                .Param("SelOrg", userOrgId >= 0, userOrgId)
-                .Param("OrgID", CurrentUser.HasPriv(ClientPrivilege.Executive), orgId)
-                .FillDataSet("dbo.AggUsage_Select");
+            // [2021-04-19 jg] This report is only availabe to Administrator privilege so it doesn't make sense to filter to a single org.
+            // var orgId = DBNull.Value; 
+
+            var userOrgId = Convert.ToInt32(rblUserOrg.SelectedValue);
+
+            DataSet ds = new DataSet();
+
+            using (var conn = new SqlConnection(ConfigurationManager.ConnectionStrings["cnSselData"].ConnectionString))
+            using (var cmd = new SqlCommand("sselData.dbo.AggUsage_Select", conn) { CommandType = CommandType.StoredProcedure })
+            using (var adap = new SqlDataAdapter(cmd))
+            {
+                cmd.Parameters.AddWithValue("Period", pp1.SelectedPeriod, SqlDbType.DateTime);
+                cmd.Parameters.AddWithValue("Privs", (int)selectedPriv, SqlDbType.Int);
+                if (userOrgId >= 0) cmd.Parameters.AddWithValue("SelOrg", userOrgId, SqlDbType.Int);
+                //if (CurrentUser.HasPriv(ClientPrivilege.Executive))
+                //    cmd.Parameters.AddWithValue("OrgID", orgId, SqlDbType.Int);
+                adap.Fill(ds);
+            }
 
             var dtRaw = ds.Tables[0];
             var dtRoom = ds.Tables[1];
@@ -147,9 +161,17 @@ namespace sselIndReports
             nr["URLdata"] = string.Empty;
             foreach (DataRow dr in dtRoom.Rows)
             {
-                nr[EntriesColumn(dr)] = dtUsage.Compute(string.Format("SUM({0})", EntriesColumn(dr)), string.Empty);
+                var entriesCol = EntriesColumn(dr);
+                var hoursCol = HoursColumn(dr);
+
+                var sumEntries = dtUsage.Compute($"SUM({entriesCol})", string.Empty);
+                nr[entriesCol] = sumEntries;
+
                 if (Convert.ToBoolean(dr["PassbackRoom"]))
-                    nr[HoursColumn(dr)] = dtUsage.Compute(string.Format("SUM({0})", HoursColumn(dr)), string.Empty);
+                {
+                    var sumHours = dtUsage.Compute($"SUM({hoursCol})", string.Empty);
+                    nr[hoursCol] = sumHours;
+                }
             }
             dtUsage.Rows.Add(nr);
 
@@ -202,13 +224,7 @@ namespace sselIndReports
             dgAccess.DataBind();
         }
 
-        protected void btnBack_Click(object sender, EventArgs e)
-        {
-            ContextBase.Session.Remove("Updated");
-            Response.Redirect("~/");
-        }
-
-        protected void dgAccess_RowDataBound(object sender, GridViewRowEventArgs e)
+        protected void DgAccess_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.DataRow)
             {

@@ -1,17 +1,14 @@
-﻿using LNF.Cache;
-using LNF.Data;
-using LNF.Models.Data;
-using LNF.Repository;
-using LNF.Repository.Data;
+﻿using LNF.Data;
+using LNF.Impl.Repository.Data;
+using LNF.Web;
 using sselIndReports.AppCode;
 using sselIndReports.AppCode.DAL;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Web.UI.WebControls;
-using System.Diagnostics;
-using LNF.Web;
 
 namespace sselIndReports
 {
@@ -28,7 +25,7 @@ namespace sselIndReports
 
             if (CurrentUser.HasPriv(ClientPrivilege.Administrator))
             {
-                IList<Org> allOrgs = DA.Current.Query<Org>().ToList();
+                IList<Org> allOrgs = DataSession.Query<Org>().ToList();
                 dataSource = allOrgs.Select(x => new OrgListItem() { OrgID = x.OrgID, OrgName = x.OrgName }).OrderBy(x => x.OrgName);
             }
             else if (CurrentUser.HasPriv(ClientPrivilege.Executive))

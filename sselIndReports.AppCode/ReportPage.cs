@@ -1,14 +1,5 @@
-﻿using LNF;
-using LNF.Billing;
-using LNF.Data;
-using LNF.Models.Billing;
-using LNF.Models.Data;
-using LNF.Models.Scheduler;
-using LNF.Repository;
-using LNF.Repository.Data;
-using LNF.Scheduler;
+﻿using LNF.Data;
 using LNF.Web;
-using StructureMap.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,29 +7,12 @@ using System.Web.UI.WebControls;
 
 namespace sselIndReports.AppCode
 {
-    public abstract class ReportPage : LNF.Web.Content.LNFPage
+    public abstract class ReportPage : LNF.Web.Content.OnlineServicesPage
     {
-        [SetterProperty]
-        public IOrgManager OrgManager { get; set; }
-
-        [SetterProperty]
-        public IBillingTypeManager BillingTypeManager { get; set; }
-
-        [SetterProperty]
-        public IClientManager ClientManager { get; set; }
-
-        [SetterProperty]
-        public IReservationManager ReservationManager { get; set; }
-
         protected IEnumerable<ClientItem> GetClientDataSource(DateTime period, bool displayAllUsersToStaff = false)
         {
             var allClientAccountsActiveInPeriod = GetClientSelectItems(period);
             return FilterUsers(CurrentUser, allClientAccountsActiveInPeriod, displayAllUsersToStaff); //checks for administrator, manager, or normal user
-        }
-
-        public ReportPage()
-        {
-            ServiceProvider.Current.BuildUp(this);
         }
 
         public virtual bool ShowButton
@@ -71,7 +45,7 @@ namespace sselIndReports.AppCode
                 DateTime sd = period;
                 DateTime ed = sd.AddMonths(1);
 
-                Session["ClientSelectItems"] = DA.Current.Query<ActiveLogClientAccount>()
+                Session["ClientSelectItems"] = DataSession.Query<LNF.Impl.Repository.Data.ActiveLogClientAccount>()
                     .Where(x => x.EnableDate < ed && (x.DisableDate == null || x.DisableDate > sd))
                     .Select(x => new UserClientSelectItem()
                     {
@@ -148,6 +122,50 @@ namespace sselIndReports.AppCode
 
             return dataSource.Distinct(new ClientItemEqualityComparer()).OrderBy(x => x.DisplayName).ToArray();
         }
+
+        protected DateTime GetQueryStringDateTime(string key)
+        {
+            if (string.IsNullOrEmpty(Request.QueryString[key]))
+                throw new Exception($"Missing required querystring paramter: {key}");
+
+            if (!DateTime.TryParse(Request.QueryString[key], out DateTime result))
+                throw new Exception($"Invalid value for querystring paramter: {key}");
+
+            return result;
+        }
+
+        protected DateTime GetQueryStringDateTime(string key, DateTime defval)
+        {
+            if (string.IsNullOrEmpty(Request.QueryString[key]))
+                return defval;
+
+            if (!DateTime.TryParse(Request.QueryString[key], out DateTime result))
+                throw new Exception($"Invalid value for querystring paramter: {key}");
+
+            return result;
+        }
+
+        protected double GetQueryStringDouble(string key)
+        {
+            if (string.IsNullOrEmpty(Request.QueryString[key]))
+                throw new Exception($"Missing required querystring paramter: {key}");
+
+            if (!double.TryParse(Request.QueryString[key], out double result))
+                throw new Exception($"Invalid value for querystring paramter: {key}");
+
+            return result;
+        }
+
+        protected double GetQueryStringDouble(string key, double defval)
+        {
+            if (string.IsNullOrEmpty(Request.QueryString[key]))
+                return defval;
+
+            if (!double.TryParse(Request.QueryString[key], out double result))
+                throw new Exception($"Invalid value for querystring paramter: {key}");
+
+            return result;
+        }
     }
 
     public class UserClientSelectItem
@@ -157,6 +175,6 @@ namespace sselIndReports.AppCode
         public string FName { get; set; }
         public int AccountID { get; set; }
         public bool Manager { get; set; }
-        public string DisplayName => LNF.Models.Data.ClientItem.GetDisplayName(LName, FName);
+        public string DisplayName => Clients.GetDisplayName(LName, FName);
     }
 }

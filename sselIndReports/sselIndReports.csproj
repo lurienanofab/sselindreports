@@ -13,7 +13,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>sselIndReports</RootNamespace>
     <AssemblyName>sselIndReports</AssemblyName>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
@@ -46,25 +46,32 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GemBox.ExcelLite">
-      <HintPath>..\..\..\SharedLib\GemBox.ExcelLite.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\..\..\SharedLib\GemBox.ExcelLite.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Owin, Version=4.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.4.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
+    <Reference Include="Microsoft.Owin, Version=4.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.4.2.0\lib\net45\Microsoft.Owin.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=4.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.4.0.1\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=4.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.4.2.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="SimpleInjector, Version=5.0.0.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
+      <HintPath>..\packages\SimpleInjector.5.3.1\lib\net461\SimpleInjector.dll</HintPath>
+    </Reference>
+    <Reference Include="SimpleInjector.Integration.Web, Version=5.0.0.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
+      <HintPath>..\packages\SimpleInjector.Integration.Web.5.0.0\lib\net45\SimpleInjector.Integration.Web.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -72,8 +79,14 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
@@ -87,6 +100,20 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IndUserUsageSummaryAudit.aspx.cs">
+      <DependentUpon>IndUserUsageSummaryAudit.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="IndUserUsageSummaryAudit.aspx.designer.cs">
+      <DependentUpon>IndUserUsageSummaryAudit.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ToolCharges.aspx.cs">
+      <DependentUpon>ToolCharges.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ToolCharges.aspx.designer.cs">
+      <DependentUpon>ToolCharges.aspx</DependentUpon>
+    </Compile>
     <Content Include="404.aspx" />
     <Content Include="500.aspx" />
     <Content Include="AggDemographic.aspx" />
@@ -97,6 +124,7 @@
     <Content Include="AggSumUsage.aspx" />
     <Content Include="DatAccount.aspx" />
     <Content Include="DatClient.aspx" />
+    <Content Include="DatHistory.aspx" />
     <Content Include="DatOrganization.aspx" />
     <Content Include="Global.asax" />
     <Content Include="IndAuthTools.aspx" />
@@ -108,7 +136,16 @@
     <Content Include="IndUserUsageSummary20100701.aspx" />
     <Content Include="IndUserUsageSummary20110401.aspx" />
     <Content Include="IndUserUsageSummary20111101.aspx" />
+    <Content Include="IndUserUsageSummaryAudit.aspx" />
     <Content Include="IndUserUsageSummaryMonthly.aspx" />
+    <Compile Include="DatHistory.aspx.cs">
+      <DependentUpon>DatHistory.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="DatHistory.aspx.designer.cs">
+      <DependentUpon>DatHistory.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="PageInitializer.cs" />
     <Content Include="ResourceDetail.aspx" />
     <Content Include="scripts\featherlight-1.7.13\featherlight.gallery.min.css" />
     <Content Include="scripts\featherlight-1.7.13\featherlight.gallery.min.js" />
@@ -120,6 +157,7 @@
     <Content Include="scripts\main.js" />
     <Content Include="scripts\overlib.js" />
     <Content Include="styles\user-usage-summary.css" />
+    <Content Include="ToolCharges.aspx" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -131,7 +169,6 @@
     <Content Include="Ajax.ashx" />
     <None Include="packages.config" />
     <None Include="Properties\PublishProfiles\Production %28Apps%29.pubxml" />
-    <None Include="Properties\PublishProfiles\sselreports.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -315,10 +352,6 @@
       <Project>{7a6cd165-0c48-4680-9a49-281688eb1cd8}</Project>
       <Name>LNF.Impl</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\lnf\LNF.Models\LNF.Models.csproj">
-      <Project>{98c7f73d-ef9d-4a87-8b79-a1208085cfbd}</Project>
-      <Name>LNF.Models</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\LNF\LNF.Web\LNF.Web.csproj">
       <Project>{f79683ff-e524-4107-a6e1-29579ee544e1}</Project>
       <Name>LNF.Web</Name>
@@ -348,7 +381,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>59734</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost/sselIndReports</IISUrl>
+          <IISUrl>http://localhost/sselindreports</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

@@ -8,7 +8,7 @@ namespace sselIndReports.AppCode.DAL
     {
         public static DataSet GetToolBillingDataByClientID(DateTime period, int clientId)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "ByClientIDPeriod")
                 .Param("Period", period)
                 .Param("ClientID", clientId)
@@ -17,7 +17,7 @@ namespace sselIndReports.AppCode.DAL
 
         public static DataSet GetToolBillingTempDataByClientID20110701(DateTime period, int clientId)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Period", period)
                 .Param("ClientID", clientId)
                 .FillDataSet("dbo.ToolBillingTemp20110701_Select");
@@ -25,7 +25,7 @@ namespace sselIndReports.AppCode.DAL
 
         public static DataSet GetToolBillingTempDataByClientID(DateTime period, int clientId)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "ByClientIDPeriod")
                 .Param("Period", period)
                 .Param("ClientID", clientId)

@@ -112,7 +112,7 @@ namespace sselIndReports
             DateTime sDate = new DateTime(year, month, 1);
             DateTime eDate = sDate.AddMonths(1);
 
-            var command = DA.Command(CommandType.Text);
+            var command = DataCommand.Create(CommandType.Text);
 
             string columns = @"
                     a.[Name] AS AccountName

@@ -1,12 +1,9 @@
-﻿using LNF.Cache;
+﻿using LNF.Billing;
 using LNF.CommonTools;
 using LNF.Repository;
-using LNF.Repository.Billing;
 using System;
 using System.Data;
 using System.Linq;
-using LNF.Web;
-using System.Web;
 
 namespace sselIndReports.AppCode.BLL
 {
@@ -15,7 +12,7 @@ namespace sselIndReports.AppCode.BLL
         //Get all users' ClientID who had accessed to the lab in any specific month
         public static DataTable GetMonthlyClientID(DateTime period)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "GetAllUsersDuringSpecificMonth")
                 .Param("Period", period)
                 .FillDataTable("dbo.RoomData_Select");
@@ -55,7 +52,7 @@ namespace sselIndReports.AppCode.BLL
                 int currentBillingTypeId = dtRoomCost.Rows[0].Field<int>("BillingType");
 
                 double totalHours = 0;
-                int[] specialBillingTypesForSomeUnknownReason = { BillingType.ExtAc_Ga, BillingType.ExtAc_Si, BillingType.Int_Si, BillingType.Int_Ga };
+                int[] specialBillingTypesForSomeUnknownReason = { BillingTypes.ExtAc_Ga, BillingTypes.ExtAc_Si, BillingTypes.Int_Si, BillingTypes.Int_Ga };
                 if (specialBillingTypesForSomeUnknownReason.Contains(currentBillingTypeId))
                 {
                     try

@@ -1,9 +1,9 @@
-﻿using LNF.Models.Data;
+﻿using LNF.Data;
 using sselIndReports.AppCode;
 using sselIndReports.AppCode.DAL;
 using System;
-using System.Text;
 using System.Data;
+using System.Text;
 
 namespace sselIndReports
 {

@@ -71,7 +71,7 @@
         <div class="section">
             <h3>Individual User Usage Summary</h3>
             <asp:Panel runat="server" ID="panDisclaimerConfig" Visible="false">
-                <asp:CheckBox runat="server" ID="chkShowDisclaimer" Text="Show Disclaimer" OnCheckedChanged="chkShowDisclaimer_CheckedChanged" AutoPostBack="true" />
+                <asp:CheckBox runat="server" ID="chkShowDisclaimer" Text="Show Disclaimer" OnCheckedChanged="ChkShowDisclaimer_CheckedChanged" AutoPostBack="true" />
             </asp:Panel>
             <asp:Panel runat="server" ID="panDisclaimer" CssClass="message" Visible="false">
                 <asp:Literal runat="server" ID="litDisclaimerText"></asp:Literal>
@@ -81,7 +81,7 @@
                     <tr>
                         <td>Select period:</td>
                         <td class="disable">
-                            <lnf:PeriodPicker runat="server" ID="pp1" AutoPostBack="true" OnSelectedPeriodChanged="pp1_SelectedPeriodChanged" />
+                            <lnf:PeriodPicker runat="server" ID="pp1" AutoPostBack="true" OnSelectedPeriodChanged="Pp1_SelectedPeriodChanged" />
                         </td>
                     </tr>
                     <tr>
@@ -184,7 +184,7 @@
 
                     <div class="tool-by-org">
                         <h5>Tool:</h5>
-                        <asp:GridView runat="server" ID="gvToolOrg20110701" CssClass="gridview" GridLines="None" AllowSorting="true" AutoGenerateColumns="false" OnRowDataBound="gvToolOrg20110701_RowDataBound">
+                        <asp:GridView runat="server" ID="gvToolOrg20110701" CssClass="gridview" GridLines="None" AllowSorting="true" AutoGenerateColumns="false" OnRowDataBound="GvToolOrg20110701_RowDataBound">
                             <HeaderStyle CssClass="header" />
                             <RowStyle CssClass="row" />
                             <AlternatingRowStyle CssClass="altrow" />
@@ -309,7 +309,7 @@
                     <div class="tool-by-acct">
                         <h5>Tool:</h5>
                         <asp:Literal runat="server" ID="litToolAccountDebug"></asp:Literal>
-                        <asp:GridView runat="server" ID="gvToolAccount20110701" CssClass="gridview" GridLines="None" AllowSorting="true" AutoGenerateColumns="false" OnRowDataBound="gvToolAccount20110701_RowDataBound">
+                        <asp:GridView runat="server" ID="gvToolAccount20110701" CssClass="gridview" GridLines="None" AllowSorting="true" AutoGenerateColumns="false" OnRowDataBound="GvToolAccount20110701_RowDataBound">
                             <HeaderStyle CssClass="header" />
                             <RowStyle CssClass="row" />
                             <AlternatingRowStyle CssClass="altrow" />
@@ -393,7 +393,7 @@
                                             <th style="width: 220px;">Room</th>
                                             <th style="width: 80px;">Days</th>
                                             <th style="width: 80px;">Entries</th>
-                                            <th style="width: 200px;">Account</th>
+                                            <th style="min-width: 250px;">Account</th>
                                             <th style="width: 80px;">Short Code</th>
                                             <th>Billing Type</th>
                                             <th>Daily Fee</th>
@@ -406,13 +406,13 @@
                             <ItemTemplate>
                                 <tr class="<%#Eval("RowCssClass")%>">
                                     <td><%#Eval("Room")%></td>
-                                    <td style="text-align: center;"><%#Eval("ChargeDays", "{0:F2}")%></td>
-                                    <td style="text-align: center;"><%#Eval("Entries", "{0:F2}")%></td>
+                                    <td style="text-align: center;"><%#GetChargeDays(Container.DataItem)%></td>
+                                    <td style="text-align: center;"><%#GetEntries(Container.DataItem)%></td>
                                     <td style="text-align: center;"><%#Eval("Name")%></td>
                                     <td style="text-align: center;"><%#Eval("ShortCode")%></td>
                                     <td style="text-align: center;"><%#Eval("BillingTypeName")%></td>
-                                    <td style="text-align: right;"><%#Eval("DailyFee", "{0:C}")%></td>
-                                    <td style="text-align: right;"><%#Eval("EntryFee", "{0:C}")%></td>
+                                    <td style="text-align: right;"><%#GetDailyFee(Container.DataItem)%></td>
+                                    <td style="text-align: right;"><%#GetEntryFee(Container.DataItem)%></td>
                                     <td style="text-align: right;"><%#Eval("LineCost", "{0:C}")%></td>
                                 </tr>
                             </ItemTemplate>
@@ -458,7 +458,7 @@
                                     <tbody>
                             </HeaderTemplate>
                             <ItemTemplate>
-                                <tr data-featherlight='<%#GetResourceDetailUrl((DataRowView)Container.DataItem)%>'>
+                                <tr data-featherlight='<%#GetResourceDetailUrl((LNF.Billing.Reports.ToolDetailItem)Container.DataItem)%>'>
                                     <td style="text-align: center;"><%#Eval("ResourceName")%></td>
                                     <td style="text-align: center;"><%#Eval("RoomName")%></td>
                                     <td style="text-align: center;"><%#Eval("ActivatedUsed", "{0:F2}")%></td>

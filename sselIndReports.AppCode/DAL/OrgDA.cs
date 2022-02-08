@@ -7,7 +7,7 @@ namespace sselIndReports.AppCode.DAL
     {
         public static DataTable GetAllOrgs()
         {
-            return DA.Command().Param("Action", "All").FillDataTable("dbo.Org_Select");
+            return DataCommand.Create().Param("Action", "All").FillDataTable("dbo.Org_Select");
         }
     }
 }

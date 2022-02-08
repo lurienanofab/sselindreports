@@ -1,11 +1,7 @@
-﻿using LNF.Cache;
-using LNF.CommonTools;
+﻿using LNF.Billing.Reports;
+using LNF.Cache;
 using LNF.Data;
-using LNF.Models.Data;
-using LNF.Models.Scheduler;
-using LNF.Repository;
-using LNF.Repository.Data;
-using LNF.Repository.Scheduler;
+using LNF.Impl.Repository.Data;
 using LNF.Web.Controls;
 using sselIndReports.AppCode;
 using sselIndReports.AppCode.BLL;
@@ -67,12 +63,12 @@ namespace sselIndReports
             {
                 if (_ShowDisclaimerSetting == null)
                 {
-                    _ShowDisclaimerSetting = DA.Current.Query<GlobalSettings>().FirstOrDefault(x => x.SettingName == "ShowUserUsageSummaryDisclaimer");
+                    _ShowDisclaimerSetting = DataSession.Query<GlobalSettings>().FirstOrDefault(x => x.SettingName == "ShowUserUsageSummaryDisclaimer");
 
                     if (_ShowDisclaimerSetting == null)
                     {
                         _ShowDisclaimerSetting = new GlobalSettings() { SettingName = "ShowUserUsageSummaryDisclaimer", SettingValue = "false" };
-                        DA.Current.SaveOrUpdate(_ShowDisclaimerSetting);
+                        DataSession.SaveOrUpdate(_ShowDisclaimerSetting);
                     }
                 }
 
@@ -88,7 +84,7 @@ namespace sselIndReports
         private void SetShowDisclaimerSetting(bool value)
         {
             ShowDisclaimerSetting.SettingValue = value ? "true" : "false";
-            DA.Current.SaveOrUpdate(ShowDisclaimerSetting);
+            DataSession.SaveOrUpdate(ShowDisclaimerSetting);
         }
 
         private bool IsPreviousPeriod(DateTime value)
@@ -165,24 +161,28 @@ namespace sselIndReports
 
             foreach (DataRow dr in dtRoom.Rows)
             {
-                Rooms room = RoomUtility.GetRoom(dr.Field<int>("RoomID"));
+                LabRoom room = Rooms.GetRoom(dr.Field<int>("RoomID"));
 
                 // Using Convert.ToDecimal because value might be decimal or double depending no if it is from RoomBilling or RoomBillingTemp
                 decimal hours = Convert.ToDecimal(dr["Hours"]);
 
-                if (room == Rooms.CleanRoom)
+                if (room == LabRoom.CleanRoom)
                     totalCleanRoomHours += hours;
-                else if (room == Rooms.WetChemistry)
+                else if (room == LabRoom.ChemRoom)
                     totalWetChemHours += hours;
-                else if (room == Rooms.TestLab)
+                else if (room == LabRoom.TestLab)
                     totalTestLabHours += hours;
-                else if (room == Rooms.OrganicsBay)
+                else if (room == LabRoom.OrganicsBay)
                     totalOrganicsHours += hours;
-                else if (room == Rooms.LNF)
+                else if (room == LabRoom.LNF)
                     totalLnfHours += hours;
             }
 
-            lblRoomHours.Text = string.Format("|  LNF: {0:#0.00} hours, Clean Room: {1:#0.00} hours, Wet Chem: {2:#0.00} hours", totalLnfHours, totalCleanRoomHours, totalWetChemHours);
+            string lnfName = "LNF";
+            string cleanRoomName = "Clean Room";
+            string wetChemName = "ROBIN";
+
+            lblRoomHours.Text = $"|  {lnfName}: {totalLnfHours:#0.00} hours, {cleanRoomName}: {totalCleanRoomHours:#0.00} hours, {wetChemName}: {totalWetChemHours:#0.00} hours";
 
             lblRoomsSum.Text = string.Empty;
             if (dtRoom.Rows.Count > 0)
@@ -197,38 +197,93 @@ namespace sselIndReports
             lblRoom.Visible = true;
         }
 
+        protected string GetChargeDays(object dataItem)
+        {
+            DataRowView drv = (DataRowView)dataItem;
+
+            bool isParent = Convert.ToBoolean(drv["IsParent"]);
+            object obj = drv["ChargeDays"];
+
+            decimal chargeDays = 0;
+
+            if (obj != null && obj != DBNull.Value)
+                chargeDays = Convert.ToDecimal(obj);
+
+            if (isParent)
+                return chargeDays.ToString("#0.00");
+            else
+                return string.Empty;
+        }
+
+        protected string GetDailyFee(object dataItem)
+        {
+            DataRowView drv = (DataRowView)dataItem;
+
+            bool isParent = Convert.ToBoolean(drv["IsParent"]);
+            object obj = drv["DailyFee"];
+
+            decimal dailyFee = 0;
+
+            if (obj != null && obj != DBNull.Value)
+                dailyFee = Convert.ToDecimal(obj);
+
+            if (isParent)
+                return dailyFee.ToString("C");
+            else
+                return string.Empty;
+        }
+
+        protected string GetEntries(object dataItem)
+        {
+            DataRowView drv = (DataRowView)dataItem;
+
+            bool isParent = Convert.ToBoolean(drv["IsParent"]);
+            object obj = drv["Entries"];
+
+            decimal entries = 0;
+
+            if (obj != null && obj != DBNull.Value)
+                entries = Convert.ToDecimal(obj);
+
+            if (isParent)
+                return string.Empty;
+            else
+                return entries.ToString("#0.00");
+        }
+
+        protected string GetEntryFee(object dataItem)
+        {
+            DataRowView drv = (DataRowView)dataItem;
+
+            bool isParent = Convert.ToBoolean(drv["IsParent"]);
+            object obj = drv["EntryFee"];
+
+            decimal entryFee = 0;
+
+            if (obj != null && obj != DBNull.Value)
+                entryFee = Convert.ToDecimal(obj);
+
+            if (isParent)
+                return string.Empty;
+            else
+                return entryFee.ToString("C");
+        }
+
         public void PopulateToolDetailData(DateTime period, int clientId)
         {
             //Tool - despite the word 'Detail' in the function name this is actually an aggregate by tool
-            //DataTable dtTool = ToolBillingBL.GetToolBillingDataByClientID20110701(period, clientId);
-            var query = Provider.Billing.Tool.GetToolBilling(period, clientId);
+            var toolBilling = new LNF.Reporting.Individual.ToolBilling(Provider);
+            var toolDetail = ToolDetailUtility.GetToolDetailResult(period, clientId, toolBilling);
 
-            // need all resources, not just active, because we may be looking at historical data
-            var resources = DA.Current.Query<ResourceInfo>().CreateModels<IResource>();
+            lbl20110401RoomSum.Text = toolDetail.LabelRoomSum.Text;
+            lbl20110401RoomSum.Visible = toolDetail.LabelRoomSum.Visible;
+            lbl20110401ResFee.Text = toolDetail.LabelResFee.Text;
+            lbl20110401ResFee.Visible = toolDetail.LabelResFee.Visible;
+            lblTool.Text = toolDetail.LabelTool.Text;
+            lblTool.Visible = toolDetail.LabelTool.Visible;
 
-            DataTable dtTool = ToolBillingBL.GetAggreateByTool(query, resources);
-            dtTool.DefaultView.Sort = "RoomName ASC, ResourceName ASC";
-            rptToolDetail.DataSource = dtTool;
+            rptToolDetail.DataSource = toolDetail.Items;
             rptToolDetail.DataBind();
-
-            decimal subTotalActivated = 0;
-
-            lbl20110401RoomSum.Text = string.Empty;
-            lbl20110401ResFee.Text = string.Empty;
-            if (dtTool.Rows.Count > 0)
-            {
-                subTotalActivated = Convert.ToDecimal(dtTool.Compute("SUM(LineCost)", string.Empty));
-                lbl20110401ResFee.Text = string.Format("| Sub Total: {0:$#,##0.00}", subTotalActivated);
-                lbl20110401ResFee.Visible = true;
-                UpdateRoomSums(dtTool, lbl20110401RoomSum);
-            }
-
-            if (subTotalActivated == 0)
-                lblTool.Text = "No tool usage fees in this period";
-            else
-                lblTool.Text = string.Format("Total tool usage fees: {0:$#,##0.00}", subTotalActivated);
-
-            lblTool.Visible = true;
         }
 
         private void PopulateStoreDetailData(DateTime period, int clientId)
@@ -379,13 +434,13 @@ namespace sselIndReports
             }
         }
 
-        protected void gvToolAccount20110701_RowDataBound(object sender, GridViewRowEventArgs e)
+        protected void GvToolAccount20110701_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.Header)
                 e.Row.Cells[4].ToolTip = "Your total reservation time, regardless of whether you activated or not";
         }
 
-        protected void gvToolOrg20110701_RowDataBound(object sender, GridViewRowEventArgs e)
+        protected void GvToolOrg20110701_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.Header)
                 e.Row.Cells[2].ToolTip = "Your total reservation time, regardless of whether you activated or not";
@@ -396,8 +451,11 @@ namespace sselIndReports
             DataRow[] rows = dt.Select(string.Format("RoomID = {0}", roomId));
             if (rows.Length > 0)
             {
-                RoomBillingDetailItem result = new RoomBillingDetailItem();
-                result.RoomName = rows[0].Field<string>("Room");
+                RoomBillingDetailItem result = new RoomBillingDetailItem
+                {
+                    RoomName = rows[0].Field<string>("Room")
+                };
+
                 RoomBillingDetailAccount[] accounts = rows.Select(x => new RoomBillingDetailAccount()
                 {
                     AccountName = x.Field<string>("Name"),
@@ -416,7 +474,7 @@ namespace sselIndReports
             return null;
         }
 
-        protected void chkShowDisclaimer_CheckedChanged(object sender, EventArgs e)
+        protected void ChkShowDisclaimer_CheckedChanged(object sender, EventArgs e)
         {
             SetShowDisclaimerSetting(chkShowDisclaimer.Checked);
             ShowDisclaimer();
@@ -427,9 +485,9 @@ namespace sselIndReports
             ShowDisclaimer();
         }
 
-        protected string GetResourceDetailUrl(DataRowView dr)
+        protected string GetResourceDetailUrl(ToolDetailItem item)
         {
-            return $"ResourceDetail.aspx?ResourceID={dr["ResourceID"]}&Period={SelectedPeriod:yyyy-MM-dd}&ClientID={dr["ClientID"]}&AccountID={dr["AccountID"]}";
+            return $"ResourceDetail.aspx?ResourceID={item.ResourceID}&Period={SelectedPeriod:yyyy-MM-dd}&ClientID={item.ClientID}&AccountID={item.AccountID}";
         }
     }
 

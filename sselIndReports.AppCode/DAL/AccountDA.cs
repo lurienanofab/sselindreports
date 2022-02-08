@@ -8,13 +8,13 @@ namespace sselIndReports.AppCode.DAL
     {
         public static DataTable GetActiveAccountManagers()
         {
-            return DA.Command(CommandType.Text)
+            return DataCommand.Create(CommandType.Text)
                 .FillDataTable("SELECT * FROM Reporting.dbo.v_ActiveAccountManagers ORDER BY AccountName");
         }
 
         public static DataView GetInternalAccounts()
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "AllInternal")
                 .FillDataTable("dbo.Account_Select")
                 .DefaultView;
@@ -22,7 +22,7 @@ namespace sselIndReports.AppCode.DAL
 
         public static DataTable GetActiveManagers(int clientId)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "AllActiveManager")
                 .Param("ClientID", clientId > 0, clientId)
                 .FillDataTable("dbo.ClientOrg_Select");
@@ -30,7 +30,7 @@ namespace sselIndReports.AppCode.DAL
 
         public static DataSet GetClientAccountDataSet(int managerOrgId)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "ClientAccountByManager")
                 .Param("ManagerOrgID", managerOrgId)
                 .FillDataSet("dbo.ClientAccount_Select");
@@ -38,7 +38,7 @@ namespace sselIndReports.AppCode.DAL
 
         public static DataTable GetAccountsByOrgID(int orgId)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "AllByOrg")
                 .Param("OrgID", orgId)
                 .FillDataTable("dbo.Account_Select");
@@ -49,7 +49,7 @@ namespace sselIndReports.AppCode.DAL
             DateTime sDate = new DateTime(year, month, 1);
             DateTime eDate = sDate.AddMonths(1);
 
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "GetAccountDetailByOrgID")
                 .Param("OrgID", orgId)
                 .Param("sDate", sDate)
@@ -59,7 +59,7 @@ namespace sselIndReports.AppCode.DAL
 
         public static DataTable GetManagersByPeriod(DateTime sDate, DateTime eDate, int chargeTypeId)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "AllActiveManagerByPeriodByChargeType")
                 .Param("sDate", sDate)
                 .Param("eDate", eDate)

@@ -1,7 +1,6 @@
 ﻿using LNF.Data;
-using LNF.Models.Data;
-using LNF.Repository;
-using LNF.Repository.Data;
+using LNF.Impl.Repository.Billing;
+using LNF.Impl.Repository.Data;
 using LNF.Web.Controls;
 using sselIndReports.AppCode;
 using System;
@@ -36,7 +35,7 @@ namespace sselIndReports
                     DateTime sDate = pp1.SelectedPeriod;
                     DateTime eDate = sDate.AddMonths(1);
 
-                    var command = DA.Command()
+                    var command = DataCommand()
                         .Param("sDate", sDate)
                         .Param("eDate", eDate)
                         .Param("ClientID", CurrentUser.ClientID);
@@ -78,9 +77,9 @@ namespace sselIndReports
             // RoomDataClean contains prior months and same month data
 
             var roomEvents = new List<RoomEvent>();
-            var cleanData = DA.Current.Query<RoomDataClean>().Where(x => (x.EntryDT >= sd && x.EntryDT < ed) && x.ClientID == clientId).ToList();
+            var cleanData = DataSession.Query<RoomDataClean>().Where(x => (x.EntryDT >= sd && x.EntryDT < ed) && x.ClientID == clientId).ToList();
 
-            var rooms = DA.Current.Query<Room>().ToList();
+            var rooms = DataSession.Query<Room>().ToList();
 
             foreach (var item in cleanData)
             {
@@ -155,8 +154,8 @@ namespace sselIndReports
                 }
             }
 
-            var toolData = ReservationManager.SelectByClient(clientId, sd, ed, true);
-            var filteredToolData = ReservationManager.FilterCancelledReservations(toolData, false);
+            var toolData = Provider.Scheduler.Reservation.SelectByClient(clientId, sd, ed, true);
+            var filteredToolData = Provider.Scheduler.Reservation.FilterCancelledReservations(toolData, false);
 
             DateTime startTime;
             double duration;
@@ -178,7 +177,7 @@ namespace sselIndReports
                 }
 
                 string account = item.Reservation.AccountName;
-                string resource = item.Reservation.ResourceName;
+                string resource = ((LNF.Scheduler.IReservationItem)item.Reservation).ResourceName;
 
                 double hours = duration / 60D;
 
@@ -247,11 +246,11 @@ namespace sselIndReports
 
         private string GetDisplayName(int clientId)
         {
-            string name = DA.Current.Query<Client>().First(x => x.ClientID == clientId).DisplayName;
+            string name = DataSession.Query<Client>().First(x => x.ClientID == clientId).DisplayName;
             return string.Format("<div class=\"display-name\">{0}</div>", name);
         }
 
-        protected void dgActDate_ItemDataBound(object sender, DataGridItemEventArgs e)
+        protected void DgActDate_ItemDataBound(object sender, DataGridItemEventArgs e)
         {
             if (e.Item.ItemType == ListItemType.AlternatingItem || e.Item.ItemType == ListItemType.Item)
             {
@@ -268,7 +267,7 @@ namespace sselIndReports
             DisplayUsage();
         }
 
-        protected void pp1_SelectedPeriodChanged(object sender, PeriodChangedEventArgs e)
+        protected void Pp1_SelectedPeriodChanged(object sender, PeriodChangedEventArgs e)
         {
             PopulateUserDropDownList(ddlUser, pp1.SelectedPeriod, btnReport);
         }

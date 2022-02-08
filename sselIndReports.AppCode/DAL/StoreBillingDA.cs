@@ -8,7 +8,7 @@ namespace sselIndReports.AppCode.DAL
     {
         public static DataTable GetStoreBillingDataByClientID(DateTime period, int clientId)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "ByClientIDPeriod")
                 .Param("Period", period)
                 .Param("ClientID", clientId)
@@ -17,7 +17,7 @@ namespace sselIndReports.AppCode.DAL
 
         public static DataTable GetStoreBillingTempDataByClientID(DateTime period, int clientId)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "ByClientIDPeriod")
                 .Param("Period", period)
                 .Param("ClientID", clientId)

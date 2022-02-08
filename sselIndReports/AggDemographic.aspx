@@ -1,13 +1,15 @@
 ﻿<%@ Page Title="Demographic Report" Language="C#" MasterPageFile="~/IndReportsMaster.Master" AutoEventWireup="true" CodeBehind="AggDemographic.aspx.cs" Inherits="sselIndReports.AggDemographic" %>
+
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
+
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="section">
         <h2>Demographic Report</h2>
         <div class="criteria">
             <div class="criteria-item">
                 Select period:
-                <lnf:PeriodPicker runat="server" ID="pp1" AutoPostBack="true" OnSelectedPeriodChanged="pp1_SelectedPeriodChanged" />
+                <lnf:PeriodPicker runat="server" ID="pp1" AutoPostBack="true" OnSelectedPeriodChanged="Pp1_SelectedPeriodChanged" />
             </div>
             <div class="criteria-item">
                 <asp:LinkButton runat="server" ID="btnBack" Text="&larr; Back to Main Page" OnClick="BackButton_Click" CssClass="back-link"></asp:LinkButton>
@@ -21,7 +23,7 @@
             </tr>
             <tr>
                 <td>
-                    <asp:DataGrid ID="dgGender" OnItemDataBound="dgItemBound" runat="server">
+                    <asp:DataGrid ID="dgGender" OnItemDataBound="DataGrid_ItemBoundBound" runat="server">
                         <AlternatingItemStyle BackColor="Linen"></AlternatingItemStyle>
                         <HeaderStyle Font-Bold="True" BackColor="#FFC0C0"></HeaderStyle>
                     </asp:DataGrid>
@@ -32,7 +34,7 @@
             </tr>
             <tr>
                 <td>
-                    <asp:DataGrid ID="dgEthnic" OnItemDataBound="dgItemBound" runat="server">
+                    <asp:DataGrid ID="dgEthnic" OnItemDataBound="DataGrid_ItemBoundBound" runat="server">
                         <AlternatingItemStyle BackColor="Linen"></AlternatingItemStyle>
                         <HeaderStyle Font-Bold="True" BackColor="#FFC0C0"></HeaderStyle>
                     </asp:DataGrid>
@@ -43,7 +45,7 @@
             </tr>
             <tr>
                 <td>
-                    <asp:DataGrid ID="dgRace" OnItemDataBound="dgItemBound" runat="server">
+                    <asp:DataGrid ID="dgRace" OnItemDataBound="DataGrid_ItemBoundBound" runat="server">
                         <AlternatingItemStyle BackColor="Linen"></AlternatingItemStyle>
                         <HeaderStyle Font-Bold="True" BackColor="#FFC0C0"></HeaderStyle>
                     </asp:DataGrid>
@@ -54,7 +56,7 @@
             </tr>
             <tr>
                 <td>
-                    <asp:DataGrid ID="dgDisability" OnItemDataBound="dgItemBound" runat="server">
+                    <asp:DataGrid ID="dgDisability" OnItemDataBound="DataGrid_ItemBoundBound" runat="server">
                         <AlternatingItemStyle BackColor="Linen"></AlternatingItemStyle>
                         <HeaderStyle Font-Bold="True" BackColor="#FFC0C0"></HeaderStyle>
                     </asp:DataGrid>
@@ -65,7 +67,7 @@
             </tr>
             <tr>
                 <td>
-                    <asp:DataGrid ID="dgCitizen" OnItemDataBound="dgItemBound" runat="server">
+                    <asp:DataGrid ID="dgCitizen" OnItemDataBound="DataGrid_ItemBoundBound" runat="server">
                         <AlternatingItemStyle BackColor="Linen"></AlternatingItemStyle>
                         <HeaderStyle Font-Bold="True" BackColor="#FFC0C0"></HeaderStyle>
                     </asp:DataGrid>

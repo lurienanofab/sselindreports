@@ -59,7 +59,7 @@
                     <tr>
                         <td><strong>Start aggregation period:</strong></td>
                         <td>
-                            <lnf:PeriodPicker runat="server" ID="ppAgg" StartPeriod="2008-01-01" AutoPostBack="true" OnSelectedPeriodChanged="ppAgg_SelectedPeriodChanged" />
+                            <lnf:PeriodPicker runat="server" ID="ppAgg" StartPeriod="2008-01-01" AutoPostBack="true" OnSelectedPeriodChanged="PpAgg_SelectedPeriodChanged" />
                         </td>
                     </tr>
                     <tr>
@@ -80,7 +80,7 @@
                         <td>
                             <asp:TextBox ID="txtMinMinutes" Text="" runat="server" Width="60"></asp:TextBox>
                             minutes
-                            <asp:Button runat="server" ID="btnChangeThreshold" Text="Update" OnClick="btnChangeThreshold_Click" />
+                            <asp:Button runat="server" ID="btnChangeThreshold" Text="Update" OnClick="BtnChangeThreshold_Click" />
                         </td>
                     </tr>
                     <tr>
@@ -91,14 +91,14 @@
                     </tr>
                 </table>
                 <div class="criteria-item">
-                    <asp:Button runat="server" ID="btnReport" Text="Retrieve Data" CommandArgument="0" OnCommand="btnReport_Command" />
-                    <asp:LinkButton runat="server" ID="btnBack" Text="&larr; Back to Main Page" OnClick="BackButton_Click" CssClass="back-link"></asp:LinkButton>
+                    <div style="margin-bottom: 10px;"><asp:Button runat="server" ID="btnReport" Text="Retrieve Data" CommandName="ViewReport" CommandArgument="0" OnCommand="Report_Command" /></div>
+                    <div style="margin-bottom: 10px;"><asp:LinkButton runat="server" ID="btnBack" Text="&larr; Back to Main Page" OnClick="BackButton_Click" CssClass="back-link"></asp:LinkButton></div>
                     <asp:Literal ID="litWarning" runat="server"></asp:Literal>
                 </div>
             </div>
         </div>
         <div class="section">
-            <asp:LinkButton runat="server" ID="btnDeleteCheckedFiles" Text="Delete Checked" OnClick="btnDeleteCheckedFiles_Click"></asp:LinkButton>
+            <asp:LinkButton runat="server" ID="btnDeleteCheckedFiles" Text="Delete Checked" OnClick="BtnDeleteCheckedFiles_Click"></asp:LinkButton>
             <asp:Literal runat="server" ID="litFileError"></asp:Literal>
             <asp:Repeater runat="server" ID="rptCurrentFiles">
                 <HeaderTemplate>

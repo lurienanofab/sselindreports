@@ -34,6 +34,7 @@
         }
     </style>
 </asp:Content>
+
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="section">
         <h2>Individual User Detailed Time-in-Lab Report</h2>
@@ -42,7 +43,7 @@
                 <tr>
                     <td>Select month and year:</td>
                     <td class="disable">
-                        <lnf:PeriodPicker runat="server" ID="pp1" AutoPostBack="true" OnSelectedPeriodChanged="pp1_SelectedPeriodChanged" />
+                        <lnf:PeriodPicker runat="server" ID="pp1" AutoPostBack="true" OnSelectedPeriodChanged="Pp1_SelectedPeriodChanged" />
                     </td>
                 </tr>
                 <tr>
@@ -113,7 +114,7 @@
             </tr>
             <tr>
                 <td>
-                    <asp:DataGrid runat="server" ID="dgActDate" Width="632" AutoGenerateColumns="false" OnItemDataBound="dgActDate_ItemDataBound">
+                    <asp:DataGrid runat="server" ID="dgActDate" Width="632" AutoGenerateColumns="false" OnItemDataBound="DgActDate_ItemDataBound">
                         <AlternatingItemStyle BackColor="Azure" />
                         <HeaderStyle Font-Bold="true" />
                         <Columns>

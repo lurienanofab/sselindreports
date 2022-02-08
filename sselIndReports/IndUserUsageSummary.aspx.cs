@@ -1,6 +1,5 @@
-﻿using LNF.CommonTools;
+﻿using LNF.Billing;
 using LNF.Data;
-using LNF.Repository.Billing;
 using sselIndReports.AppCode;
 using sselIndReports.AppCode.BLL;
 using sselIndReports.AppCode.DAL;
@@ -180,7 +179,7 @@ namespace sselIndReports
             dlSummary.DataBind();
 
             //2009-10-12 future billing button display
-            int billingTypeId = BillingType.Other;
+            int billingTypeId = BillingTypes.Other;
 
             if (dtRoom.Rows.Count > 0)
                 billingTypeId = dtRoom.Rows[0].Field<int>("BillingTypeID");
@@ -191,7 +190,7 @@ namespace sselIndReports
             else if (dsTool.Tables[2].Rows.Count > 0)
                 billingTypeId = dsTool.Tables[2].Rows[0].Field<int>("BillingTypeID");
 
-            int[] specialBillingTypesForSomeUnknownReason = { BillingType.Int_Ga, BillingType.Int_Si, BillingType.ExtAc_Ga, BillingType.ExtAc_Si };
+            int[] specialBillingTypesForSomeUnknownReason = { BillingTypes.Int_Ga, BillingTypes.Int_Si, BillingTypes.ExtAc_Ga, BillingTypes.ExtAc_Si };
             if (specialBillingTypesForSomeUnknownReason.Contains(billingTypeId))
             {
                 btnCurrent.Visible = true;
@@ -335,7 +334,7 @@ namespace sselIndReports
             dlSummary.DataBind();
         }
 
-        protected void gvRoom_RowDataBound(object sender, GridViewRowEventArgs e)
+        protected void GvRoom_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.DataRow)
             {
@@ -344,7 +343,7 @@ namespace sselIndReports
             }
         }
 
-        protected void btnFuture_Click(object sender, EventArgs e)
+        protected void BtnFuture_Click(object sender, EventArgs e)
         {
             RunFutureReport(SelectedPeriod, SelectedClientID);
         }
@@ -365,13 +364,13 @@ namespace sselIndReports
             foreach (DataRow dr in dt.Rows)
             {
                 int billingTypeId = dr.Field<int>("BillingTypeID");
-                var room = RoomUtility.GetRoom(dr.Field<int>("RoomID"));
+                var room = Rooms.GetRoom(dr.Field<int>("RoomID"));
 
-                if (billingTypeId == BillingType.Other)
+                if (billingTypeId == BillingTypes.Other)
                     dr["LineCost"] = 0;
-                else if (BillingTypeManager.IsGrowerUserBillingType(billingTypeId))
+                else if (BillingTypes.IsGrowerUserBillingType(billingTypeId))
                 {
-                    if (room == Rooms.OrganicsBay)
+                    if (room == LabRoom.OrganicsBay)
                     {
                         //Organics bay must be charged for growers as well
                         dr["LineCost"] = dr.Field<decimal>("RoomCharge");

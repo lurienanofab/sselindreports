@@ -1,6 +1,6 @@
 ﻿using LNF;
 using LNF.CommonTools;
-using LNF.Models.Data;
+using LNF.Data;
 using LNF.Web;
 using System;
 using System.Collections.Generic;
@@ -11,6 +11,8 @@ namespace sselIndReports
 {
     public partial class _500 : Page
     {
+        public IProvider Provider => ServiceProvider.Current;
+
         protected void Page_Load(object sender, EventArgs e)
         {
             ContextBase = new HttpContextWrapper(Context);
@@ -56,7 +58,7 @@ namespace sselIndReports
 
             try
             {
-                currentUser = ContextBase.CurrentUser();
+                currentUser = ContextBase.CurrentUser(Provider);
             }
             catch (Exception ex)
             {
@@ -71,7 +73,7 @@ namespace sselIndReports
             try
             {
                 var app = ServiceProvider.Current.Log.Name;
-                SendEmail.SendErrorEmail(err, currentUser, app, ContextBase.CurrentIP(), ContextBase.Request.Url);
+                SendEmail.SendErrorEmail(err, string.Empty, currentUser, app, ContextBase.CurrentIP(), ContextBase.Request.Url);
             }
             catch (Exception ex)
             {

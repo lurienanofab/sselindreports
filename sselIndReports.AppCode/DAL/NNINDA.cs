@@ -8,7 +8,7 @@ namespace sselIndReports.AppCode.DAL
     {
         public static DataSet GetTablesWithMinimumMinutes(DateTime period, int privs, bool makeAggData, double minimumHours)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "GetAllTablesWithMinimumHours")
                 .Param("Period", period)
                 .Param("Privs", privs)
@@ -19,7 +19,7 @@ namespace sselIndReports.AppCode.DAL
 
         public static DataTable GetCumulativeUserTable()
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "AllInternal")
                 .FillDataTable("dbo.Account_Select");
         }
@@ -27,7 +27,7 @@ namespace sselIndReports.AppCode.DAL
 
         public static DataSet GetCostTables(DateTime period)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "GetCostTables")
                 .Param("Period", period)
                 .FillDataSet("dbo.NNIN_Select");
@@ -35,7 +35,7 @@ namespace sselIndReports.AppCode.DAL
 
         public static bool CumulativeUserExists(DateTime period)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("@Action", "DataCheck")
                 .Param("@eDate", period)
                 .ExecuteScalar<bool>("dbo.CumUserForNNIN_Select").Value;
@@ -43,7 +43,7 @@ namespace sselIndReports.AppCode.DAL
 
         public static DataTable GetCumulativeUserAggregateData(DateTime sDate, DateTime eDate)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "Aggregate")
                 .Param("sDate", sDate)
                 .Param("eDate", eDate)

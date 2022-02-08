@@ -1,5 +1,5 @@
 ﻿using LNF;
-using LNF.Models.Billing;
+using LNF.Billing;
 using sselIndReports.AppCode.DAL;
 using System;
 using System.Data;
@@ -9,7 +9,7 @@ namespace sselIndReports.AppCode.BLL
 {
     public static class RoomBillingBL
     {
-        public static IBillingTypeManager BillingType => ServiceProvider.Current.Billing.BillingType;
+        public static IBillingTypeRepository BillingType => ServiceProvider.Current.Billing.BillingType;
 
         public static DataTable GetRoomBillingDataByClientID(HttpContextBase context, DateTime period, int clientId)
         {

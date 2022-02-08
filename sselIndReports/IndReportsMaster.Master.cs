@@ -8,7 +8,7 @@ using System.Configuration;
 
 namespace sselIndReports
 {
-    public partial class IndReportsMaster : LNF.Web.Content.LNFMasterPage
+    public partial class IndReportsMaster : LNF.Web.Content.OnlineServicesMasterPage
     {
         public override bool ShowMenu
         {

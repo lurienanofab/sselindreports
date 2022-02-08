@@ -1,6 +1,4 @@
 ﻿using LNF.Data;
-using LNF.Models.Data;
-using LNF.Repository;
 using sselIndReports.AppCode;
 using System;
 using System.Data;
@@ -36,7 +34,7 @@ namespace sselIndReports
         private void LoadUserList()
         {
             //client info - gets put into ddl, not needed in dataset
-            var command = DA.Command();
+            var command = DataCommand();
 
             command.Param("ClientID", CurrentUser.ClientID);
 
@@ -71,7 +69,7 @@ namespace sselIndReports
                 return;
             }
 
-            var dtAuthTools = DA.Command()
+            var dtAuthTools = DataCommand()
                 .Param("Action", "AuthTools")
                 .Param("ClientID", ddlUser.SelectedValue)
                 .FillDataTable("dbo.sselScheduler_Select");

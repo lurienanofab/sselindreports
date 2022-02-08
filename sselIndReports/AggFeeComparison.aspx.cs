@@ -1,8 +1,8 @@
-﻿using LNF.CommonTools;
+﻿using LNF.Billing;
+using LNF.CommonTools;
 using LNF.Data;
-using LNF.Models.Data;
+using LNF.Impl.Repository.Billing;
 using LNF.Repository;
-using LNF.Repository.Billing;
 using sselIndReports.AppCode;
 using sselIndReports.AppCode.BLL;
 using sselIndReports.AppCode.DAL;
@@ -72,13 +72,13 @@ namespace sselIndReports
             {
                 billingTypeId = dtRoomCost.Rows[0].Field<int>("BillingType");
 
-                if (billingTypeId != BillingType.Other)
+                if (billingTypeId != BillingTypes.Other)
                 {
                     //first, we have to get the total hours for people who are not pay by hours - we will use the "total hours" to find out the correct apportion for each account
                     decimal totalCleanRoomHours = 0; //this stores the total clean room hours for this user at this month
                     decimal totalChemRoomHours = 0; //this stores the total chem room hours
 
-                    int[] specialBillingTypesForSomeUnknownReason = { BillingType.ExtAc_Ga, BillingType.ExtAc_Si, BillingType.Int_Si, BillingType.Int_Ga };
+                    int[] specialBillingTypesForSomeUnknownReason = { BillingTypes.ExtAc_Ga, BillingTypes.ExtAc_Si, BillingTypes.Int_Si, BillingTypes.Int_Ga };
                     if (specialBillingTypesForSomeUnknownReason.Contains(billingTypeId))
                     {
                         try
@@ -105,23 +105,23 @@ namespace sselIndReports
                     decimal tempTotalHours = 0;
                     foreach (DataRow dr in dtRoomCost.Rows)
                     {
-                        Rooms room = RoomUtility.GetRoom(dr.Field<int>("RoomID"));
-                        if (room == Rooms.CleanRoom)
+                        var room = Rooms.GetRoom(dr.Field<int>("RoomID"));
+                        if (room == LabRoom.CleanRoom)
                             tempTotalHours = totalCleanRoomHours;
-                        else if (room == Rooms.WetChemistry)
+                        else if (room == LabRoom.ChemRoom)
                             tempTotalHours = totalChemRoomHours;
 
                         //if the current user is not using the Hourly rate, we have to calcuate it
-                        int[] billingTypesThatDoNotUseHourlyRate = { BillingType.ExtAc_Ga, BillingType.ExtAc_Si, BillingType.Int_Si, BillingType.Int_Ga, BillingType.ExtAc_Tools, BillingType.Int_Tools };
+                        int[] billingTypesThatDoNotUseHourlyRate = { BillingTypes.ExtAc_Ga, BillingTypes.ExtAc_Si, BillingTypes.Int_Si, BillingTypes.Int_Ga, BillingTypes.ExtAc_Tools, BillingTypes.Int_Tools };
                         if (billingTypesThatDoNotUseHourlyRate.Contains(billingTypeId))
-                            dr["LineCost"] = AppCode.BLL.BillingTypeManager.GetTotalCostByBillingType(billingTypeId, dr.Field<decimal>("TotalHours"), dr.Field<decimal>("TotalEntries"), room, dr.Field<decimal>("TotalCalcCost"), tempTotalHours);
-                        else if (billingTypeId == BillingType.Other)
+                            dr["LineCost"] = BillingTypeManager.GetTotalCostByBillingType(billingTypeId, dr.Field<decimal>("TotalHours"), dr.Field<decimal>("TotalEntries"), room, dr.Field<decimal>("TotalCalcCost"), tempTotalHours);
+                        else if (billingTypeId == BillingTypes.Other)
                             dr["LineCost"] = 0;
 
                         //for some reasons, the TotalCalcCost column is never filled for DC lab and Chem room, so we have to add it manually here
-                        if (room != Rooms.CleanRoom)
+                        if (room != LabRoom.CleanRoom)
                         {
-                            if (billingTypeId == BillingType.Other)
+                            if (billingTypeId == BillingTypes.Other)
                                 dr["TotalCalcCost"] = 0;
                         }
                     }
@@ -133,7 +133,7 @@ namespace sselIndReports
                     totalRoomPerUseSum = tempMonthSum;
 
                     //if it's non-per usage type, we must also calculate it's current cost
-                    int[] billingTypesThatAreNotPerUse = { BillingType.ExtAc_Ga, BillingType.ExtAc_Si, BillingType.Int_Si, BillingType.Int_Ga, BillingType.ExtAc_Tools, BillingType.Int_Tools };
+                    int[] billingTypesThatAreNotPerUse = { BillingTypes.ExtAc_Ga, BillingTypes.ExtAc_Si, BillingTypes.Int_Si, BillingTypes.Int_Ga, BillingTypes.ExtAc_Tools, BillingTypes.Int_Tools };
                     if (billingTypesThatAreNotPerUse.Contains(billingTypeId))
                         tempMonthSum = Convert.ToDecimal(dtRoomCost.Compute("SUM(LineCost)", string.Empty));
 
@@ -166,7 +166,7 @@ namespace sselIndReports
                 }
             }
 
-            if (billingTypeId != BillingType.Other)
+            if (billingTypeId != BillingTypes.Other)
             {
                 //at this moment, dtToolCost has clean records
                 if (dtToolCost.Rows.Count > 0)
@@ -178,7 +178,7 @@ namespace sselIndReports
 
             //show billing type ONLY when calculating for one person
             if (ddlUser.SelectedValue != "0")
-                lblBillingType.Text = "Billing type = " + DA.Current.Single<BillingType>(billingTypeId).BillingTypeName;
+                lblBillingType.Text = "Billing type = " + DataSession.Single<BillingType>(billingTypeId).BillingTypeName;
             else
                 lblBillingType.Text = "All users are selected";
 
@@ -189,7 +189,7 @@ namespace sselIndReports
         {
             DateTime period = pp1.SelectedPeriod;
             int totalMonths = Convert.ToInt32(txtNumMonths.Text);
-            int currentBillingTypeId = BillingType.Other;
+            int currentBillingTypeId = BillingTypes.Other;
 
             decimal totalRoomSum = 0;
             decimal totalRoomPerUseSum = 0;
@@ -212,8 +212,8 @@ namespace sselIndReports
             //people like Ning belongs to more than 1 org, so we have to filter out the accounts that are not in this particular org
             DataTable dtAccount = ClientDA.GetAllAccountsByClientOrgID(Convert.ToInt32(ddlManager.SelectedValue));
 
-            int[] billingTypesChargedByToolUsage = { BillingType.ExtAc_Hour, BillingType.Int_Hour, BillingType.NonAc_Hour, BillingType.ExtAc_Tools, BillingType.Int_Tools, BillingType.NonAc_Tools };
-            int[] specialBillingTypesForSomeUnknownReason = { BillingType.NonAc, BillingType.NonAc_Hour, BillingType.NonAc_Tools };
+            int[] billingTypesChargedByToolUsage = { BillingTypes.ExtAc_Hour, BillingTypes.Int_Hour, BillingTypes.NonAc_Hour, BillingTypes.ExtAc_Tools, BillingTypes.Int_Tools, BillingTypes.NonAc_Tools };
+            int[] specialBillingTypesForSomeUnknownReason = { BillingTypes.NonAc, BillingTypes.NonAc_Hour, BillingTypes.NonAc_Tools };
 
             if (ddlUser.SelectedValue == "0")
             {
@@ -250,7 +250,7 @@ namespace sselIndReports
                             ndr["Name"] = userItem.Text;
 
                             //for per usage types (such as xxx_hour or xxx_tool, we need to include the tool fee for current payment
-                            int[] billingTypesForPerUsage = { BillingType.ExtAc_Hour, BillingType.Int_Hour, BillingType.NonAc_Hour, BillingType.ExtAc_Tools, BillingType.Int_Tools, BillingType.NonAc_Tools };
+                            int[] billingTypesForPerUsage = { BillingTypes.ExtAc_Hour, BillingTypes.Int_Hour, BillingTypes.NonAc_Hour, BillingTypes.ExtAc_Tools, BillingTypes.Int_Tools, BillingTypes.NonAc_Tools };
                             if (billingTypesForPerUsage.Contains(currentBillingTypeId))
                                 ndr["CurrentPayment"] = Math.Round(totalRoomSum, 2) + Math.Round(totalToolSum, 2);
                             else

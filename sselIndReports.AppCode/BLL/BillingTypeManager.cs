@@ -1,6 +1,6 @@
-﻿using LNF.CommonTools;
+﻿using LNF.Billing;
+using LNF.Data;
 using LNF.Repository;
-using LNF.Repository.Billing;
 using System;
 using System.Data;
 
@@ -10,7 +10,7 @@ namespace sselIndReports.AppCode.BLL
     {
         public static DataTable GetBillingTypes()
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "All")
                 .FillDataTable("dbo.BillingType_Select");
         }
@@ -19,7 +19,7 @@ namespace sselIndReports.AppCode.BLL
         {
             if (isActive == DBNull.Value || isActive is bool)
             {
-                return DA.Command()
+                return DataCommand.Create()
                     .Param("Action", "All")
                     .Param("IsActive", isActive)
                     .FillDataTable("dbo.BillingType_Select");
@@ -28,62 +28,62 @@ namespace sselIndReports.AppCode.BLL
             throw new Exception("Invalid type for parameter IsActive. Must be System.DBNull or System.Boolean.");
         }
 
-        public static decimal GetTotalCostByBillingType(int billingTypeId, decimal hours, decimal entries, Rooms room, decimal totalCalcCost, decimal totalHours = 0)
+        public static decimal GetTotalCostByBillingType(int billingTypeId, decimal hours, decimal entries, LabRoom room, decimal totalCalcCost, decimal totalHours = 0)
         {
             decimal result = 0;
 
-            if (room == Rooms.CleanRoom)
+            if (room == LabRoom.CleanRoom)
             {
-                if (billingTypeId == BillingType.Int_Ga)
+                if (billingTypeId == BillingTypes.Int_Ga)
                 {
                     if (totalHours > 0)
                         return (hours / totalHours) * 875;
                     else
                         return 0;
                 }
-                else if (billingTypeId == BillingType.Int_Si)
+                else if (billingTypeId == BillingTypes.Int_Si)
                 {
                     if (totalHours > 0)
                         return (hours / totalHours) * 1315;
                     else
                         return 0;
                 }
-                else if (billingTypeId == BillingType.Int_Hour)
+                else if (billingTypeId == BillingTypes.Int_Hour)
                     return 2.5M * entries + 15 * hours;
-                else if (billingTypeId == BillingType.Int_Tools)
+                else if (billingTypeId == BillingTypes.Int_Tools)
                     return 2.5M * entries;
-                else if (billingTypeId == BillingType.ExtAc_Ga)
+                else if (billingTypeId == BillingTypes.ExtAc_Ga)
                 {
                     if (totalHours > 0)
                         return (hours / totalHours) * 875;
                     else
                         return 0;
                 }
-                else if (billingTypeId == BillingType.ExtAc_Si)
+                else if (billingTypeId == BillingTypes.ExtAc_Si)
                 {
                     if (totalHours > 0)
                         return (hours / totalHours) * 1315;
                     else
                         return 0;
                 }
-                else if (billingTypeId == BillingType.ExtAc_Tools)
+                else if (billingTypeId == BillingTypes.ExtAc_Tools)
                     return 2.5M * entries;
-                else if (billingTypeId == BillingType.ExtAc_Hour)
+                else if (billingTypeId == BillingTypes.ExtAc_Hour)
                     return 2.5M * entries + 15 * hours;
-                else if (billingTypeId == BillingType.NonAc)
+                else if (billingTypeId == BillingTypes.NonAc)
                     return hours * 77;
-                else if (billingTypeId == BillingType.NonAc_Tools)
+                else if (billingTypeId == BillingTypes.NonAc_Tools)
                     return 2.5M * hours;
-                else if (billingTypeId == BillingType.NonAc_Hour)
+                else if (billingTypeId == BillingTypes.NonAc_Hour)
                     return 2.5M * entries + 45 * hours;
-                else if (billingTypeId == BillingType.Other)
+                else if (billingTypeId == BillingTypes.Other)
                     return 0;
             }
-            else if (room == Rooms.WetChemistry)
+            else if (room == LabRoom.ChemRoom)
             {
-                if (billingTypeId == BillingType.Other)
+                if (billingTypeId == BillingTypes.Other)
                     return 0;
-                else if (billingTypeId >= BillingType.NonAc)
+                else if (billingTypeId >= BillingTypes.NonAc)
                 {
                     if (hours > 0)
                         return 190;
@@ -103,11 +103,11 @@ namespace sselIndReports.AppCode.BLL
                         return 0;
                 }
             }
-            else if (room == Rooms.TestLab)
+            else if (room == LabRoom.TestLab)
             {
-                if (billingTypeId == BillingType.Other)
+                if (billingTypeId == BillingTypes.Other)
                     return 0;
-                else if (billingTypeId >= BillingType.NonAc)
+                else if (billingTypeId >= BillingTypes.NonAc)
                 {
                     if ((entries > 0 || hours > 0) && totalCalcCost > 0)
                         return 50;
@@ -122,11 +122,11 @@ namespace sselIndReports.AppCode.BLL
                         return 0;
                 }
             }
-            else if (room == Rooms.OrganicsBay)
+            else if (room == LabRoom.OrganicsBay)
             {
-                if (billingTypeId == BillingType.Other)
+                if (billingTypeId == BillingTypes.Other)
                     return 0;
-                else if (billingTypeId >= BillingType.NonAc)
+                else if (billingTypeId >= BillingTypes.NonAc)
                 {
                     if (entries > 0 || hours > 0)
                         return 190;
@@ -151,7 +151,7 @@ namespace sselIndReports.AppCode.BLL
         {
             try
             {
-                return DA.Command()
+                return DataCommand.Create()
                     .Param("Action", "GetCurrentTypeName")
                     .Param("ClientOrgID", clientOrgId)
                     .ExecuteScalar<string>("dbo.ClientOrgBillingTypeTS_Select").Value;
@@ -164,7 +164,7 @@ namespace sselIndReports.AppCode.BLL
 
         public static DataTable GetClientBillingTypesByPeriod(DateTime period)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "GetClientBillingTypeByPeriod")
                 .Param("Period", period)
                 .FillDataTable("dbo.ClientOrgBillingTypeTS_Select");
