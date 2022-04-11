@@ -96,7 +96,24 @@ namespace sselIndReports
 
         private decimal GetLineCost(IToolBilling tb)
         {
-            return ToolBilling.GetLineCost(new ToolLineCostParameters(tb));
+            return ToolBilling.GetLineCost(new ToolLineCostParameters(tb, GetResourceName(tb)));
+        }
+
+        private IEnumerable<IResource> resources = null;
+
+        private string GetResourceName(IToolBilling tb)
+        {
+            if (resources == null)
+            {
+                resources = Provider.Scheduler.Resource.GetResources();
+            }
+
+            var res = resources.FirstOrDefault(x => x.ResourceID == tb.ResourceID);
+
+            if (res == null)
+                throw new Exception($"Cannot find record with ResourceID: {tb.ResourceID}");
+
+            return res.ResourceName;
         }
 
         private string GetRequiredParamAsString(string key)

@@ -34,7 +34,7 @@ namespace sselIndReports
         {
             // store the relationship between the buttons and pages
             // there should be one line per button, equals number of pages
-            // adding makes the button visible
+            // adding makes the button visible (depending on ShowButton property)
 
             appPages.Add(new ReportButton(btnIndDetUsage, new IndDetUsage()));
             //appPages.Add(new ReportButton(trIndSumUsage, btnIndSumUsage, new IndSumUsage()));
@@ -52,6 +52,7 @@ namespace sselIndReports
             appPages.Add(new ReportButton(btnIndUserUsageSummary20100701, new IndUserUsageSummary20100701()));
             appPages.Add(new ReportButton(btnIndUserUsageSummary20110401, new IndUserUsageSummary20110401()));
             appPages.Add(new ReportButton(btnIndUserUsageSummary20111101, new IndUserUsageSummary20111101()));
+            appPages.Add(new ReportButton(btnIndUserUsageSummary20220301, new IndUserUsageSummary20220301()));
             appPages.Add(new ReportButton(btnIndUserUsageSummaryAudit, new IndUserUsageSummaryAudit()));
             appPages.Add(new ReportButton(btnDatHistory, new DatHistory()));
 

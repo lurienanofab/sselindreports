@@ -1,4 +1,5 @@
-﻿using LNF.Billing.Reports;
+﻿using LNF.Billing;
+using LNF.Billing.Reports;
 using LNF.Cache;
 using LNF.Data;
 using LNF.Impl.Repository.Data;
@@ -14,11 +15,9 @@ using System.Web.UI.WebControls;
 
 namespace sselIndReports
 {
-    public partial class IndUserUsageSummary20111101 : UserUsageSummaryPage
+    public partial class IndUserUsageSummary20220301 : UserUsageSummaryPage
     {
         private GlobalSettings _ShowDisclaimerSetting;
-
-        public override ClientPrivilege AuthTypes => ClientPrivilege.Administrator | ClientPrivilege.Developer;
 
         protected override DateTime SelectedPeriod
         {
@@ -271,21 +270,36 @@ namespace sselIndReports
                 return entryFee.ToString("C");
         }
 
-        public void PopulateToolDetailData(DateTime period, int clientId)
+        public void SetToolDataInfo(DataTable dtTool)
+        {
+            // [2022-04-08 jg] old method uses this ToolBilling class. The new way uses the UserUsageAudit class but resusing the label code here
+
+            //var toolBilling = new LNF.Reporting.Individual.ToolBilling(Provider);
+            //var toolDetail = ToolDetailUtility.GetToolDetailResult(period, clientId, toolBilling);
+
+            var labelTool = new BillingReportLabel();
+            var labelRoomSum = new BillingReportLabel();
+            var labelResFee = new BillingReportLabel();
+            ToolDetailUtility.SetLabels(dtTool, labelTool, labelRoomSum, labelResFee);
+
+            lbl20110401RoomSum.Text = labelRoomSum.Text;
+            lbl20110401RoomSum.Visible = labelRoomSum.Visible;
+            lbl20110401ResFee.Text = labelResFee.Text;
+            lbl20110401ResFee.Visible = labelResFee.Visible;
+            lblTool.Text = labelTool.Text;
+            lblTool.Visible = labelTool.Visible;
+        }
+
+        private void PopulateToolDetailData(DateTime period, int clientId)
         {
             //Tool - despite the word 'Detail' in the function name this is actually an aggregate by tool
-            var toolBilling = new LNF.Reporting.Individual.ToolBilling(Provider);
-            var toolDetail = ToolDetailUtility.GetToolDetailResult(period, clientId, toolBilling);
 
-            lbl20110401RoomSum.Text = toolDetail.LabelRoomSum.Text;
-            lbl20110401RoomSum.Visible = toolDetail.LabelRoomSum.Visible;
-            lbl20110401ResFee.Text = toolDetail.LabelResFee.Text;
-            lbl20110401ResFee.Visible = toolDetail.LabelResFee.Visible;
-            lblTool.Text = toolDetail.LabelTool.Text;
-            lblTool.Visible = toolDetail.LabelTool.Visible;
-
-            rptToolDetail.DataSource = toolDetail.Items;
+            var audit = new UserUsageAudit(Provider);
+            audit.GetAuditData(period, clientId);
+            var dtTool = audit.GetAggregateTable();
+            rptToolDetail.DataSource = dtTool;
             rptToolDetail.DataBind();
+            SetToolDataInfo(dtTool);
         }
 
         private void PopulateStoreDetailData(DateTime period, int clientId)

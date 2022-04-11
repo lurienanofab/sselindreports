@@ -11,259 +11,340 @@ namespace sselIndReports
 {
 
 
-    public partial class Index
+    public partial class IndUserUsageSummary20220301
     {
 
         /// <summary>
-        /// lblName control.
+        /// hidAjaxUrl control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblName;
+        protected global::System.Web.UI.HtmlControls.HtmlInputHidden hidAjaxUrl;
 
         /// <summary>
-        /// divInd control.
+        /// panDisclaimerConfig control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divInd;
+        protected global::System.Web.UI.WebControls.Panel panDisclaimerConfig;
 
         /// <summary>
-        /// lblInd control.
+        /// chkShowDisclaimer control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblInd;
+        protected global::System.Web.UI.WebControls.CheckBox chkShowDisclaimer;
 
         /// <summary>
-        /// btnIndDetUsage control.
+        /// panDisclaimer control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnIndDetUsage;
+        protected global::System.Web.UI.WebControls.Panel panDisclaimer;
 
         /// <summary>
-        /// btnIndSumUsage control.
+        /// litDisclaimerText control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnIndSumUsage;
+        protected global::System.Web.UI.WebControls.Literal litDisclaimerText;
 
         /// <summary>
-        /// btnIndUserUsageSummary control.
+        /// pp1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnIndUserUsageSummary;
+        protected global::LNF.Web.Controls.PeriodPicker pp1;
 
         /// <summary>
-        /// btnIndUserUsageSummary20100701 control.
+        /// ddlUser control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnIndUserUsageSummary20100701;
+        protected global::System.Web.UI.WebControls.DropDownList ddlUser;
 
         /// <summary>
-        /// btnIndUserUsageSummary20110401 control.
+        /// lblClientID control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnIndUserUsageSummary20110401;
+        protected global::System.Web.UI.WebControls.Label lblClientID;
 
         /// <summary>
-        /// btnIndUserUsageSummary20111101 control.
+        /// btnReport control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnIndUserUsageSummary20111101;
+        protected global::System.Web.UI.WebControls.Button btnReport;
 
         /// <summary>
-        /// btnIndUserUsageSummary20220301 control.
+        /// LinkButton1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnIndUserUsageSummary20220301;
+        protected global::System.Web.UI.WebControls.LinkButton LinkButton1;
 
         /// <summary>
-        /// btnIndUserUsageSummaryAudit control.
+        /// lblGlobalMsg control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnIndUserUsageSummaryAudit;
+        protected global::System.Web.UI.WebControls.Label lblGlobalMsg;
 
         /// <summary>
-        /// btnIndAuthTools control.
+        /// divReportInfo control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnIndAuthTools;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divReportInfo;
 
         /// <summary>
-        /// btnIndClientAccount control.
+        /// rptReportInfo control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnIndClientAccount;
+        protected global::System.Web.UI.WebControls.Repeater rptReportInfo;
 
         /// <summary>
-        /// divAgg control.
+        /// litSummaryDisclaimerText control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divAgg;
+        protected global::System.Web.UI.WebControls.Literal litSummaryDisclaimerText;
 
         /// <summary>
-        /// lblAgg control.
+        /// divReportContent control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblAgg;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divReportContent;
 
         /// <summary>
-        /// btnAggSumUsage control.
+        /// lblSummaryApproximate control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnAggSumUsage;
+        protected global::System.Web.UI.WebControls.Label lblSummaryApproximate;
 
         /// <summary>
-        /// btnAggDemographic control.
+        /// divAggReports control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnAggDemographic;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divAggReports;
 
         /// <summary>
-        /// btnAggNNIN control.
+        /// gvAggByOrgRoom control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnAggNNIN;
+        protected global::System.Web.UI.WebControls.GridView gvAggByOrgRoom;
 
         /// <summary>
-        /// btnAggNNIN2 control.
+        /// gvToolOrg20110701 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnAggNNIN2;
+        protected global::System.Web.UI.WebControls.GridView gvToolOrg20110701;
 
         /// <summary>
-        /// btnAggFeeComparison control.
+        /// gvStoreOrg control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnAggFeeComparison;
+        protected global::System.Web.UI.WebControls.GridView gvStoreOrg;
 
         /// <summary>
-        /// btnAggSubsidyByFacultyGroup control.
+        /// gvSubsidy control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnAggSubsidyByFacultyGroup;
+        protected global::System.Web.UI.WebControls.GridView gvSubsidy;
 
         /// <summary>
-        /// divDat control.
+        /// gvRoomAccount control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divDat;
+        protected global::System.Web.UI.WebControls.GridView gvRoomAccount;
 
         /// <summary>
-        /// lblDat control.
+        /// litToolAccountDebug control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblDat;
+        protected global::System.Web.UI.WebControls.Literal litToolAccountDebug;
 
         /// <summary>
-        /// btnDatClient control.
+        /// gvToolAccount20110701 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnDatClient;
+        protected global::System.Web.UI.WebControls.GridView gvToolAccount20110701;
 
         /// <summary>
-        /// btnDatAccount control.
+        /// gvStoreAccount control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnDatAccount;
+        protected global::System.Web.UI.WebControls.GridView gvStoreAccount;
 
         /// <summary>
-        /// btnDatOrganization control.
+        /// lblRoom control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnDatOrganization;
+        protected global::System.Web.UI.WebControls.Label lblRoom;
 
         /// <summary>
-        /// btnDatHistory control.
+        /// lblRoomHours control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnDatHistory;
+        protected global::System.Web.UI.WebControls.Label lblRoomHours;
 
         /// <summary>
-        /// btnLogout control.
+        /// rptRoomDetail control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnLogout;
+        protected global::System.Web.UI.WebControls.Repeater rptRoomDetail;
+
+        /// <summary>
+        /// lblRoomsSum control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblRoomsSum;
+
+        /// <summary>
+        /// lblTool control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblTool;
+
+        /// <summary>
+        /// rptToolDetail control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Repeater rptToolDetail;
+
+        /// <summary>
+        /// zrptToolDetail control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Repeater zrptToolDetail;
+
+        /// <summary>
+        /// lbl20110401RoomSum control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbl20110401RoomSum;
+
+        /// <summary>
+        /// lbl20110401ResFee control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbl20110401ResFee;
+
+        /// <summary>
+        /// lblStore control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblStore;
+
+        /// <summary>
+        /// gvStoreDetail control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView gvStoreDetail;
+
+        /// <summary>
+        /// gvMisc control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView gvMisc;
     }
 }

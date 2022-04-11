@@ -370,6 +370,10 @@
         <div class="section">
             <h3>User Usage Summary Audit Report</h3>
 
+            <div style="border-top: solid 1px #aaa; border-bottom: solid 1px #aaa; padding: 10px; margin-bottom: 20px;">
+                This page was created while developing the new "audit friendly" version of the User Usage Summary report. Table data displayed is the same as what is shown on the latest version of the User Usage Summary, Tool Detail section. You can click a resource name to see reservation details.
+            </div>
+
             <div class="criteria">
                 <table class="criteria-table">
                     <tr>
