@@ -449,7 +449,7 @@
                                             <th data-property="PerUseCharge">Per Use Charge</th>
                                             <th data-property="HourlyRate">Usage Rate</th>
                                             <th data-property="BillingDurationHoursForgiven">Usage Hours</th>
-                                            <th data-property="BillingCharge">Billing Charge</th>
+                                            <%--<th data-property="BillingCharge">Billing Charge</th>--%>
                                             <th data-property="LineCost">Line Cost</th>
                                         </tr>
                                     </thead>
@@ -467,7 +467,7 @@
                                     <td data-property="PerUseCharge" data-value='<%#Eval("PerUseCharge")%>' style="text-align: center;"><%#Eval("PerUseCharge", "{0:C}")%></td>
                                     <td data-property="HourlyRate" data-value='<%#Eval("HourlyRate")%>' style="text-align: center;"><%#Eval("HourlyRate", "{0:C}")%></td>
                                     <td data-property="BillingDurationHoursForgiven" data-value='<%#Eval("BillingDurationHoursForgiven")%>' style="text-align: right;"><%#Eval("BillingDurationHoursForgiven", "{0:0.00}")%></td>
-                                    <td data-property="BillingCharge" data-value='<%#Eval("BillingCharge")%>' style="text-align: right;"><%#Eval("BillingCharge", "{0:C}")%></td>
+                                    <%--<td data-property="BillingCharge" data-value='<%#Eval("BillingCharge")%>' style="text-align: right;"><%#Eval("BillingCharge", "{0:C}")%></td>--%>
                                     <td data-property="LineCost" data-value='<%#Eval("LineCost")%>' style="text-align: right;"><%#Eval("LineCost", "{0:C}")%></td>
                                 </tr>
                             </ItemTemplate>
